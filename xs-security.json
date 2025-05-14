@@ -1,0 +1,21 @@
+{
+  "xsappname": "eclaims",
+  "tenant-mode": "dedicated",
+  "scopes": [
+  ],
+  "attributes": [],
+  "role-templates": [
+  ],
+  "oauth2-configuration": {
+    "token-validity": 36000,
+    "credential-types":[
+      "binding-secret",
+      "x509"
+    ],
+    "redirect-uris": [
+      "https://*.applicationstudio.cloud.sap/**",
+      "https://*.cfapps.eu10-004.hana.ondemand.com/login/callback",
+      "https://*.hana.ondemand.com/**"
+    ]
+  }
+}
