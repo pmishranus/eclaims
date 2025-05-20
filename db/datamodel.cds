@@ -180,6 +180,23 @@ context MASTER_DATA {
             MODIFIED_ON    : VAR_TEXT_50;
     };
     @cds.persistence.exists
+    entity CHRS_ELIG_CRITERIA {
+        key STF_NUMBER          : VAR_TEXT_100;
+        key SF_STF_NUMBER       : VAR_TEXT_100;
+        key CLAIM_TYPE          : VAR_TEXT_100;
+        key START_DATE          : VAR_DATE;
+        key END_DATE            : VAR_DATE;
+            SUBMISSION_END_DATE : VAR_DATE;
+            MODIFIED_BY         : VAR_TEXT_20;
+            REMARKS             : VAR_TEXT_150;
+            MODIFIED_ON         : VAR_TEXT_50;
+        key STF_CLAIM_TYPE_CAT  : VAR_TEXT_10 default 'NA';
+            WORKING_HOURS       : VAR_TEXT_100;
+            APPOINTMENT_TRACK   : VAR_TEXT_10;
+    };
+
+
+    @cds.persistence.exists
     entity MASTER_CLAIM_TYPE {
         key CLAIM_TYPE_C : VAR_TEXT_100;
             CLAIM_TYPE_T : VAR_TEXT_100;
@@ -246,6 +263,21 @@ context UTILITY {
             PROCESSED_BY_NID     : VAR_TEXT_100; // NUSNET ID of the Requestor
             PROCESS_EXPECTED_DOC : VAR_DATE; // Populate Process Expected Date of Completion
             PROCESS_ACTUAL_DOC   : VAR_DATE; // Actual Date of Completion of the process
+    };
+
+        /********************************************* Remarks Data Entity ***************************/
+     @cds.persistence.exists
+     entity REMARKS_DATA {
+        key ID                : VAR_TEXT_20;
+            REFERENCE_ID      : VAR_TEXT_20;
+            REMARKS           : VAR_TEXT_5000;
+            STAFF_ID          : VAR_TEXT_20;
+            STAFF_NAME        : VAR_TEXT_100;
+            STAFF_USER_TYPE   : VAR_TEXT_40; // Capture user type, if Approver / Requestor / Verifier, etc.
+            REMARKS_UPDATE_ON : VAR_TEXT_40; // Remarks entered timestamp
+            REMARKS_TYPE      : VAR_TEXT_15; // Capture the action associated with that remark.
+            NUSNET_ID         : VAR_TEXT_100;
+            IS_EDITABLE       : VAR_INT; //Flag to allow for edit of remarks on the screen
     };
 
     /********************************************* Task Details Config Entity ***************************/

@@ -74,6 +74,30 @@ module.exports = {
 
 
 
+    fetchStaffInfoForRequest: async function (nusNetId, ulu, fdlu) {
+        const query = `
+                        SELECT cj.*
+                        FROM CHRS_JOB_INFO cj
+                        WHERE cj.STF_NUMBER IN (
+                        SELECT cj1.STF_NUMBER
+                        FROM CHRS_JOB_INFO cj1
+                        WHERE (
+                                UPPER(cj1.NUSNET_ID) = UPPER(?)
+                                OR UPPER(cj1.STF_NUMBER) = UPPER(?)
+                                )
+                            AND cj1.ULU_C = ?
+                            AND cj1.FDLU_C = ?
+                        )
+                        AND cj.ULU_C = ?
+                        AND cj.FDLU_C = ?
+                `;
+        const values = [nusNetId, nusNetId, ulu, fdlu, ulu, fdlu];
+        const fetchStaffInfoForRequest = await cds.run(query, values);
+        return fetchStaffInfoForRequest;
+    },
+
+
+
     checkStaffIsActiveAndValidForMonthly: async function (nusNetId, startDate, endDate, claimType) {
         const query = `
                         SELECT cj.*

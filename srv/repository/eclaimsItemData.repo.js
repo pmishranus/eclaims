@@ -99,9 +99,48 @@ async function checkForExistingReq(staffNusNetId, claimStartDate, claimEndDate, 
       return checkForExistingReq;
 }
 
+async function fetchItemCount(draftId) {
+    let query = ` SELECT * FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = '${draftId}'`;
+    let fetchItemCount = await cds.run(query);
+    return fetchItemCount;
+}
+
+async function fetchItemIds(draftId) {
+    let query = ` SELECT ITEM_ID FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = '${draftId}'`;
+    let fetchItemIds = await cds.run(query);
+    return fetchItemIds;
+}
+
+async function softDeleteByItemId(tx,itemIds,nusNetId,date){
+    const query = ` UPDATE NUSEXT_ECLAIMS_ITEMS_DATA set IS_DELETED = 'Y', UPDATED_BY = ?, UPDATED_ON = ? where ITEM_ID in ('${itemIds})`;
+    const values = [nusNetId, date];
+    const result = await tx.run(query, values);
+  
+    // result will be an object; affected rows may be in result.affectedRows or result.length
+    return result;
+}
+
+
+async function softDeleteByDraftId(tx,draftId, nusNetId, date) {
+    const placeholders = itemIds.map(() => '?').join(', ');
+    const query = `
+      UPDATE NUSEXT_ECLAIMS_ITEMS_DATA
+      SET IS_DELETED='Y', UPDATED_BY=?, UPDATED_ON=?
+      WHERE ITEM_ID IN (SELECT ITEM_ID FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = '${draftId}' AND IS_DELETED = 'N')
+    `;
+    const values = [nusNetId, date];
+    const result = await tx.run(query, values);
+  
+    // result will be an object; affected rows may be in result.affectedRows or result.length
+    return result;
+  }
 
 module.exports = {
     queryDayMonthAndYearRequests,
     queryMonthAndYearRequests,
-    checkForExistingReq
+    checkForExistingReq,
+    fetchItemCount,
+    fetchItemIds,
+    softDeleteByItemId,
+    softDeleteByDraftId
 }

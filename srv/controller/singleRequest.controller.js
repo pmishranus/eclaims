@@ -2,18 +2,23 @@ const cds = require("@sap/cds");
 const CommonRepo = require("../repository/util.repo");
 const EclaimsHeaderDataRepo = require("../repository/eclaimsData.repo");
 const RequestLockDetailsRepo = require("../repository/requestLockDetails.repo");
+const ProcessParticipantsRepo = require("../repository/processParticipant.repo");
+const ElligibilityCriteriaRepo = require("../repository/eligibilityCriteria.repo");
 const DateToWeekRepo = require("../repository/dateToWeek.repo");
 const EclaimsItemDataRepo = require("../repository/eclaimsItemData.repo");
 const CommonUtils = require("../util/commonUtil");
+const ProcessDetailsRepo = require("../repository/processDetails.repo");
 const DateUtils = require("../util/dateUtil");
+const TaskDetailsRepo = require("../repository/taskDetails.repo");
 const ValidationResultsDto = require("../dto/validationResultsDto");
 const { ApplicationConstants, MessageConstants } = require("../util/constant");
 const { ApplicationException } = require("../util/customErrors");
 const RateTypeConfig = require("../enum/rateTypeConfig");
 const ChrsJobInfoRepo = require("../repository/chrsJobInfo.repo");
+
 async function postClaims(request) {
     try {
-        const tx = cds.tx();
+        const tx = cds.tx(request);
         const user = request.user.id;
         // const userName = user.split('@')[0];
         const userName = "PTT_CA1";
@@ -355,7 +360,7 @@ async function claimantCASaveSubmit(item, requestorGroup, savedData, isCASave, r
 
     let itemCount = (item.CLAIM_REQUEST_TYPE &&
         item.CLAIM_REQUEST_TYPE.toUpperCase() === ApplicationConstants.CLAIM_REQUEST_TYPE_PERIOD) ? 0 : 1;
-    const nusNetId = eclaimsJWTTokenUtil.fetchNusNetIdFromToken(token);
+    const nusNetId = loggedInUserDetails.NUSNET_ID;
 
     // DRAFT_ID Handling
     if (item.DRAFT_ID) {
@@ -371,14 +376,14 @@ async function claimantCASaveSubmit(item, requestorGroup, savedData, isCASave, r
                 eclaimsData.CREATED_ON = new Date().toISOString();
             }
             eclaimsData.REQUEST_ID = savedData.REQUEST_ID;
-            itemCount = await eclaimsItemDataRepository.fetchItemCount(savedData.DRAFT_ID);
+            itemCount = await EclaimsItemDataRepo.fetchItemCount(savedData.DRAFT_ID);
         } else {
-            draftNumber = await eligibilityCriteriaRepository.fetchSequenceNumber(draftIdPatternVal, draftIdNoOfDigits);
+            draftNumber = await CommonRepo.fetchSequenceNumber(draftIdPatternVal, draftIdNoOfDigits);
             eclaimsData.DRAFT_ID = draftNumber;
             eclaimsData.CREATED_ON = new Date().toISOString();
         }
     } else {
-        draftNumber = await eligibilityCriteriaRepository.fetchSequenceNumber(draftIdPatternVal, draftIdNoOfDigits);
+        draftNumber = await CommonRepo.fetchSequenceNumber(draftIdPatternVal, draftIdNoOfDigits);
         eclaimsData.DRAFT_ID = draftNumber;
         eclaimsData.CREATED_ON = new Date().toISOString();
     }
@@ -394,7 +399,7 @@ async function claimantCASaveSubmit(item, requestorGroup, savedData, isCASave, r
     // ACTION SUBMIT logic
     if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_SUBMIT) {
         if (!item.REQUEST_ID && !eclaimsData.REQUEST_ID) {
-            const requestNumber = await eligibilityCriteriaRepository.fetchSequenceNumber(requestIdPatternVal, requestIdNoOfDigits);
+            const requestNumber = await CommonRepo.fetchSequenceNumber(requestIdPatternVal, requestIdNoOfDigits);
             eclaimsData.REQUEST_ID = requestNumber;
         } else if (item.REQUEST_ID) {
             eclaimsData.REQUEST_ID = item.REQUEST_ID;
@@ -420,7 +425,7 @@ async function claimantCASaveSubmit(item, requestorGroup, savedData, isCASave, r
         // If claim type is 102, fetch working hours
         if (item.CLAIM_TYPE && item.CLAIM_TYPE === ApplicationConstants.CLAIM_TYPE_102) {
             const dateRange = DateUtils.fetchDatesFromMonthAndYear(parseInt(monthData[0]), parseInt(monthData[1]));
-            const staffResponseList = await eligibilityCriteriaRepository.fetchWorkingHours(
+            const staffResponseList = await ElligibilityCriteriaRepo.fetchWorkingHours(
                 item.STAFF_ID, dateRange[0], dateRange[1], item.CLAIM_TYPE
             );
             const staffResponse = staffResponseList && staffResponseList.length > 0 ? staffResponseList[0] : {};
@@ -444,7 +449,7 @@ async function claimantCASaveSubmit(item, requestorGroup, savedData, isCASave, r
     }
 
     // Fetch staff info
-    const chrsJobInfoDtls = await ChrsJobInfoRepository.fetchStaffInfoForRequest(item.STAFF_ID, item.ULU, item.FDLU);
+    const chrsJobInfoDtls = await ChrsJobInfoRepo.fetchStaffInfoForRequest(item.STAFF_ID, item.ULU, item.FDLU);
     if (!chrsJobInfoDtls || chrsJobInfoDtls.length === 0) {
         const chrsJobInfoDatavalidation = frameValidationMessage("Eclaims", "No chrsJobInfoDtls available.");
         validationResults = [chrsJobInfoDatavalidation];
@@ -453,7 +458,7 @@ async function claimantCASaveSubmit(item, requestorGroup, savedData, isCASave, r
         return eclaimsDataResDto;
     }
     // Persist CHRS info (you'd write this)
-    await persistChrsJobInfoData(eclaimsData, chrsJobInfoDtls[0]);
+    persistChrsJobInfoData(eclaimsData, chrsJobInfoDtls[0]);
 
     // ULU/FDLU/ULU_T
     if (item.ULU) eclaimsData.ULU = item.ULU;
@@ -461,18 +466,19 @@ async function claimantCASaveSubmit(item, requestorGroup, savedData, isCASave, r
     if (item.ULU_T) eclaimsData.ULU_T = item.ULU_T;
 
     // Save EClaims Data
-    const savedMasterData = await EclaimsHeaderDataRepo.save(eclaimsData);
+    const savedMasterData = await CommonRepo.upsertOperationChained(tx, "NUSEXT_ECLAIMS_HEADER_DATA", eclaimsData);
 
     // Save or soft-delete items
     if (item.SelectedClaimDates && item.SelectedClaimDates.length > 0) {
         // Soft delete old items if needed
         if (draftNumber) {
             const itemIdList = item.SelectedClaimDates.map(x => x.ITEM_ID).filter(Boolean);
-            const savedItemIds = await eclaimsItemDataRepository.fetchItemIds(draftNumber);
+            const savedItemIds = await EclaimsItemDataRepo.fetchItemIds(draftNumber);
             if (savedItemIds && savedItemIds.length > 0) {
                 const itemIdsToSoftDelete = savedItemIds.filter(itemId => !itemIdList.includes(itemId));
                 if (itemIdsToSoftDelete.length > 0) {
-                    await eclaimsItemDataRepository.softDeleteByItemId(itemIdsToSoftDelete, userInfoDetails.STAFF_ID, new Date());
+                    await EclaimsItemDataRepo.softDeleteByItemId(tx, itemIdsToSoftDelete, userInfoDetails.STAFF_ID, new Date());
+                    // await EclaimsItemDataRepo.softDeleteByDraftId(tx, draftNumber, userInfoDetails.STAFF_ID, new Date()); //here 
                 }
             }
         }
@@ -487,20 +493,20 @@ async function claimantCASaveSubmit(item, requestorGroup, savedData, isCASave, r
         }
     } else if (draftNumber) {
         // User deleted all items
-        await eclaimsItemDataRepository.softDeleteByDraftId(draftNumber);
+        await EclaimsItemDataRepo.softDeleteByDraftId(tx, draftNumber, userInfoDetails.STAFF_ID, new Date());
     }
 
     // CA Save? (add participants and verifiers)
     if (isCASave) {
-        await populateProcessParticipantDetails(item, token);
+        await populateProcessParticipantDetails(item, tx, loggedInUserDetails);
     }
 
     // Populate Remarks
-    await populateRemarksDataDetails(item.REMARKS, item.DRAFT_ID);
+    await populateRemarksDataDetails(item.REMARKS, item.DRAFT_ID,tx);
 
     // Persist processDetails & taskDetails
     try {
-        const processDetails = await processDetailsRepository.fetchByReferenceId(draftNumber, item.CLAIM_TYPE);
+        const processDetails = await ProcessDetailsRepo.fetchByReferenceId(draftNumber, item.CLAIM_TYPE);
         if (
             savedData &&
             item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_SUBMIT &&
@@ -511,7 +517,7 @@ async function claimantCASaveSubmit(item, requestorGroup, savedData, isCASave, r
                 REQUEST_ID: savedData.REQUEST_ID,
                 PROCESS_CODE: savedData.CLAIM_TYPE,
                 ACTION_CODE: ApplicationConstants.ACTION_SUBMIT,
-                TASK_INST_ID: (await taskDetailsRepository.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE))?.TASK_INST_ID,
+                TASK_INST_ID: (await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE))?.TASK_INST_ID,
                 ROLE: item.ROLE,
                 IS_REMARKS_UPDATE: true
             }];
@@ -539,6 +545,281 @@ async function claimantCASaveSubmit(item, requestorGroup, savedData, isCASave, r
     Object.assign(eclaimsDataResDto, savedMasterData);
     eclaimsDataResDto.eclaimsItemDataDetails = eclaimsItemsRes;
     return eclaimsDataResDto;
+}
+
+async function populateProcessParticipantDetails(item, tx, loggedInUserDetails) {
+    // await processParticipantsRepository.softDeleteByDraftId(item.DRAFT_ID); // Uncomment if you want to use it
+
+    const ppntIdList = [];
+
+    // Process ADDTIONAL_APPROVER_1
+    if (item.ADDTIONAL_APPROVER_1 && Array.isArray(item.ADDTIONAL_APPROVER_1) && item.ADDTIONAL_APPROVER_1.length > 0) {
+        for (const additionalApproverOne of item.ADDTIONAL_APPROVER_1) {
+            if (
+                additionalApproverOne &&
+                additionalApproverOne.NUSNET_ID &&
+                additionalApproverOne.NUSNET_ID.trim() !== ''
+            ) {
+                const updated = await persistProcessParticipantDetails(additionalApproverOne, item, loggedInUserDetails, ApplicationConstants.TASK_ACTION_addapp1, tx);
+                ppntIdList.push(updated.PPNT_ID);
+            }
+        }
+    }
+
+    // Process ADDTIONAL_APPROVER_2
+    if (item.ADDTIONAL_APPROVER_2 && Array.isArray(item.ADDTIONAL_APPROVER_2) && item.ADDTIONAL_APPROVER_2.length > 0) {
+        for (const additionalApproverTwo of item.ADDTIONAL_APPROVER_2) {
+            if (
+                additionalApproverTwo &&
+                additionalApproverTwo.NUSNET_ID &&
+                additionalApproverTwo.NUSNET_ID.trim() !== ''
+            ) {
+                const updated = await persistProcessParticipantDetails(additionalApproverTwo, item, loggedInUserDetails, ApplicationConstants.TASK_ACTION_addapp2, tx);
+                ppntIdList.push(updated.PPNT_ID);
+            }
+        }
+    }
+
+    // Process VERIFIER
+    if (item.VERIFIER && Array.isArray(item.VERIFIER) && item.VERIFIER.length > 0) {
+        for (const verifier of item.VERIFIER) {
+            if (verifier && verifier.NUSNET_ID && verifier.NUSNET_ID.trim() !== '') {
+                const updated = await persistProcessParticipantDetails(verifier, item, token, loggedInUserDetails, ApplicationConstants.TASK_ACTION_verifier, tx);
+                ppntIdList.push(updated.PPNT_ID);
+            }
+        }
+    }
+
+    // Fetch all participants currently saved for this draft
+    const savedParticipants = await ProcessParticipantsRepo.fetchPPNTIdDtls(item.DRAFT_ID);
+
+    if (savedParticipants && savedParticipants.length > 0) {
+        // Find participants that were saved but not updated in this operation (should be soft deleted)
+        const softDeleteIds = savedParticipants.filter(savedId => !ppntIdList.includes(savedId));
+        if (softDeleteIds && softDeleteIds.length > 0) {
+            await ProcessParticipantsRepo.softDeleteByPPNTId(tx, softDeleteIds);
+        }
+    }
+}
+
+async function persistProcessParticipantDetails(
+    claimInnerRequestDto,
+    item,
+    loggedInUserDetails,
+    userDesignation,
+    tx
+) {
+    // Get user details from token (assumed async)
+    const userInfoDetails = loggedInUserDetails;
+
+    // Build the ProcessParticipants object
+    const processParticipants = {};
+
+    processParticipants.NUSNET_ID = claimInnerRequestDto.NUSNET_ID;
+
+    if (claimInnerRequestDto.PPNT_ID && claimInnerRequestDto.PPNT_ID.trim() !== '') {
+        processParticipants.PPNT_ID = claimInnerRequestDto.PPNT_ID;
+    } else {
+        // Generate PPNT_ID
+        const now = new Date();
+        const requestMonth = String(now.getMonth() + 1).padStart(2, '0'); // JS months: 0-11
+        const requestYear = String(now.getFullYear() % 100).padStart(2, '0');
+        const particpantIdPattern = `PPNT${requestYear}${requestMonth}`;
+        // Assume fetchSequenceNumber is async and returns a string
+        const participantId = await CommonRepo.fetchSequenceNumber(particpantIdPattern, 4);
+        processParticipants.PPNT_ID = participantId;
+    }
+
+    processParticipants.REFERENCE_ID = item.DRAFT_ID;
+    processParticipants.STAFF_ID = claimInnerRequestDto.STAFF_ID;
+    processParticipants.UPDATED_ON = new Date();
+    processParticipants.STAFF_FULL_NAME = claimInnerRequestDto.STAFF_FULL_NAME;
+    processParticipants.IS_DELETED = ApplicationConstants.N;
+
+    if (userInfoDetails) {
+        processParticipants.UPDATED_BY_NID = userInfoDetails.NUSNET_ID;
+        processParticipants.UPDATED_BY = userInfoDetails.STAFF_ID;
+    }
+
+    processParticipants.USER_DESIGNATION = userDesignation;
+
+    // Save to DB (assumed async)
+    // const savedParticipant = await processParticipantsRepository.save(processParticipants);
+    const savedParticipant = await CommonRepo.upsertOperationChained(tx, "NUSEXT_UTILITY_PROCESS_PARTICIPANTS", processParticipants);
+    return savedParticipant;
+}
+
+async function populateRemarksDataDetails(claimInnerRequestDto, draftId,tx) {
+    if (
+        claimInnerRequestDto &&
+        Array.isArray(claimInnerRequestDto) &&
+        claimInnerRequestDto.length > 0 &&
+        draftId &&
+        draftId.trim() !== ""
+    ) {
+        for (const remarksData of claimInnerRequestDto) {
+            if (remarksData) {
+                const inputData = {};
+
+                // Set ID (reuse if present, else generate)
+                if (remarksData.ID && remarksData.ID.trim() !== "") {
+                    inputData.ID = remarksData.ID;
+                } else {
+                    const now = new Date();
+                    const requestMonth = String(now.getMonth() + 1).padStart(2, "0");
+                    const requestYear = String(now.getFullYear() % 100).padStart(2, "0");
+                    const remarkIdPattern = `RMK${requestYear}${requestMonth}`;
+                    // Assume async function returning a string
+                    inputData.ID = await CommonRepo.fetchSequenceNumber(remarkIdPattern, 5);
+                }
+
+                inputData.NUSNET_ID = remarksData.NUSNET_ID;
+                inputData.REFERENCE_ID = draftId;
+                inputData.STAFF_ID = remarksData.STAFF_ID;
+                inputData.STAFF_NAME = remarksData.STAFF_NAME;
+
+                // Sanitize REMARKS
+                let tempRemarks = remarksData.REMARKS && remarksData.REMARKS.trim() !== "" ? remarksData.REMARKS : "";
+                tempRemarks = tempRemarks.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                inputData.REMARKS = tempRemarks;
+
+                inputData.REMARKS_UPDATE_ON = remarksData.REMARKS_UPDATE_ON;
+                inputData.STAFF_USER_TYPE = remarksData.STAFF_USER_TYPE;
+                inputData.IS_EDITABLE = 0;
+
+                // Save (assume async)
+                // await remarksDataRepository.save(inputData);
+                await commonQuery.upsertOperationChained(tx, "NUSEXT_UTILITY_REMARKS_DATA", inputData);
+            }
+        }
+    }
+}
+
+
+
+
+
+async function persistEclaimsItemData(
+    draftNumber,
+    itemCount,
+    selectedClaimDates,
+    item,
+    eclaimsData,
+    nusNetId,
+    userInfoDetails
+) {
+    console.info("MassUploadServiceImpl persistEclaimsItemData start()");
+
+    // Build item ID
+    let itemId;
+    if (selectedClaimDates.ITEM_ID && selectedClaimDates.ITEM_ID.trim() !== '') {
+        itemId = selectedClaimDates.ITEM_ID;
+    } else {
+        itemId = draftNumber + (ApplicationConstants.PREFIX_ZERO_THREE_DIGITS
+            ? String(itemCount).padStart(3, '0')
+            : String(itemCount));
+    }
+
+    // Construct the object
+    const eclaimsItemData = {
+        ITEM_ID: itemId,
+        DRAFT_ID: draftNumber,
+        RATE_TYPE: selectedClaimDates.RATE_TYPE,
+        CLAIM_DAY: selectedClaimDates.CLAIM_DAY,
+        CLAIM_DAY_TYPE: selectedClaimDates.CLAIM_DAY_TYPE,
+        CLAIM_START_DATE: selectedClaimDates.CLAIM_START_DATE,
+        CLAIM_END_DATE: selectedClaimDates.CLAIM_END_DATE,
+        START_TIME: selectedClaimDates.START_TIME,
+        END_TIME: selectedClaimDates.END_TIME,
+        REMARKS: selectedClaimDates.REMARKS,
+        CLAIM_MONTH: eclaimsData.CLAIM_MONTH,
+        CLAIM_YEAR: eclaimsData.CLAIM_YEAR,
+        HOURS: ApplicationConstants.DEFAULT_DOUBLE_VALUE,
+        RATE_TYPE_AMOUNT: Number(ApplicationConstants.DEFAULT_DOUBLE).toFixed(2),
+        TOTAL_AMOUNT: Number(ApplicationConstants.DEFAULT_DOUBLE).toFixed(2),
+        DISC_RATETYPE_AMOUNT: ApplicationConstants.DEFAULT_DOUBLE_VALUE,
+        RATE_UNIT: ApplicationConstants.DEFAULT_DOUBLE_VALUE,
+        HOURS_UNIT: ApplicationConstants.DEFAULT_DOUBLE,
+        IS_PH: selectedClaimDates.IS_PH,
+        WAGE_CODE: selectedClaimDates.WAGE_CODE,
+        IS_DISCREPENCY: selectedClaimDates.IS_DISCREPENCY,
+        WBS: selectedClaimDates.WBS,
+        UPDATED_BY: userInfoDetails.STAFF_ID,
+        UPDATED_ON: new Date(),
+        IS_DELETED: ApplicationConstants.N
+    };
+
+    // Provide default START_TIME and END_TIME if blank
+    if (!eclaimsItemData.START_TIME || eclaimsItemData.START_TIME.trim() === '') {
+        eclaimsItemData.START_TIME = ApplicationConstants.CLAIM_START_TIME_DEFAULT;
+    }
+    if (!eclaimsItemData.END_TIME || eclaimsItemData.END_TIME.trim() === '') {
+        eclaimsItemData.END_TIME = ApplicationConstants.CLAIM_END_TIME_DEFAULT;
+    }
+
+    // Optional fields with formatting
+    if (selectedClaimDates.HOURS && selectedClaimDates.HOURS.trim() !== '') {
+        eclaimsItemData.HOURS = Number(selectedClaimDates.HOURS).toFixed(2);
+    }
+    if (selectedClaimDates.RATE_TYPE_AMOUNT && selectedClaimDates.RATE_TYPE_AMOUNT.trim() !== '') {
+        eclaimsItemData.RATE_TYPE_AMOUNT = Number(selectedClaimDates.RATE_TYPE_AMOUNT).toFixed(2);
+    }
+    if (selectedClaimDates.TOTAL_AMOUNT && selectedClaimDates.TOTAL_AMOUNT.trim() !== '') {
+        eclaimsItemData.TOTAL_AMOUNT = Number(selectedClaimDates.TOTAL_AMOUNT).toFixed(2);
+    }
+    if (selectedClaimDates.DISC_RATETYPE_AMOUNT && selectedClaimDates.DISC_RATETYPE_AMOUNT.trim() !== '') {
+        eclaimsItemData.DISC_RATETYPE_AMOUNT = Number(selectedClaimDates.DISC_RATETYPE_AMOUNT).toFixed(2);
+    }
+    if (selectedClaimDates.RATE_UNIT && selectedClaimDates.RATE_UNIT.trim() !== '') {
+        eclaimsItemData.RATE_UNIT = Number(selectedClaimDates.RATE_UNIT).toFixed(2);
+    }
+    if (selectedClaimDates.HOURS_UNIT && selectedClaimDates.HOURS_UNIT.trim() !== '') {
+        eclaimsItemData.HOURS_UNIT = Number(selectedClaimDates.HOURS_UNIT);
+    }
+
+    // Set CLAIM_WEEK_NO if CLAIM_START_DATE is provided
+    if (selectedClaimDates.CLAIM_START_DATE && selectedClaimDates.CLAIM_START_DATE.trim() !== '') {
+        const claimDate = DateUtils.convertStringToDate(
+            selectedClaimDates.CLAIM_START_DATE,
+            ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
+        );
+        const weekOfYear = await dateToWeekRepository.fetchWeekOfTheDay(claimDate); // Assume async
+        eclaimsItemData.CLAIM_WEEK_NO = weekOfYear;
+    }
+
+    // Save to database (adjust for your DB or CAP model)
+    await commonQuery.upsertOperationChained(tx, "NUSEXT_ECLAIMS_ITEMS_DATA", eclaimsItemData);
+
+    // Prepare result DTO (you may want to use a mapping function or simply return the inserted object)
+    const eclaimsItemDataResDto = { ...eclaimsItemData };
+
+    console.info("MassUploadServiceImpl persistEclaimsItemData end()");
+    return eclaimsItemDataResDto;
+}
+
+function persistChrsJobInfoData(eclaimsData, chrsJobInfo) {
+    if (chrsJobInfo) {
+        // Defensive: chrsJobInfoId may be undefined/null
+        const jobInfoId = chrsJobInfo.chrsJobInfoId || {};
+
+        eclaimsData.CONCURRENT_STAFF_ID = jobInfoId.SF_STF_NUMBER;
+        eclaimsData.STAFF_ID = jobInfoId.STF_NUMBER;
+        eclaimsData.STAFF_NUSNET_ID = chrsJobInfo.NUSNET_ID;
+        eclaimsData.ULU = chrsJobInfo.ULU_C;
+        eclaimsData.FDLU = chrsJobInfo.FDLU_C;
+        eclaimsData.FULL_NM = chrsJobInfo.FULL_NM;
+        eclaimsData.ULU_T = chrsJobInfo.ULU_T;
+
+        if (chrsJobInfo.JOIN_DATE) {
+            // If JOIN_DATE is a Date object, convert to ISO string or toString as needed
+            if (chrsJobInfo.JOIN_DATE instanceof Date) {
+                eclaimsData.DATE_JOINED = chrsJobInfo.JOIN_DATE.toISOString().split('T')[0]; // "YYYY-MM-DD"
+            } else {
+                eclaimsData.DATE_JOINED = chrsJobInfo.JOIN_DATE.toString();
+            }
+        }
+        eclaimsData.EMPLOYEE_GRP = chrsJobInfo.EMP_GP_C;
+    }
 }
 
 async function validateEclaimsData(item, roleFlow, requestorGroup, loggedInUserDetails) {
@@ -640,7 +921,7 @@ function frameValidationMessage(field, message) {
     return validationResultsDto;
 }
 
-async function itemDataValidation(item, roleFlow, requestorGroup,loggedInUserDetails) {
+async function itemDataValidation(item, roleFlow, requestorGroup, loggedInUserDetails) {
     const response = [];
 
 
@@ -986,334 +1267,334 @@ async function itemDataValidation(item, roleFlow, requestorGroup,loggedInUserDet
 }
 async function checkOverLapping(item) {
     let validationResult = [];
-  
+
     if (item && item.selectedClaimDates && item.selectedClaimDates.length > 0) {
-      if (
-        (item.CLAIM_REQUEST_TYPE || '').toUpperCase() === ApplicationConstants.CLAIM_REQUEST_TYPE_PERIOD.toUpperCase()
-      ) {
-        validationResult = await checkPeriodValidation(item);
-      } else if (
-        (item.CLAIM_REQUEST_TYPE || '').toUpperCase() === ApplicationConstants.CLAIM_REQUEST_TYPE_DAILY.toUpperCase()
-      ) {
-        validationResult = await checkDailyValidation(item);
-      }
+        if (
+            (item.CLAIM_REQUEST_TYPE || '').toUpperCase() === ApplicationConstants.CLAIM_REQUEST_TYPE_PERIOD.toUpperCase()
+        ) {
+            validationResult = await checkPeriodValidation(item);
+        } else if (
+            (item.CLAIM_REQUEST_TYPE || '').toUpperCase() === ApplicationConstants.CLAIM_REQUEST_TYPE_DAILY.toUpperCase()
+        ) {
+            validationResult = await checkDailyValidation(item);
+        }
     }
     return validationResult;
-  }
+}
 
-  async function checkPeriodValidation(item) {
+async function checkPeriodValidation(item) {
     const validationResult = [];
     const inputItems = [...item.selectedClaimDates]; // Clone/copy array
-  
+
     // Sort by CLAIM_START_DATE
     inputItems.sort((a, b) => {
-      const dateA = DateUtils.convertStringToDate(a.CLAIM_START_DATE, ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT);
-      const dateB = DateUtils.convertStringToDate(b.CLAIM_START_DATE, ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT);
-      return dateA - dateB;
+        const dateA = DateUtils.convertStringToDate(a.CLAIM_START_DATE, ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT);
+        const dateB = DateUtils.convertStringToDate(b.CLAIM_START_DATE, ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT);
+        return dateA - dateB;
     });
-  
+
     for (let itemCount = 0; itemCount < inputItems.length; itemCount++) {
-      const selectedClaimDates = inputItems[itemCount];
-  
-      const claimStartDate = DateUtils.convertStringToDate(
-        selectedClaimDates.CLAIM_START_DATE,
-        ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
-      );
-      const claimEndDate = DateUtils.convertStringToDate(
-        selectedClaimDates.CLAIM_END_DATE,
-        ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
-      );
-  
-      const rateType = selectedClaimDates.RATE_TYPE || '';
-  
-      if (
-        !selectedClaimDates.CLAIM_START_DATE || !selectedClaimDates.CLAIM_END_DATE ||
-        selectedClaimDates.CLAIM_START_DATE.trim() === '' || selectedClaimDates.CLAIM_END_DATE.trim() === ''
-      ) {
-        const validationResultsDto = frameItemValidationMsg(
-          '',
-          ApplicationConstants.CLAIM_START_DATE,
-          'Claim Start/End Date is not provided.'
+        const selectedClaimDates = inputItems[itemCount];
+
+        const claimStartDate = DateUtils.convertStringToDate(
+            selectedClaimDates.CLAIM_START_DATE,
+            ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
         );
-        validationResult.push(validationResultsDto);
-      }
-  
-      // Inner loop
-      for (let innerItemCount = 0; innerItemCount < inputItems.length; innerItemCount++) {
-        const innerItemClaimDates = inputItems[innerItemCount];
-        const innerRateType = innerItemClaimDates.RATE_TYPE || '';
-  
-        if (itemCount !== innerItemCount) {
-          const rateTypeMatch =
-            innerItemClaimDates.RATE_TYPE &&
-            CommonUtils.equalsIgnoreCase(selectedClaimDates.RATE_TYPE, innerItemClaimDates.RATE_TYPE) &&
-            CommonUtils.equalsIgnoreCase(selectedClaimDates.RATE_TYPE_AMOUNT, innerItemClaimDates.RATE_TYPE_AMOUNT);
-  
-          if (
-            rateTypeMatch ||
-            isHourlyMonthlyRateType(rateType, innerRateType)
-          ) {
-            const innerClaimStartDate = DateUtils.convertStringToDate(
-              innerItemClaimDates.CLAIM_START_DATE,
-              ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
+        const claimEndDate = DateUtils.convertStringToDate(
+            selectedClaimDates.CLAIM_END_DATE,
+            ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
+        );
+
+        const rateType = selectedClaimDates.RATE_TYPE || '';
+
+        if (
+            !selectedClaimDates.CLAIM_START_DATE || !selectedClaimDates.CLAIM_END_DATE ||
+            selectedClaimDates.CLAIM_START_DATE.trim() === '' || selectedClaimDates.CLAIM_END_DATE.trim() === ''
+        ) {
+            const validationResultsDto = frameItemValidationMsg(
+                '',
+                ApplicationConstants.CLAIM_START_DATE,
+                'Claim Start/End Date is not provided.'
             );
-            const innerClaimEndDate = DateUtils.convertStringToDate(
-              innerItemClaimDates.CLAIM_END_DATE,
-              ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
-            );
-  
-            // Overlap check logic
-            if (
-              (innerClaimStartDate.getTime() === claimStartDate.getTime() && innerClaimEndDate.getTime() === claimEndDate.getTime()) ||
-              (innerClaimStartDate > claimStartDate && innerClaimStartDate < claimEndDate) ||
-              (claimStartDate > innerClaimStartDate && claimStartDate < innerClaimEndDate) ||
-              (innerClaimEndDate > claimStartDate && innerClaimEndDate < claimEndDate) ||
-              (claimEndDate > innerClaimStartDate && claimEndDate < innerClaimEndDate)
-            ) {
-              const validationResultsDto = frameItemValidationMsg(
-                selectedClaimDates.CLAIM_START_DATE,
-                ApplicationConstants.CLAIM_OVERLAP,
-                'Please check claim date(s), start time, end time provided.'
-              );
-              validationResult.push(validationResultsDto);
-            }
-          }
+            validationResult.push(validationResultsDto);
         }
-      }
+
+        // Inner loop
+        for (let innerItemCount = 0; innerItemCount < inputItems.length; innerItemCount++) {
+            const innerItemClaimDates = inputItems[innerItemCount];
+            const innerRateType = innerItemClaimDates.RATE_TYPE || '';
+
+            if (itemCount !== innerItemCount) {
+                const rateTypeMatch =
+                    innerItemClaimDates.RATE_TYPE &&
+                    CommonUtils.equalsIgnoreCase(selectedClaimDates.RATE_TYPE, innerItemClaimDates.RATE_TYPE) &&
+                    CommonUtils.equalsIgnoreCase(selectedClaimDates.RATE_TYPE_AMOUNT, innerItemClaimDates.RATE_TYPE_AMOUNT);
+
+                if (
+                    rateTypeMatch ||
+                    isHourlyMonthlyRateType(rateType, innerRateType)
+                ) {
+                    const innerClaimStartDate = DateUtils.convertStringToDate(
+                        innerItemClaimDates.CLAIM_START_DATE,
+                        ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
+                    );
+                    const innerClaimEndDate = DateUtils.convertStringToDate(
+                        innerItemClaimDates.CLAIM_END_DATE,
+                        ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
+                    );
+
+                    // Overlap check logic
+                    if (
+                        (innerClaimStartDate.getTime() === claimStartDate.getTime() && innerClaimEndDate.getTime() === claimEndDate.getTime()) ||
+                        (innerClaimStartDate > claimStartDate && innerClaimStartDate < claimEndDate) ||
+                        (claimStartDate > innerClaimStartDate && claimStartDate < innerClaimEndDate) ||
+                        (innerClaimEndDate > claimStartDate && innerClaimEndDate < claimEndDate) ||
+                        (claimEndDate > innerClaimStartDate && claimEndDate < innerClaimEndDate)
+                    ) {
+                        const validationResultsDto = frameItemValidationMsg(
+                            selectedClaimDates.CLAIM_START_DATE,
+                            ApplicationConstants.CLAIM_OVERLAP,
+                            'Please check claim date(s), start time, end time provided.'
+                        );
+                        validationResult.push(validationResultsDto);
+                    }
+                }
+            }
+        }
     }
-  
+
     return validationResult;
-  }
-  function isHourlyMonthlyRateType(rateType, innerRateType) {
+}
+function isHourlyMonthlyRateType(rateType, innerRateType) {
     const rateTypeObj = RateTypeConfig.fromValue(rateType);
     const innerRateTypeObj = RateTypeConfig.fromValue(innerRateType);
-  
+
     const unknownValue = RateTypeConfig.UNKNOWN.getValue();
     const hourlyValue = RateTypeConfig.HOURLY.getValue();
     const monthlyValue = RateTypeConfig.MONTHLY.getValue();
-  
+
     if (
         CommonUtils.equalsIgnoreCase(rateTypeObj.getValue(), unknownValue) &&
         CommonUtils.equalsIgnoreCase(innerRateTypeObj.getValue(), unknownValue)
     ) {
-      if (
-        (CommonUtils.equalsIgnoreCase(rateTypeObj.getValue(), hourlyValue) && CommonUtils.equalsIgnoreCase(innerRateTypeObj.getValue(), monthlyValue)) ||
-        (CommonUtils.equalsIgnoreCase(rateTypeObj.getValue(), monthlyValue) && CommonUtils.equalsIgnoreCase(innerRateTypeObj.getValue(), hourlyValue))
-      ) {
-        return true;
-      }
+        if (
+            (CommonUtils.equalsIgnoreCase(rateTypeObj.getValue(), hourlyValue) && CommonUtils.equalsIgnoreCase(innerRateTypeObj.getValue(), monthlyValue)) ||
+            (CommonUtils.equalsIgnoreCase(rateTypeObj.getValue(), monthlyValue) && CommonUtils.equalsIgnoreCase(innerRateTypeObj.getValue(), hourlyValue))
+        ) {
+            return true;
+        }
     }
     return false;
-  }
+}
 
 function isValidFlowCheck(roleFlow, requestorGroup) {
     // Helper for case-insensitive comparison
-  
+
     return (
-      (CommonUtils.equalsIgnoreCase(roleFlow, ApplicationConstants.CA) &&
-      CommonUtils.equalsIgnoreCase(requestorGroup, ApplicationConstants.CLAIM_ASSISTANT)) ||
-      (CommonUtils.equalsIgnoreCase(roleFlow, ApplicationConstants.ESS) &&
-      CommonUtils.equalsIgnoreCase(requestorGroup, ApplicationConstants.NUS_CHRS_ECLAIMS_ESS))
+        (CommonUtils.equalsIgnoreCase(roleFlow, ApplicationConstants.CA) &&
+            CommonUtils.equalsIgnoreCase(requestorGroup, ApplicationConstants.CLAIM_ASSISTANT)) ||
+        (CommonUtils.equalsIgnoreCase(roleFlow, ApplicationConstants.ESS) &&
+            CommonUtils.equalsIgnoreCase(requestorGroup, ApplicationConstants.NUS_CHRS_ECLAIMS_ESS))
     );
-  }
+}
 
 async function checkClaimExists(selectedClaimDates, item, roleFlow, requestorGroup) {
     let validationMessage = null;
-  
+
     // Assuming isValidFlowCheck is synchronous or asynchronous as needed
     const flowValid = isValidFlowCheck(roleFlow, requestorGroup);
-  
-    if (
-      flowValid &&
-      CommonUtils.isNotBlank(selectedClaimDates.CLAIM_START_DATE) &&
-      CommonUtils.isNotBlank(selectedClaimDates.CLAIM_END_DATE) &&
-      CommonUtils.isNotBlank(item.ULU) &&
-      CommonUtils.isNotBlank(item.FDLU) &&
-      CommonUtils.isNotBlank(item.STAFF_ID) &&
-      CommonUtils.isNotBlank(selectedClaimDates.RATE_TYPE)
-    ) {
-      // Make sure this repository returns a Promise (async)
-      const eclaimsItemData = await EclaimsItemDataRepo.checkForExistingReq(
-        item.STAFF_ID,
-        selectedClaimDates.CLAIM_START_DATE,
-        selectedClaimDates.CLAIM_END_DATE,
-        item.ULU,
-        item.FDLU
-      );
-      // frameClaimExistMessage should also be implemented/reused in Node
-      validationMessage = frameClaimExistMessage(
-        eclaimsItemData,
-        selectedClaimDates,
-        item.CLAIM_REQUEST_TYPE
-      );
-    }
-    return validationMessage;
-  }
-  function frameClaimExistMessage(eclaimsItemData, selectedClaimDates, claimRequestType) {
-    let validationMessage = null;
-  
-    if (eclaimsItemData && eclaimsItemData.length > 0) {
-      for (const eclaimsItemSavedData of eclaimsItemData) {
-        if (
-            CommonUtils.isNotBlank(eclaimsItemSavedData.RATE_TYPE) &&
-            CommonUtils.isNotBlank(selectedClaimDates.RATE_TYPE) &&
-            CommonUtils.equalsIgnoreCase(eclaimsItemSavedData.RATE_TYPE, selectedClaimDates.RATE_TYPE)
-        ) {
-          // Fix for mass upload validation issue - Hourly check not required for Period
-          if (
-            (CommonUtils.equalsIgnoreCase(eclaimsItemSavedData.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY) ||
-            CommonUtils.equalsIgnoreCase(eclaimsItemSavedData.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY_19)) &&
-            !CommonUtils.equalsIgnoreCase(claimRequestType, ApplicationConstants.CLAIM_REQUEST_TYPE_PERIOD)
-          ) {
-            // Assume DateUtils.frameLocalDateTime returns a JS Date or dayjs object
-            const claimStartDateTime = DateUtils.frameLocalDateTime(
-              selectedClaimDates.CLAIM_START_DATE, selectedClaimDates.START_TIME
-            );
-            const claimEndDateTime = DateUtils.frameLocalDateTime(
-              selectedClaimDates.CLAIM_END_DATE, selectedClaimDates.END_TIME
-            );
-            const savedStartDateTime = DateUtils.frameLocalDateTime(
-              eclaimsItemSavedData.CLAIM_START_DATE, eclaimsItemSavedData.START_TIME
-            );
-            const savedEndDateTime = DateUtils.frameLocalDateTime(
-              eclaimsItemSavedData.CLAIM_END_DATE, eclaimsItemSavedData.END_TIME
-            );
-  
-            // JavaScript Date comparison
-            if (
-              (savedStartDateTime.getTime() === claimStartDateTime.getTime() &&
-               savedEndDateTime.getTime() === claimEndDateTime.getTime()) ||
-              (claimStartDateTime < savedEndDateTime && savedStartDateTime < claimEndDateTime) ||
-              (claimStartDateTime > savedStartDateTime && claimStartDateTime < savedEndDateTime) ||
-              (savedEndDateTime > claimEndDateTime && savedEndDateTime < claimEndDateTime) ||
-              (claimEndDateTime > savedStartDateTime && claimEndDateTime < savedEndDateTime)
-            ) {
-              validationMessage = "Claim already exists for the provided Start and End Date/Time.";
-              break;
-            }
-          } else {
-            if (CommonUtils.equalsIgnoreCase(claimRequestType, ApplicationConstants.CLAIM_REQUEST_TYPE_PERIOD)) {
-              // Checking for Rate Amount validation also
-              if (
-                CommonUtils.isNotBlank(selectedClaimDates.RATE_TYPE_AMOUNT) &&
-                Number(Number(selectedClaimDates.RATE_TYPE_AMOUNT).toFixed(2)) ===
-                  Number(Number(eclaimsItemSavedData.RATE_TYPE_AMOUNT).toFixed(2))
-              ) {
-                validationMessage = "Claim already exists for the provided Start and End Date.";
-                break;
-              }
-            } else {
-              validationMessage = "Claim already exists for the provided Start and End Date.";
-              break;
-            }
-          }
-        } else if (
-            CommonUtils.isNotBlank(eclaimsItemSavedData.RATE_TYPE) &&
-            CommonUtils.isNotBlank(selectedClaimDates.RATE_TYPE) &&
-          (CommonUtils.equalsIgnoreCase(selectedClaimDates.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY_20) ||
-          CommonUtils.equalsIgnoreCase(selectedClaimDates.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY_21))
-        ) {
-          // Fix for mass upload validation issue - Hourly check not required for Period
-          if (
-            CommonUtils.equalsIgnoreCase(eclaimsItemSavedData.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY_20) ||
-            CommonUtils.equalsIgnoreCase(eclaimsItemSavedData.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY_21)
-          ) {
-            validationMessage =
-              "Rate Type T-2 courses Learning Per Sem and T->2 courses Learning Per Sem cannot be selected for same day.";
-            break;
-          }
-        }
-      }
-    }
-    return validationMessage;
-  }
 
-  async function checkDailyValidation(item) {
+    if (
+        flowValid &&
+        CommonUtils.isNotBlank(selectedClaimDates.CLAIM_START_DATE) &&
+        CommonUtils.isNotBlank(selectedClaimDates.CLAIM_END_DATE) &&
+        CommonUtils.isNotBlank(item.ULU) &&
+        CommonUtils.isNotBlank(item.FDLU) &&
+        CommonUtils.isNotBlank(item.STAFF_ID) &&
+        CommonUtils.isNotBlank(selectedClaimDates.RATE_TYPE)
+    ) {
+        // Make sure this repository returns a Promise (async)
+        const eclaimsItemData = await EclaimsItemDataRepo.checkForExistingReq(
+            item.STAFF_ID,
+            selectedClaimDates.CLAIM_START_DATE,
+            selectedClaimDates.CLAIM_END_DATE,
+            item.ULU,
+            item.FDLU
+        );
+        // frameClaimExistMessage should also be implemented/reused in Node
+        validationMessage = frameClaimExistMessage(
+            eclaimsItemData,
+            selectedClaimDates,
+            item.CLAIM_REQUEST_TYPE
+        );
+    }
+    return validationMessage;
+}
+function frameClaimExistMessage(eclaimsItemData, selectedClaimDates, claimRequestType) {
+    let validationMessage = null;
+
+    if (eclaimsItemData && eclaimsItemData.length > 0) {
+        for (const eclaimsItemSavedData of eclaimsItemData) {
+            if (
+                CommonUtils.isNotBlank(eclaimsItemSavedData.RATE_TYPE) &&
+                CommonUtils.isNotBlank(selectedClaimDates.RATE_TYPE) &&
+                CommonUtils.equalsIgnoreCase(eclaimsItemSavedData.RATE_TYPE, selectedClaimDates.RATE_TYPE)
+            ) {
+                // Fix for mass upload validation issue - Hourly check not required for Period
+                if (
+                    (CommonUtils.equalsIgnoreCase(eclaimsItemSavedData.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY) ||
+                        CommonUtils.equalsIgnoreCase(eclaimsItemSavedData.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY_19)) &&
+                    !CommonUtils.equalsIgnoreCase(claimRequestType, ApplicationConstants.CLAIM_REQUEST_TYPE_PERIOD)
+                ) {
+                    // Assume DateUtils.frameLocalDateTime returns a JS Date or dayjs object
+                    const claimStartDateTime = DateUtils.frameLocalDateTime(
+                        selectedClaimDates.CLAIM_START_DATE, selectedClaimDates.START_TIME
+                    );
+                    const claimEndDateTime = DateUtils.frameLocalDateTime(
+                        selectedClaimDates.CLAIM_END_DATE, selectedClaimDates.END_TIME
+                    );
+                    const savedStartDateTime = DateUtils.frameLocalDateTime(
+                        eclaimsItemSavedData.CLAIM_START_DATE, eclaimsItemSavedData.START_TIME
+                    );
+                    const savedEndDateTime = DateUtils.frameLocalDateTime(
+                        eclaimsItemSavedData.CLAIM_END_DATE, eclaimsItemSavedData.END_TIME
+                    );
+
+                    // JavaScript Date comparison
+                    if (
+                        (savedStartDateTime.getTime() === claimStartDateTime.getTime() &&
+                            savedEndDateTime.getTime() === claimEndDateTime.getTime()) ||
+                        (claimStartDateTime < savedEndDateTime && savedStartDateTime < claimEndDateTime) ||
+                        (claimStartDateTime > savedStartDateTime && claimStartDateTime < savedEndDateTime) ||
+                        (savedEndDateTime > claimEndDateTime && savedEndDateTime < claimEndDateTime) ||
+                        (claimEndDateTime > savedStartDateTime && claimEndDateTime < savedEndDateTime)
+                    ) {
+                        validationMessage = "Claim already exists for the provided Start and End Date/Time.";
+                        break;
+                    }
+                } else {
+                    if (CommonUtils.equalsIgnoreCase(claimRequestType, ApplicationConstants.CLAIM_REQUEST_TYPE_PERIOD)) {
+                        // Checking for Rate Amount validation also
+                        if (
+                            CommonUtils.isNotBlank(selectedClaimDates.RATE_TYPE_AMOUNT) &&
+                            Number(Number(selectedClaimDates.RATE_TYPE_AMOUNT).toFixed(2)) ===
+                            Number(Number(eclaimsItemSavedData.RATE_TYPE_AMOUNT).toFixed(2))
+                        ) {
+                            validationMessage = "Claim already exists for the provided Start and End Date.";
+                            break;
+                        }
+                    } else {
+                        validationMessage = "Claim already exists for the provided Start and End Date.";
+                        break;
+                    }
+                }
+            } else if (
+                CommonUtils.isNotBlank(eclaimsItemSavedData.RATE_TYPE) &&
+                CommonUtils.isNotBlank(selectedClaimDates.RATE_TYPE) &&
+                (CommonUtils.equalsIgnoreCase(selectedClaimDates.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY_20) ||
+                    CommonUtils.equalsIgnoreCase(selectedClaimDates.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY_21))
+            ) {
+                // Fix for mass upload validation issue - Hourly check not required for Period
+                if (
+                    CommonUtils.equalsIgnoreCase(eclaimsItemSavedData.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY_20) ||
+                    CommonUtils.equalsIgnoreCase(eclaimsItemSavedData.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY_21)
+                ) {
+                    validationMessage =
+                        "Rate Type T-2 courses Learning Per Sem and T->2 courses Learning Per Sem cannot be selected for same day.";
+                    break;
+                }
+            }
+        }
+    }
+    return validationMessage;
+}
+
+async function checkDailyValidation(item) {
     const validationResult = [];
     // Clone and sort inputItems by CLAIM_START_DATE
     const inputItems = [...item.selectedClaimDates].sort((a, b) => {
-      const dateA = DateUtils.frameLocalDateTime(a.CLAIM_START_DATE, a.START_TIME);
-      const dateB = DateUtils.frameLocalDateTime(b.CLAIM_START_DATE, b.START_TIME);
-      return dateA - dateB;
+        const dateA = DateUtils.frameLocalDateTime(a.CLAIM_START_DATE, a.START_TIME);
+        const dateB = DateUtils.frameLocalDateTime(b.CLAIM_START_DATE, b.START_TIME);
+        return dateA - dateB;
     });
-  
+
     for (let itemCount = 0; itemCount < inputItems.length; itemCount++) {
-      const selectedClaimDates = inputItems[itemCount];
-  
-      const claimStartDateTime = DateUtils.frameLocalDateTime(
-        selectedClaimDates.CLAIM_START_DATE,
-        selectedClaimDates.START_TIME
-      );
-      const claimEndDateTime = DateUtils.frameLocalDateTime(
-        selectedClaimDates.CLAIM_END_DATE,
-        selectedClaimDates.END_TIME
-      );
-  
-      const rateType = selectedClaimDates.RATE_TYPE || '';
-  
-      for (let innerItemCount = 0; innerItemCount < inputItems.length; innerItemCount++) {
-        const innerItemClaimDates = inputItems[innerItemCount];
-        const innerRateType = innerItemClaimDates.RATE_TYPE || '';
-  
-        if (
-          !innerItemClaimDates.CLAIM_START_DATE ||
-          !innerItemClaimDates.CLAIM_END_DATE ||
-          innerItemClaimDates.CLAIM_START_DATE.trim() === '' ||
-          innerItemClaimDates.CLAIM_END_DATE.trim() === ''
-        ) {
-          const validationResultsDto = frameItemValidationMsg(
-            '',
-            ApplicationConstants.CLAIM_START_DATE,
-            'Claim Start/End Date is not provided.'
-          );
-          validationResult.push(validationResultsDto);
-        }
-  
-        if (itemCount !== innerItemCount) {
-          const rateTypeMatch =
-            selectedClaimDates.RATE_TYPE &&
-            innerItemClaimDates.RATE_TYPE &&
-            selectedClaimDates.RATE_TYPE.toUpperCase() === innerItemClaimDates.RATE_TYPE.toUpperCase();
-  
-          if (
-            (rateTypeMatch && selectedClaimDates.RATE_TYPE.trim() !== '') ||
-            isHourlyMonthlyRateType(rateType, innerRateType)
-          ) {
-            const innerClaimStartDateTime = DateUtils.frameLocalDateTime(
-              innerItemClaimDates.CLAIM_START_DATE,
-              innerItemClaimDates.START_TIME
-            );
-            const innerClaimEndDateTime = DateUtils.frameLocalDateTime(
-              innerItemClaimDates.CLAIM_END_DATE,
-              innerItemClaimDates.END_TIME
-            );
-  
-            // Overlap check logic using date comparisons
+        const selectedClaimDates = inputItems[itemCount];
+
+        const claimStartDateTime = DateUtils.frameLocalDateTime(
+            selectedClaimDates.CLAIM_START_DATE,
+            selectedClaimDates.START_TIME
+        );
+        const claimEndDateTime = DateUtils.frameLocalDateTime(
+            selectedClaimDates.CLAIM_END_DATE,
+            selectedClaimDates.END_TIME
+        );
+
+        const rateType = selectedClaimDates.RATE_TYPE || '';
+
+        for (let innerItemCount = 0; innerItemCount < inputItems.length; innerItemCount++) {
+            const innerItemClaimDates = inputItems[innerItemCount];
+            const innerRateType = innerItemClaimDates.RATE_TYPE || '';
+
             if (
-              (innerClaimStartDateTime.getTime() === claimStartDateTime.getTime() &&
-                innerClaimEndDateTime.getTime() === claimEndDateTime.getTime()) ||
-              (innerClaimStartDateTime > claimStartDateTime &&
-                innerClaimStartDateTime < claimEndDateTime) ||
-              (claimStartDateTime > innerClaimStartDateTime &&
-                claimStartDateTime < innerClaimEndDateTime) ||
-              (innerClaimEndDateTime > claimEndDateTime &&
-                innerClaimEndDateTime < claimEndDateTime) ||
-              (claimEndDateTime > innerClaimStartDateTime &&
-                claimEndDateTime < innerClaimEndDateTime)
+                !innerItemClaimDates.CLAIM_START_DATE ||
+                !innerItemClaimDates.CLAIM_END_DATE ||
+                innerItemClaimDates.CLAIM_START_DATE.trim() === '' ||
+                innerItemClaimDates.CLAIM_END_DATE.trim() === ''
             ) {
-              const validationResultsDto = frameItemValidationMsg(
-                selectedClaimDates.CLAIM_START_DATE,
-                ApplicationConstants.CLAIM_OVERLAP,
-                'Please check claim date(s), start time, end time provided.'
-              );
-              validationResult.push(validationResultsDto);
+                const validationResultsDto = frameItemValidationMsg(
+                    '',
+                    ApplicationConstants.CLAIM_START_DATE,
+                    'Claim Start/End Date is not provided.'
+                );
+                validationResult.push(validationResultsDto);
             }
-          }
+
+            if (itemCount !== innerItemCount) {
+                const rateTypeMatch =
+                    selectedClaimDates.RATE_TYPE &&
+                    innerItemClaimDates.RATE_TYPE &&
+                    selectedClaimDates.RATE_TYPE.toUpperCase() === innerItemClaimDates.RATE_TYPE.toUpperCase();
+
+                if (
+                    (rateTypeMatch && selectedClaimDates.RATE_TYPE.trim() !== '') ||
+                    isHourlyMonthlyRateType(rateType, innerRateType)
+                ) {
+                    const innerClaimStartDateTime = DateUtils.frameLocalDateTime(
+                        innerItemClaimDates.CLAIM_START_DATE,
+                        innerItemClaimDates.START_TIME
+                    );
+                    const innerClaimEndDateTime = DateUtils.frameLocalDateTime(
+                        innerItemClaimDates.CLAIM_END_DATE,
+                        innerItemClaimDates.END_TIME
+                    );
+
+                    // Overlap check logic using date comparisons
+                    if (
+                        (innerClaimStartDateTime.getTime() === claimStartDateTime.getTime() &&
+                            innerClaimEndDateTime.getTime() === claimEndDateTime.getTime()) ||
+                        (innerClaimStartDateTime > claimStartDateTime &&
+                            innerClaimStartDateTime < claimEndDateTime) ||
+                        (claimStartDateTime > innerClaimStartDateTime &&
+                            claimStartDateTime < innerClaimEndDateTime) ||
+                        (innerClaimEndDateTime > claimEndDateTime &&
+                            innerClaimEndDateTime < claimEndDateTime) ||
+                        (claimEndDateTime > innerClaimStartDateTime &&
+                            claimEndDateTime < innerClaimEndDateTime)
+                    ) {
+                        const validationResultsDto = frameItemValidationMsg(
+                            selectedClaimDates.CLAIM_START_DATE,
+                            ApplicationConstants.CLAIM_OVERLAP,
+                            'Please check claim date(s), start time, end time provided.'
+                        );
+                        validationResult.push(validationResultsDto);
+                    }
+                }
+            }
         }
-      }
     }
     return validationResult;
-  }
+}
 
 function frameItemValidationMsg(claimDate, columnName, message) {
     const validationResultsDto = new ValidationResultsDto();
