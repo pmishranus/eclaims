@@ -483,10 +483,9 @@ const ApplicationConstants = {
     SEQUENCE_REQUEST_LOCK_ID_DIGITS: 4
   },
 
-  TASK_ACTION_verifier : 'VERIFIER',
-  TASK_ACTION_addapp1 : 'ADDITIONAL_APP_1',
+  TASK_ACTION_verifier: 'VERIFIER',
+  TASK_ACTION_addapp1: 'ADDITIONAL_APP_1',
   TASK_ACTION_addapp2: 'ADDITIONAL_APP_2',
-  
 
 
 
@@ -497,7 +496,8 @@ const ApplicationConstants = {
 
 
 
-PERSONAL_INFO: "PERSONAL_INFO",
+
+  PERSONAL_INFO: "PERSONAL_INFO",
   ECLAIMS_DASHBOARD_SYSTEM_REFRESH_ERROR: "System refresh is in-progress, please try again at later time.",
   INVALID_PROCESS_CODE: "Invalid process code : Pass the valid process code"
 };

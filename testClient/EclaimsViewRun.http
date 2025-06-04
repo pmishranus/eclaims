@@ -62,3 +62,15 @@ Authorization: Bearer {{access_token}}
 GET {{unsecureProtocol}}://{{host}}/v2/eclaims/$metadata
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+
+### Request-2 Get eclaims header data
+#==================================================================#
+GET {{unsecureProtocol}}://{{host}}/eclaims/fetchClaimTypes(staffId='21830',userGroup='CA_MONTH')
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+### Request-2 Get eclaims header data
+#==================================================================#
+GET {{unsecureProtocol}}://{{host}}/eclaims/fetchUluFdlu(userGroup='CLAIM_ASSISTANT',claimType='103',period='undefined')
+Content-Type: application/json
+Authorization: Bearer {{access_token}}

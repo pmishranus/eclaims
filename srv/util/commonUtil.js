@@ -20,6 +20,13 @@ function equalsIgnoreCase(str1, str2) {
   return false;
 }
 
+function notEqualsIgnoreCase(str1, str2) {
+  if (typeof str1 === 'string' && typeof str2 === 'string') {
+    return str1.toLowerCase() !== str2.toLowerCase();
+  }
+  return false;
+}
+
 // Example utility function to get a value or a default if it's empty
 function getOrDefault(value, defaultValue) {
   return _.isEmpty(value) ? defaultValue : value;
@@ -33,6 +40,9 @@ function isNotBlank(value) {
   return !_.isEmpty(value)
 }
 
+function isBlank(value) {
+  return _.isEmpty(value)
+}
 
 /**
  * Checks if a string is null, undefined, or empty.
@@ -170,6 +180,7 @@ function convertListToString(arr, key) {
 module.exports = {
   frameResponse,
   equalsIgnoreCase,
+  notEqualsIgnoreCase,
   isNullOrEmpty,
   isNotNullOrEmpty,
   capitalizeWords,
@@ -188,5 +199,6 @@ module.exports = {
   numberToText,
   groupBy,
   frameValidationMessage,
-  convertListToString
+  convertListToString,
+  isBlank
 };

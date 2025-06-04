@@ -5,6 +5,7 @@ using {
   PRJ_ECLAIM_REQUEST_VIEW
 } from '../db/redefinemodel';
 
+
 service EclaimsService @(path: '/eclaims') {
 
   @open
@@ -13,9 +14,13 @@ service EclaimsService @(path: '/eclaims') {
 
   /********************************************************************* Functions ***************************************************************************************************/
   function dummy()                                 returns {};
+  function fetchClaimTypes(staffId : String, userGroup : String)                       returns array of {};
+    function fetchUluFdlu(claimType : String, userGroup : String,period : String)                       returns  {};
   /********************************************************************* Actions ***************************************************************************************************/
 
   action   eclaimsOverviewDashboard(data : object) returns String;
+
+
   /******************************************************************** Calculation Views Exposed *********************************************************************************/
 
   // @readonly

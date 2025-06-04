@@ -16,6 +16,14 @@ module.exports = {
         );
         return fetchStaffInfo;
     },
+    fetchUserInfo : async function(upperNusNetId){
+        const stfInfoQueryParameter = ` ( NUSNET_ID = '${upperNusNetId}' OR STF_NUMBER = '${upperNusNetId}')`
+        let fetchStaffInfo = await cds.run(SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
+            .where(stfInfoQueryParameter)
+            .orderBy('END_DATE desc')
+        );
+        return fetchStaffInfo;
+    },
 
     fetchDistinctULU: async function(uluCode){
         const queryParameter = ` u.ULU_C = '${uluCode}`;
@@ -48,8 +56,8 @@ module.exports = {
         return checkForMatrixAdmin;
     },
 
-    upsertOperationChained : function(tx,entityName,record){
-        let execUpsertOperation = tx.run(UPSERT.into(entityName).entries(record));
+    upsertOperationChained : async function(tx,entityName,record){
+        let execUpsertOperation = await tx.run(UPSERT.into(entityName).entries(record));
         return execUpsertOperation;
     }
 

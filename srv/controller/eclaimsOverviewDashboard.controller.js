@@ -29,11 +29,11 @@ module.exports = {
         return this.fetchDashBoardDetails(oConnection);
     },
 
-    fetchDashBoardDetails: async function (oConnection) {
+    fetchDashBoardDetails: async function (request) {
         const tx = cds.tx();
         let configResponse = [];
         try {
-            const user = oConnection.request.user.id;
+            const user = request.user.id;
             // const userName = user.split('@')[0];
             const userName = "PTT_CA1";
             const upperNusNetId = userName.toUpperCase();
@@ -45,7 +45,7 @@ module.exports = {
                 throw new Error("User not found..!!");
             }
 
-            const inputRequest = oConnection.request.data.data;
+            const inputRequest = request.data.data;
 
             let chrsJobInfoList = await ChrsJobInfoRepo.fetchUserDetails(upperNusNetId);
 

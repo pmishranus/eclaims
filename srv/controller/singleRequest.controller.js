@@ -27,7 +27,7 @@ async function postClaims(request) {
         if (!userName) {
             throw new Error("User not found..!!");
         }
-        let massUploadRequest = oConnection.request.data.data;
+        let massUploadRequest = request.data.data;
 
         let roleFlow = await fetchRole(massUploadRequest);
 
@@ -54,7 +54,7 @@ async function postClaims(request) {
 
 
     } catch (error) {
-        Logger.debug("route can not bef found for host:", tenantHost);
+        // Logger.debug("route can not bef found for host:", tenantHost);
         return
     }
 }

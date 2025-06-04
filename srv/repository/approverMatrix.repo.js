@@ -11,7 +11,7 @@ module.exports = {
                 .where(queryParameter));
         return checkForDuplicateWithValidity;
     },
-    checkForUserGrpNProcess: async function (PROCESS_CODE,STF_NUMBER, STAFF_USER_GRP) {
+    checkForUserGrpNProcess: async function (PROCESS_CODE, STF_NUMBER, STAFF_USER_GRP) {
         const queryParameter = ` eam.STAFF_ID = '${STF_NUMBER}' and eam.PROCESS_CODE = '${PROCESS_CODE}' and eam.STAFF_USER_GRP = '${STAFF_USER_GRP}' and eam.VALID_FROM <= CURRENT_DATE and eam.VALID_TO >= CURRENT_DATE  and eam.IS_DELETED='N' `;
         let checkForUserGrpNProcess = await cds.run(
             SELECT
@@ -57,7 +57,7 @@ module.exports = {
         return validateAgainstStaffUserGrp;
 
     },
-    fetchEclaimsRole : async function(STF_NUMBER){
+    fetchEclaimsRole: async function (STF_NUMBER) {
         const queryParameter = ` eam.STAFF_ID = '${STF_NUMBER}' AND eam.VALID_FROM <= CURRENT_DATE AND eam.VALID_TO >= CURRENT_DATE AND eam.PROCESS_CODE LIKE '10%' AND eam.IS_DELETED='N' `;
         let fetchEclaimsRole = await cds.run(
             SELECT
@@ -66,7 +66,7 @@ module.exports = {
                 .where(queryParameter));
         return fetchEclaimsRole;
     },
-    fetchCWRoleForDashboard :async function(STF_NUMBER){
+    fetchCWRoleForDashboard: async function (STF_NUMBER) {
         const queryParameter = ` eam.STAFF_ID = '${STF_NUMBER}' AND eam.VALID_FROM <= CURRENT_DATE AND eam.VALID_TO >= CURRENT_DATE AND eam.PROCESS_CODE LIKE '20%' AND eam.IS_DELETED='N' `;
         let fetchCWRoleForDashboard = await cds.run(
             SELECT
@@ -75,33 +75,57 @@ module.exports = {
                 .where(queryParameter));
         return fetchCWRoleForDashboard;
     },
-    fetchCAAndDADetails:async function (ULU, FDLU, PROCESS_CODE) {
+    fetchCAAndDADetails: async function (ULU, FDLU, PROCESS_CODE) {
         // const queryParameter = ` eam.STAFF_USER_GRP in ('DEPARTMENT_ADMIN','CLAIM_ASSISTANT') and eam.ULU = '${ULU}' and eam.FDLU = '${FDLU}' and eam.PROCESS_CODE in ('${PROCESS_CODE}') and eam.VALID_FROM <= CURRENT_DATE and eam.VALID_TO >= CURRENT_DATE and eam.IS_DELETED='N' `;
         // let fetchCAAndDADetails = await cds.run(
         //     SELECT
         //         .from(' NUSEXT_UTILITY_CHRS_APPROVER_MATRIX as eam ')
         //         .where(queryParameter));
 
-         let fetchCAAndDADetails = await cds.run(
-                    SELECT
-                        .from(' NUSEXT_UTILITY_CHRS_APPROVER_MATRIX')
-                        .where({
-                            ULU : ULU,
-                            FDLU : FDLU,
-                            STAFF_USER_GRP : {
-                                in : ['DEPARTMENT_ADMIN','CLAIM_ASSISTANT']
-                            },
-                            PROCESS_CODE : {
-                                in : PROCESS_CODE
-                            },
-                            VALID_FROM : {
-                                '<=' : 'CURRENT_DATE'
-                            },
-                            VALID_TO : {
-                                '<=' : 'CURRENT_DATE'
-                            },
-                            IS_DELETED : 'N'
-                        }));
+        let fetchCAAndDADetails = await cds.run(
+            SELECT
+                .from(' NUSEXT_UTILITY_CHRS_APPROVER_MATRIX')
+                .where({
+                    ULU: ULU,
+                    FDLU: FDLU,
+                    STAFF_USER_GRP: {
+                        in: ['DEPARTMENT_ADMIN', 'CLAIM_ASSISTANT']
+                    },
+                    PROCESS_CODE: {
+                        in: PROCESS_CODE
+                    },
+                    VALID_FROM: {
+                        '<=': 'CURRENT_DATE'
+                    },
+                    VALID_TO: {
+                        '<=': 'CURRENT_DATE'
+                    },
+                    IS_DELETED: 'N'
+                }));
         return fetchCAAndDADetails;
     },
+
+    fetchCAClaimTypes: async function (staffNusNetId) {
+        let queryParameter = ` ( UPPER(eam.STAFF_NUSNET_ID) = '${staffNusNetId}' or eam.STAFF_ID = '${staffNusNetId}') and eam.VALID_FROM <= CURRENT_DATE and eam.VALID_TO >= CURRENT_DATE and eam.PROCESS_CODE = mc.CLAIM_TYPE_C and eam.STAFF_ID = cj.STF_NUMBER and eam.IS_DELETED='N' `;
+        let fetchCAClaimTypes = await cds.run(
+
+            SELECT
+                .from('NUSEXT_UTILITY_CHRS_APPROVER_MATRIX as eam')
+                .columns(
+                    'eam.PROCESS_CODE as CLAIM_TYPE_C',
+                    'mc.CLAIM_TYPE_T',
+                    'eam.STAFF_ID',
+                    'cj.SF_STF_NUMBER',
+                    'eam.VALID_FROM',
+                    'eam.VALID_TO',
+                    'cj.JOIN_DATE'
+                )
+                .join('NUSEXT_MASTER_DATA_MASTER_CLAIM_TYPE as mc').on('eam.PROCESS_CODE = mc.CLAIM_TYPE_C')
+                .join('NUSEXT_MASTER_DATA_CHRS_JOB_INFO as cj').on('eam.STAFF_ID = cj.STF_NUMBER')
+                .where(queryParameter)
+        );
+
+        return fetchCAClaimTypes;
+
+    }
 }

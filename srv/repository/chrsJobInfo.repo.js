@@ -1,5 +1,6 @@
 const cds = require("@sap/cds");
 const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
+const { query } = require("express");
 module.exports = {
     fetchUserDetails: async function (upperNusNetId) {
         const stfInfoQueryParameter = ` ( NUSNET_ID = '${upperNusNetId}' OR STF_NUMBER = '${upperNusNetId}') AND START_DATE <= CURRENT_DATE AND END_DATE >= CURRENT_DATE`
@@ -44,8 +45,8 @@ module.exports = {
 
     checkStaffIsActiveAndValid: async function (nusNetId, startDate, endDate, ulu, fdlu, claimType) {
         const query = ` SELECT cj.*
-                            FROM CHRS_JOB_INFO cj
-                            JOIN ELIGIBILITY_CRITERIA ec
+                            FROM NUSEXT_MASTER_DATA_CHRS_JOB_INFO cj
+                            JOIN NUSEXT_MASTER_DATA_ELIGIBILITY_CRITERIA ec
                                 ON ec.STF_NUMBER = cj.STF_NUMBER
                             AND ec.SF_STF_NUMBER = cj.SF_STF_NUMBER
                             WHERE cj.START_DATE <= ?
@@ -77,10 +78,10 @@ module.exports = {
     fetchStaffInfoForRequest: async function (nusNetId, ulu, fdlu) {
         const query = `
                         SELECT cj.*
-                        FROM CHRS_JOB_INFO cj
+                        FROM NUSEXT_MASTER_DATA_CHRS_JOB_INFO cj
                         WHERE cj.STF_NUMBER IN (
                         SELECT cj1.STF_NUMBER
-                        FROM CHRS_JOB_INFO cj1
+                        FROM NUSEXT_MASTER_DATA_CHRS_JOB_INFO cj1
                         WHERE (
                                 UPPER(cj1.NUSNET_ID) = UPPER(?)
                                 OR UPPER(cj1.STF_NUMBER) = UPPER(?)
@@ -101,13 +102,13 @@ module.exports = {
     checkStaffIsActiveAndValidForMonthly: async function (nusNetId, startDate, endDate, claimType) {
         const query = `
                         SELECT cj.*
-                        FROM CHRS_JOB_INFO cj, ELIGIBILITY_CRITERIA ec
+                        FROM NUSEXT_MASTER_DATA_CHRS_JOB_INFO cj, NUSEXT_MASTER_DATA_ELIGIBILITY_CRITERIA ec
                         WHERE
                             cj.START_DATE <= ?
                             AND cj.END_DATE >= ?
                             AND cj.STF_NUMBER IN (
                             SELECT cj1.STF_NUMBER
-                            FROM CHRS_JOB_INFO cj1
+                            FROM NUSEXT_MASTER_DATA_CHRS_JOB_INFO cj1
                             WHERE UPPER(cj1.NUSNET_ID) = UPPER(?)
                                 OR UPPER(cj1.STF_NUMBER) = UPPER(?)
                             )
@@ -125,5 +126,14 @@ module.exports = {
         ];
         const checkStaffIsActiveAndValidForMonthly = await cds.run(query, values);
         return checkStaffIsActiveAndValidForMonthly;
+    },
+
+    retrieveJobInfoDetails: async function(nusNetId){
+        let query = ` STF_NUMBER = SF_STF_NUMBER AND (UPPER(NUSNET_ID) = '${nusNetId.toUpperCase()}' OR UPPER(STF_NUMBER) = '${nusNetId.toUpperCase()}') AND START_DATE <= CURRENT_DATE AND END_DATE >= CURRENT_DATE `;
+        let retrieveJobInfoDetails = await cds.run(
+            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
+            .where(query)
+        );
+        return retrieveJobInfoDetails;
     }
 }
