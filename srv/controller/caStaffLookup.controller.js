@@ -7,6 +7,10 @@ const CommonUtils = require("../util/commonUtil");
 const ChrsCompInfoRepo = require("../repository/chrsCompInfo.repo");
 const { yaml } = require("@sap/cds/lib/compile/load");
 
+/**
+ *
+ * @param request
+ */
 async function fetchCaStaffLookup(request) {
     let approveTasksRes = [];
     try {
@@ -21,10 +25,8 @@ async function fetchCaStaffLookup(request) {
 
         const { claimType, ulu, fdlu, period, searchValue } = request.data;
 
-
-
         if (!claimType || !period || !ulu || !fdlu)
-            return request.error(400, "Pls provide valid inputs - claimCode, ULU, FDLU , Period");
+            {return request.error(400, "Pls provide valid inputs - claimCode, ULU, FDLU , Period");}
 
         let staffLookup = [];
         if (period.includes(ApplicationConstants.HYPHEN)) {
@@ -36,17 +38,47 @@ async function fetchCaStaffLookup(request) {
             let startDate = inputDates[0];
             let endDate = inputDates[1];
             if (CommonUtils.isNotBlank(searchValue)) {
-                staffLookup = await ChrsJobInfoRepo.claimAssistantStaffLookup(userInfoDetails.NUSNET_ID, ulu, fdlu, startDate, endDate, claimType, searchValue);
+                staffLookup = await ChrsJobInfoRepo.claimAssistantStaffLookup(
+                    userInfoDetails.NUSNET_ID,
+                    ulu,
+                    fdlu,
+                    startDate,
+                    endDate,
+                    claimType,
+                    searchValue
+                );
             } else {
-                staffLookup = await ChrsJobInfoRepo.claimAssistantStaffLookup(userInfoDetails.NUSNET_ID, ulu, fdlu, startDate, endDate, claimType);
+                staffLookup = await ChrsJobInfoRepo.claimAssistantStaffLookup(
+                    userInfoDetails.NUSNET_ID,
+                    ulu,
+                    fdlu,
+                    startDate,
+                    endDate,
+                    claimType
+                );
             }
         } else {
-            let startDate = DateUtils.formatDateAsString(new Date(), 'yyyy-MM-dd');
-            let endDate = DateUtils.formatDateAsString(new Date(), 'yyyy-MM-dd');
+            let startDate = DateUtils.formatDateAsString(new Date(), "yyyy-MM-dd");
+            let endDate = DateUtils.formatDateAsString(new Date(), "yyyy-MM-dd");
             if (CommonUtils.isNotBlank(searchValue)) {
-                staffLookup = await ChrsJobInfoRepo.claimAssistantStaffLookup(userInfoDetails.NUSNET_ID, ulu, fdlu, startDate, endDate, claimType, searchValue);
+                staffLookup = await ChrsJobInfoRepo.claimAssistantStaffLookup(
+                    userInfoDetails.NUSNET_ID,
+                    ulu,
+                    fdlu,
+                    startDate,
+                    endDate,
+                    claimType,
+                    searchValue
+                );
             } else {
-                staffLookup = await ChrsJobInfoRepo.claimAssistantStaffLookup(userInfoDetails.NUSNET_ID, ulu, fdlu, startDate, endDate, claimType);
+                staffLookup = await ChrsJobInfoRepo.claimAssistantStaffLookup(
+                    userInfoDetails.NUSNET_ID,
+                    ulu,
+                    fdlu,
+                    startDate,
+                    endDate,
+                    claimType
+                );
             }
         }
 
@@ -68,20 +100,13 @@ async function fetchCaStaffLookup(request) {
             });
         }
 
-
-
         return updatedStaffLookup;
-
-
-
-
     } catch (err) {
         // If there is a global error, rethrow or return as per your CAP error handling
         throw err;
     }
 }
 
-
 module.exports = {
-    fetchCaStaffLookup
-}
+    fetchCaStaffLookup,
+};

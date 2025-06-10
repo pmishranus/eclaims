@@ -3,43 +3,45 @@ const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
 const { query } = require("express");
 module.exports = {
     fetchUserDetails: async function (upperNusNetId) {
-        const stfInfoQueryParameter = ` ( NUSNET_ID = '${upperNusNetId}' OR STF_NUMBER = '${upperNusNetId}') AND START_DATE <= CURRENT_DATE AND END_DATE >= CURRENT_DATE`
-        let fetchUserDetails = await cds.run(SELECT.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
-            .where(stfInfoQueryParameter));
+        const stfInfoQueryParameter = ` ( NUSNET_ID = '${upperNusNetId}' OR STF_NUMBER = '${upperNusNetId}') AND START_DATE <= CURRENT_DATE AND END_DATE >= CURRENT_DATE`;
+        let fetchUserDetails = await cds.run(
+            SELECT.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").where(stfInfoQueryParameter)
+        );
         return fetchUserDetails;
     },
     retrieveExternalUserDetails: async function (upperNusNetId) {
-        const stfInfoQueryParameter = ` ( NUSNET_ID = '${upperNusNetId}' OR STF_NUMBER = '${upperNusNetId}') AND START_DATE <= CURRENT_DATE AND END_DATE >= CURRENT_DATE`
-        let retrieveExternalUserDetails = await cds.run(SELECT.from("NUSEXT_UTILITY_CHRS_EXTERNAL_USERS")
-            .where(stfInfoQueryParameter));
+        const stfInfoQueryParameter = ` ( NUSNET_ID = '${upperNusNetId}' OR STF_NUMBER = '${upperNusNetId}') AND START_DATE <= CURRENT_DATE AND END_DATE >= CURRENT_DATE`;
+        let retrieveExternalUserDetails = await cds.run(
+            SELECT.from("NUSEXT_UTILITY_CHRS_EXTERNAL_USERS").where(stfInfoQueryParameter)
+        );
         return retrieveExternalUserDetails;
     },
     fetchRmRole: async function (STF_NUMBER) {
-        const queryParameter = ` RM_STF_N = '${STF_NUMBER}' `
-        let fetchRmRole = await cds.run(SELECT.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
-            .where(queryParameter));
+        const queryParameter = ` RM_STF_N = '${STF_NUMBER}' `;
+        let fetchRmRole = await cds.run(SELECT.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").where(queryParameter));
         return fetchRmRole;
     },
     fetchRmsManagerJobInfo: async function (STF_NUMBER) {
-        const queryParameter = ` RM_STF_N = '${STF_NUMBER}' `
-        let fetchRmRole = await cds.run(SELECT.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").alias('cj')
-            .where(queryParameter));
+        const queryParameter = ` RM_STF_N = '${STF_NUMBER}' `;
+        let fetchRmRole = await cds.run(
+            SELECT.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").alias("cj").where(queryParameter)
+        );
         return fetchRmRole;
     },
     fetchJobInfoDetailsForDashboard: async function (sColumns, staffId) {
-        const queryParameter = ` ( UPPER(NUSNET_ID) = UPPER('${staffId}') OR UPPER(STF_NUMBER) = UPPER('${staffId}')) AND START_DATE <= CURRENT_DATE AND END_DATE >= CURRENT_DATE`
+        const queryParameter = ` ( UPPER(NUSNET_ID) = UPPER('${staffId}') OR UPPER(STF_NUMBER) = UPPER('${staffId}')) AND START_DATE <= CURRENT_DATE AND END_DATE >= CURRENT_DATE`;
         // let fetchJobInfoDetailsForDashboard = await cds.run(SELECT.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
         //     .columns(`${sColumns}`)
         //     .where(queryParameter));
-        let query = 'SELECT ' + sColumns + ' FROM NUSEXT_MASTER_DATA_CHRS_JOB_INFO WHERE ' + queryParameter;
+        let query = "SELECT " + sColumns + " FROM NUSEXT_MASTER_DATA_CHRS_JOB_INFO WHERE " + queryParameter;
         let fetchJobInfoDetailsForDashboard = await cds.run(query);
         return fetchJobInfoDetailsForDashboard;
     },
     fetchName: async function (STF_NUMBER) {
-        const queryParameter = ` cj.STF_NUMBER = '${STF_NUMBER}' and cj.SF_STF_NUMBER = '${STF_NUMBER}' and cj.START_DATE <= CURRENT_DATE AND cj.END_DATE >= CURRENT_DATE `
-        let fetchName = await cds.run(SELECT.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO as cj")
-            .columns('cj.FULL_NM')
-            .where(queryParameter));
+        const queryParameter = ` cj.STF_NUMBER = '${STF_NUMBER}' and cj.SF_STF_NUMBER = '${STF_NUMBER}' and cj.START_DATE <= CURRENT_DATE AND cj.END_DATE >= CURRENT_DATE `;
+        let fetchName = await cds.run(
+            SELECT.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO as cj").columns("cj.FULL_NM").where(queryParameter)
+        );
         return fetchName;
     },
 
@@ -62,18 +64,19 @@ module.exports = {
                                 AND ec.CLAIM_TYPE = ?
                     `;
         const values = [
-            endDate, startDate,
-            nusNetId, nusNetId, // For both NUSNET_ID and STF_NUMBER
+            endDate,
+            startDate,
+            nusNetId,
+            nusNetId, // For both NUSNET_ID and STF_NUMBER
             ulu,
             fdlu,
-            endDate, startDate,
-            claimType
+            endDate,
+            startDate,
+            claimType,
         ];
         const checkStaffIsActiveAndValid = await cds.run(query, values);
         return checkStaffIsActiveAndValid;
     },
-
-
 
     fetchStaffInfoForRequest: async function (nusNetId, ulu, fdlu) {
         const query = `
@@ -97,8 +100,6 @@ module.exports = {
         return fetchStaffInfoForRequest;
     },
 
-
-
     checkStaffIsActiveAndValidForMonthly: async function (nusNetId, startDate, endDate, claimType) {
         const query = `
                         SELECT cj.*
@@ -118,40 +119,24 @@ module.exports = {
                             AND ec.STF_NUMBER = cj.STF_NUMBER
                             AND ec.SF_STF_NUMBER = cj.SF_STF_NUMBER
                     `;
-        const values = [
-            endDate, startDate,
-            nusNetId, nusNetId,
-            endDate, startDate,
-            claimType
-        ];
+        const values = [endDate, startDate, nusNetId, nusNetId, endDate, startDate, claimType];
         const checkStaffIsActiveAndValidForMonthly = await cds.run(query, values);
         return checkStaffIsActiveAndValidForMonthly;
     },
 
     retrieveJobInfoDetails: async function (nusNetId) {
         let query = ` STF_NUMBER = SF_STF_NUMBER AND (UPPER(NUSNET_ID) = '${nusNetId.toUpperCase()}' OR UPPER(STF_NUMBER) = '${nusNetId.toUpperCase()}') AND START_DATE <= CURRENT_DATE AND END_DATE >= CURRENT_DATE `;
-        let retrieveJobInfoDetails = await cds.run(
-            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
-                .where(query)
-        );
+        let retrieveJobInfoDetails = await cds.run(SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").where(query));
         return retrieveJobInfoDetails;
     },
 
-    claimAssistantStaffLookup: async function (nusNetId,
-        ulu,
-        fdlu,
-        startDate,
-        endDate,
-        claimType,
-        searchValue
-    )
-    // searchValue2,
-    // searchValue3,
-    // searchValue4,
-    // searchValue5,
-    // searchValue6,
-    // searchValue7)
-    {
+    claimAssistantStaffLookup: async function (nusNetId, ulu, fdlu, startDate, endDate, claimType, searchValue) {
+        // searchValue2,
+        // searchValue3,
+        // searchValue4,
+        // searchValue5,
+        // searchValue6,
+        // searchValue7)
         const query = `SELECT
     cj.SF_STF_NUMBER,
     cj.STF_NUMBER,
@@ -224,30 +209,15 @@ ORDER BY
             `%${searchValue}%`,
             `%${searchValue}%`,
             `%${searchValue.toUpperCase()}%`,
-            `%${searchValue.toUpperCase()}%`
+            `%${searchValue.toUpperCase()}%`,
         ];
 
         const results = await cds.run(query, params);
         return results;
-
     },
 
-    claimAssistantStaffLookup: async function (nusNetId,
-        ulu,
-        fdlu,
-        startDate,
-        endDate,
-        claimType) {
-        const params = [
-            endDate,
-            startDate,
-            nusNetId,
-            ulu,
-            fdlu,
-            endDate,
-            startDate,
-            claimType
-        ];
+    claimAssistantStaffLookup: async function (nusNetId, ulu, fdlu, startDate, endDate, claimType) {
+        const params = [endDate, startDate, nusNetId, ulu, fdlu, endDate, startDate, claimType];
         const query = `SELECT
     cj.SF_STF_NUMBER,
     cj.STF_NUMBER,
@@ -296,6 +266,5 @@ ORDER BY
     cj.STF_NUMBER DESC`;
         const results = await cds.run(query, params);
         return results;
-    }
-
-}
+    },
+};

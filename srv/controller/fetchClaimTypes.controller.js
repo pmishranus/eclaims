@@ -1,4 +1,3 @@
-
 const AppConfigRepo = require("../repository/appConfig.repo");
 const CommonRepo = require("../repository/util.repo");
 const ApproverMatrixRepo = require("../repository/approverMatrix.repo");
@@ -6,12 +5,16 @@ const { ApplicationConstants } = require("../util/constant");
 const CommonUtils = require("../util/commonUtil");
 const ElligibleCriteriaRepo = require("../repository/eligibilityCriteria.repo");
 
+/**
+ *
+ * @param request
+ */
 async function fetchClaimTypes(request) {
     let approveTasksRes = [];
     try {
         const tx = cds.tx(request);
         const user = request.user.id;
-        const { staffId, userGroup } = request.data
+        const { staffId, userGroup } = request.data;
         const userName = "PTT_CA1";
         const upperNusNetId = userName.toUpperCase();
         let userInfoDetails = await CommonRepo.fetchUserInfo(upperNusNetId);
@@ -19,14 +22,13 @@ async function fetchClaimTypes(request) {
             throw new Error("User not found..!!");
         }
 
-
         console.log("EligibilityCriteriaServiceImpl fetchClaimTypes start()");
 
-        if (!staffId || staffId.trim() === '') {
+        if (!staffId || staffId.trim() === "") {
             req.reject(400, "StaffId passed is Empty/Null. Please provide valid staffId");
             return;
         }
-        if (!userGroup || userGroup.trim() === '') {
+        if (!userGroup || userGroup.trim() === "") {
             req.reject(400, "UserGroup passed is Empty/Null. Please provide valid userGroup");
             return;
         }
@@ -50,7 +52,7 @@ async function fetchClaimTypes(request) {
                 // Deduplicate by CLAIM_TYPE_C
                 const seen = new Set();
                 response = results.filter(item => {
-                    if (seen.has(item.CLAIM_TYPE_C)) return false;
+                    if (seen.has(item.CLAIM_TYPE_C)) {return false;}
                     seen.add(item.CLAIM_TYPE_C);
                     return true;
                 });
@@ -61,7 +63,8 @@ async function fetchClaimTypes(request) {
             if (response && response.length > 0) {
                 for (const eligibleClaims of response) {
                     const configList = await AppConfigRepo.fetchByConfigKeyAndProcessCode(
-                        userGroup, eligibleClaims.CLAIM_TYPE_C
+                        userGroup,
+                        eligibleClaims.CLAIM_TYPE_C
                     );
                     if (configList && configList.length > 0) {
                         eligibleClaims.PAST_MONTHS = configList[0].CONFIG_VALUE;
@@ -74,10 +77,6 @@ async function fetchClaimTypes(request) {
 
         console.log("EligibilityCriteriaServiceImpl fetchClaimTypes end()");
         return response;
-
-
-
-
     } catch (err) {
         // If there is a global error, rethrow or return as per your CAP error handling
         throw err;
@@ -85,5 +84,5 @@ async function fetchClaimTypes(request) {
 }
 
 module.exports = {
-    fetchClaimTypes
-}
+    fetchClaimTypes,
+};

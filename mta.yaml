@@ -3,62 +3,62 @@ ID: eclaims
 version: 1.0.0
 description: "A simple CAP project."
 parameters:
-  enable-parallel-deployments: true
+    enable-parallel-deployments: true
 build-parameters:
-  before-all:
-    - builder: custom
-      commands:
-        - npm root
+    before-all:
+        - builder: custom
+          commands:
+              - npm root
 modules:
-  - name: eclaims-srv
-    type: nodejs
-    path: gen/srv
-    parameters:
-      instances: 1
-      buildpack: nodejs_buildpack
-      memory: 512M
-    build-parameters:
-      builder: npm-ci
-    provides:
-      - name: srv-api # required by consumers of CAP services (e.g. approuter)
-        properties:
-          srv-url: ${default-url}
-    requires:
-      - name: utility-db
-      - name: utility-uaa
+    - name: eclaims-srv
+      type: nodejs
+      path: gen/srv
+      parameters:
+          instances: 1
+          buildpack: nodejs_buildpack
+          memory: 512M
+      build-parameters:
+          builder: npm-ci
+      provides:
+          - name: srv-api # required by consumers of CAP services (e.g. approuter)
+            properties:
+                srv-url: ${default-url}
+      requires:
+          - name: utility-db
+          - name: utility-uaa
 
-  - name: eclaims-db-deployer
-    type: hdb
-    path: gen/db
-    parameters:
-      buildpack: nodejs_buildpack
-    requires:
-      - name: utility-db
+    - name: eclaims-db-deployer
+      type: hdb
+      path: gen/db
+      parameters:
+          buildpack: nodejs_buildpack
+      requires:
+          - name: utility-db
 
-  - name: eclaims-approuter
-    type: approuter.nodejs
-    path: app/router
-    parameters:
-      keep-existing-routes: true
-      disk-quota: 256M
-      memory: 256M
-    requires:
-      - name: srv-api
-        group: destinations
-        properties:
-          name: srv-api # must be used in xs-app.json as well
-          url: ~{srv-url}
-          forwardAuthToken: true
-      - name: utility-uaa
+    - name: eclaims-approuter
+      type: approuter.nodejs
+      path: app/router
+      parameters:
+          keep-existing-routes: true
+          disk-quota: 256M
+          memory: 256M
+      requires:
+          - name: srv-api
+            group: destinations
+            properties:
+                name: srv-api # must be used in xs-app.json as well
+                url: ~{srv-url}
+                forwardAuthToken: true
+          - name: utility-uaa
 
 resources:
-  - name: utility-db
-    type: org.cloudfoundry.existing-service
-    parameters:
-      service-name: utility-db
-    properties:
-      master-db-hdi: ${service-name}  
-  - name: utility-uaa
-    type: org.cloudfoundry.existing-service
-    parameters:
-      service-name: utility-uaa
+    - name: utility-db
+      type: org.cloudfoundry.existing-service
+      parameters:
+          service-name: utility-db
+      properties:
+          master-db-hdi: ${service-name}
+    - name: utility-uaa
+      type: org.cloudfoundry.existing-service
+      parameters:
+          service-name: utility-uaa

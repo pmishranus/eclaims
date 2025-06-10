@@ -1,33 +1,28 @@
 {
-  "xsappname": "eclaims",
-  "tenant-mode": "dedicated",
-  "scopes": [
-    {
-      "name": "$XSAPPNAME.Admin",
-      "description": "Admin"
-    }
-  ],
-  "attributes": [],
-  "role-templates": [
-    {
-      "name": "Admin",
-      "description": "generated",
-      "scope-references": [
-        "$XSAPPNAME.Admin"
-      ],
-      "attribute-references": []
-    }
-  ],
-  "oauth2-configuration": {
-    "token-validity": 36000,
-    "credential-types":[
-      "binding-secret",
-      "x509"
+    "xsappname": "eclaims",
+    "tenant-mode": "dedicated",
+    "scopes": [
+        {
+            "name": "$XSAPPNAME.Admin",
+            "description": "Admin"
+        }
     ],
-    "redirect-uris": [
-      "https://*.applicationstudio.cloud.sap/**",
-      "https://*.cfapps.eu10-004.hana.ondemand.com/login/callback",
-      "https://*.hana.ondemand.com/**"
-    ]
-  }
+    "attributes": [],
+    "role-templates": [
+        {
+            "name": "Admin",
+            "description": "generated",
+            "scope-references": ["$XSAPPNAME.Admin"],
+            "attribute-references": []
+        }
+    ],
+    "oauth2-configuration": {
+        "token-validity": 36000,
+        "credential-types": ["binding-secret", "x509"],
+        "redirect-uris": [
+            "https://*.applicationstudio.cloud.sap/**",
+            "https://*.cfapps.eu10-004.hana.ondemand.com/login/callback",
+            "https://*.hana.ondemand.com/**"
+        ]
+    }
 }

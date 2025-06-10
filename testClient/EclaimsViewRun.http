@@ -92,3 +92,16 @@ Authorization: Bearer {{access_token}}
 GET {{unsecureProtocol}}://{{host}}/eclaims/caStaffLookup(ulu='0261046100',fdlu='0004630003',claimType='101',period='05-2025')
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+
+### Request-2 Get eclaims header data
+#==================================================================#
+GET {{unsecureProtocol}}://{{host}}/eclaims/draftEclaimData(ulu='0231054600',fdlu='0005690002',claimType='103',period='04-2025',staffId='151398')
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+### Request-2 Get eclaims header data
+#==================================================================#
+GET {{unsecureProtocol}}://{{host}}/v2/eclaims/draftEclaimData?ulu=0231054600&fdlu=0005690002&claimType=103&period=04-2025&staffId=151398
+Content-Type: application/json
+Authorization: Bearer {{access_token}}

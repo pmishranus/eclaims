@@ -2,18 +2,18 @@
 class ApplicationException extends Error {
     constructor(message) {
         super(message);
-        this.name = 'ApplicationException';
+        this.name = "ApplicationException";
     }
 }
 
 class DatabaseException extends Error {
     constructor(message) {
         super(message);
-        this.name = 'DatabaseException';
+        this.name = "DatabaseException";
     }
 }
 
 module.exports = {
     ApplicationException,
-    DatabaseException
+    DatabaseException,
 };

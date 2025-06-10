@@ -3,6 +3,4 @@
     "src/gen/**/*.hdbconstraint",
     "src/gen/nusext.UTILITY.STATUS_CONFIG_V2.hdbtable",
     "src/gen/EclaimsService.*.hdbview"
-    
 ]
-  

@@ -1,4 +1,3 @@
-
 const Connection = require("../config/connection.class");
 const ChrsJobInfoRepo = require("../repository/chrsJobInfo.repo");
 const ChrsHrpInfoRepo = require("../repository/hrpInfo.repo");
@@ -14,7 +13,7 @@ const CommonUtils = require("../util/commonUtil");
 const ChrsUluFdluRepo = require("../repository/chrsUluFdlu.repo");
 const TaskDelegationDetailsRepo = require("../repository/taskDelegation,repo");
 const EclaimsHeaderDataRepo = require("../repository/eclaimsData.repo");
-const moment = require('moment-timezone');
+const moment = require("moment-timezone");
 const { head } = require("lodash");
 module.exports = {
     /**
@@ -22,7 +21,7 @@ module.exports = {
      * @param {object} request CAP Request Object
      * @param {oject} db CAP DB Object
      * @param {object} srv CAP DB Object
-     * @returns {Promise<Object>} Result of Updated Entries in JSON
+     * @returns {Promise<object>} Result of Updated Entries in JSON
      */
     createConnectionOverviewDashboard: function (request, db, srv) {
         const oConnection = new Connection(request, db, srv);
@@ -55,13 +54,12 @@ module.exports = {
 
             if (!chrsJobInfoList || Object.keys(chrsJobInfoList).length === 0) {
                 return {
-                    "isError": true,
-                    "message": ApplicationConstants.ECLAIMS_DASHBOARD_SYSTEM_REFRESH_ERROR
-                }
+                    isError: true,
+                    message: ApplicationConstants.ECLAIMS_DASHBOARD_SYSTEM_REFRESH_ERROR,
+                };
             }
 
             switch (inputRequest.PROCESS_CODE) {
-
                 case ApplicationConstants.ECLAIMS_OVERALL_PROCESS:
                     return this.populateDashboardEclaims(chrsJobInfoList, inputRequest);
                 case ApplicationConstants.CW_OVERALL_PROCESS:
@@ -69,22 +67,17 @@ module.exports = {
 
                 default:
                     return {
-                        "isError": true,
-                        "message": ApplicationConstants.INVALID_PROCESS_CODE
-                    }
+                        isError: true,
+                        message: ApplicationConstants.INVALID_PROCESS_CODE,
+                    };
             }
-
-
-
-
-
         } catch (error) {
             await tx.rollback();
             if (error instanceof ApplicationException) {
             } else if (error instanceof TypeError) {
-                console.error('Type Error:', error.message);
+                console.error("Type Error:", error.message);
             } else {
-                console.error('General Error:', error.message);
+                console.error("General Error:", error.message);
             }
         }
         tx.commit();
@@ -94,22 +87,22 @@ module.exports = {
         let oReturnObj = {};
         oReturnObj.error = false;
         oReturnObj.visible = {
-            "data": false,
-            "groups": false,
-            "quickLinks": false,
-            "claimRequestOverview": false,
-            "claimAssistantRequestOverview": false,
-            "taxBenRequestOverview": false,
-            "previousFeedback": false,
-            "uluDetails": false,
-            "fdluDetails": false,
-            "monthlyClaims": false,
-            "resultCalendar": false,
-            "taskInboxCount": false,
-            "usefullLinks": false,
-            "elligibleEclaims": false,
-            "hrpStaffDetailsDTO": false,
-            "delegationDetailsDto": false
+            data: false,
+            groups: false,
+            quickLinks: false,
+            claimRequestOverview: false,
+            claimAssistantRequestOverview: false,
+            taxBenRequestOverview: false,
+            previousFeedback: false,
+            uluDetails: false,
+            fdluDetails: false,
+            monthlyClaims: false,
+            resultCalendar: false,
+            taskInboxCount: false,
+            usefullLinks: false,
+            elligibleEclaims: false,
+            hrpStaffDetailsDTO: false,
+            delegationDetailsDto: false,
         };
         oReturnObj.userProfile = {};
         oReturnObj.userProfile.applications = [];
@@ -126,8 +119,6 @@ module.exports = {
         // populate User group in key value pair
         let aEclaimGroups = await this.populateGroups(inputRequest, chrsJobInfo, chrsJobInfoList);
 
-
-
         // populateUluFdlu for user
         aEclaimGroups = await this.populateUluFdlu(chrsJobInfo, inputRequest, aEclaimGroups);
         oReturnObj.userProfile.groups = aEclaimGroups;
@@ -139,7 +130,11 @@ module.exports = {
         oReturnObj.visible.quickLinks = true;
 
         // Populate claim Request details for claimant
-        let claimantList = await this.populateRequestDetails(chrsJobInfo, ApplicationConstants.CLAIMANT, inputRequest.PROCESS_CODE);
+        let claimantList = await this.populateRequestDetails(
+            chrsJobInfo,
+            ApplicationConstants.CLAIMANT,
+            inputRequest.PROCESS_CODE
+        );
         oReturnObj.userProfile.claimRequestOverview = claimantList.length ? claimantList : [];
         oReturnObj.visible.claimRequestOverview = true;
 
@@ -149,15 +144,27 @@ module.exports = {
 
         // Populate claim Request details for claimant Assistant
         if (hasClaimAssistant) {
-            let caList = await this.populateRequestDetails(chrsJobInfo, ApplicationConstants.CLAIM_ASSISTANT, inputRequest.PROCESS_CODE);
+            let caList = await this.populateRequestDetails(
+                chrsJobInfo,
+                ApplicationConstants.CLAIM_ASSISTANT,
+                inputRequest.PROCESS_CODE
+            );
             oReturnObj.userProfile.claimAssistantRequestOverview = caList.length ? caList : [];
             oReturnObj.visible.claimAssistantRequestOverview = true;
 
             // For tax ben we are populating count card on UI
-            let tbList = await this.populateTbRequestDetails(chrsJobInfo, ApplicationConstants.CLAIM_ASSISTANT, inputRequest.PROCESS_CODE);
+            let tbList = await this.populateTbRequestDetails(
+                chrsJobInfo,
+                ApplicationConstants.CLAIM_ASSISTANT,
+                inputRequest.PROCESS_CODE
+            );
             oReturnObj.userProfile.taxBenRequestOverview = tbList.length ? tbList : [];
 
-            let taxBenCAList = await ApproverMatrixRepo.checkForUserGrpNProcess(ApplicationConstants.CLAIM_TYPE_105, chrsJobInfo.STF_NUMBER, ApplicationConstants.CLAIM_ASSISTANT);
+            let taxBenCAList = await ApproverMatrixRepo.checkForUserGrpNProcess(
+                ApplicationConstants.CLAIM_TYPE_105,
+                chrsJobInfo.STF_NUMBER,
+                ApplicationConstants.CLAIM_ASSISTANT
+            );
             oReturnObj.visible.taxBenRequestOverview = taxBenCAList.length ? true : false;
         }
         // populate tables
@@ -174,7 +181,7 @@ module.exports = {
         await this.populateDelegationDetails(oReturnObj, chrsJobInfo.STF_NUMBER, inputRequest.PROCESS_CODE);
 
         // let statusBreakdownList = await this.getTaskTileDetails(inputRequest,chrsJobInfo);
-        oReturnObj.userProfile.taskInboxCount = [];//statusBreakdownList;
+        oReturnObj.userProfile.taskInboxCount = []; //statusBreakdownList;
         oReturnObj.visible.taskInboxCount = true;
 
         return oReturnObj;
@@ -188,7 +195,7 @@ module.exports = {
 
     // 	let aCollectiveRoleList = [];
     // 	aCollectiveRoleList = await this.fetchUserRoles(chrsJobInfo);
-    // 	roleList.addAll(await this.fetchCwUserRoles(chrsJobInfo)); 
+    // 	roleList.addAll(await this.fetchCwUserRoles(chrsJobInfo));
 
     // 	for (let taskInbox in taskInboxStatusList) {
     // 		taskCount = 0;
@@ -226,33 +233,48 @@ module.exports = {
 
     populateDelegationDetails: async function (oReturnObj, staffId, processCode) {
         let delegationDetailsList = [];
-        let taskDelegationList = await TaskDelegationDetailsRepo.fetchProcessActiveDelegationDetails(processCode, staffId);
+        let taskDelegationList = await TaskDelegationDetailsRepo.fetchProcessActiveDelegationDetails(
+            processCode,
+            staffId
+        );
         for (let taskDelegationDetails of taskDelegationList) {
-
             taskDelegationDetails.DELEGATED_TO_NAME = ChrsJobInfoRepo.fetchName(taskDelegationDetails.DELEGATED_TO);
             taskDelegationDetails.DELEGATED_FROM_NAME = ChrsJobInfoRepo.fetchName(taskDelegationDetails.DELEGATED_FROM);
-            taskDelegationDetails.PROCESS_TYPE_DESC = ProcessConfigRepo.fetchProcessTitleByPROCESS_CODE(taskDelegationDetails.PROCESS_TYPE);
+            taskDelegationDetails.PROCESS_TYPE_DESC = ProcessConfigRepo.fetchProcessTitleByPROCESS_CODE(
+                taskDelegationDetails.PROCESS_TYPE
+            );
             taskDelegationDetails.CHANGED_BY_NAME = ChrsJobInfoRepo.fetchName(taskDelegationDetails.MODIFIED_BY);
-            taskDelegationDetails.DELIMIT_BTN_REQ = CommonUtils.equalsIgnoreCase(staffId, taskDelegationDetails.DELEGATED_FOR) ? ApplicationConstants.Y : ApplicationConstants.N;
-            taskDelegationDetails.IS_DELETE = taskDelegationDetails.VALID_FROM > new Date() ? ApplicationConstants.Y : ApplicationConstants.N;
+            taskDelegationDetails.DELIMIT_BTN_REQ = CommonUtils.equalsIgnoreCase(
+                staffId,
+                taskDelegationDetails.DELEGATED_FOR
+            )
+                ? ApplicationConstants.Y
+                : ApplicationConstants.N;
+            taskDelegationDetails.IS_DELETE =
+                taskDelegationDetails.VALID_FROM > new Date() ? ApplicationConstants.Y : ApplicationConstants.N;
 
             delegationDetailsList.push(taskDelegationDetails);
             oReturnObj.visible.delegationDetailsDto = true;
         }
 
         oReturnObj.userProfile.delegationDetails = delegationDetailsList;
-
     },
     populateCurrentTimestamp: async function (oReturnObj) {
-        const currentDate = moment().format('YYYY-MM-DD HH:mm');
-        const utcDate = moment.tz(currentDate, 'UTC').format('YYYY-MM-DD HH:mm');
+        const currentDate = moment().format("YYYY-MM-DD HH:mm");
+        const utcDate = moment.tz(currentDate, "UTC").format("YYYY-MM-DD HH:mm");
         oReturnObj.userProfile.dataRefreshedAt = utcDate;
     },
     populateUseFullLinks: async function (oReturnObj, role, processCode) {
         let roleList = role;
         roleList.push({
-            STAFF_USER_GRP : "ALL"});
-        let dashboardConfigurationList = await DashboardConfigRepo.fetchStatusDetailsByRole(ApplicationConstants.USEFULLINKS, processCode, role, "STAFF_USER_GRP");
+            STAFF_USER_GRP: "ALL",
+        });
+        let dashboardConfigurationList = await DashboardConfigRepo.fetchStatusDetailsByRole(
+            ApplicationConstants.USEFULLINKS,
+            processCode,
+            role,
+            "STAFF_USER_GRP"
+        );
 
         const distinctByKey = (list, keyExtractor) => {
             const seen = new Set();
@@ -280,7 +302,6 @@ module.exports = {
     },
 
     populateCAAndDADetails: async function (oReturnObj, chrsJobInfoList, inputRequest) {
-
         let approverMatrixList = [];
         let codeDetail = [];
         let eligibility = {};
@@ -290,19 +311,23 @@ module.exports = {
             let fdlu = chrsJobInfo.FDLU_C;
             let uluText = chrsJobInfo.ULU_T;
             let fdluText = chrsJobInfo.FDLU_T;
-            if ((CommonUtils.equalsIgnoreCase(chrsJobInfo.EMP_CAT_C, ApplicationConstants.PTT_CODE)
-                || CommonUtils.equalsIgnoreCase(chrsJobInfo.EMP_CAT_C, ApplicationConstants.CW_CODE))
-                || (CommonUtils.equalsIgnoreCase(chrsJobInfo.EMP_CAT_C, ApplicationConstants.OT_CODE)
-                    && CommonUtils.equalsIgnoreCase(chrsJobInfo.APPT_TRACK_C,
-                        ApplicationConstants.APP_TRACT_CODE))) {
-                codeDetail = await DashboardConfigRepo.fetchClaimCode(chrsJobInfo.EMP_CAT_C, inputRequest.PROCESS_CODE, chrsJobInfo.STF_NUMBER);
+            if (
+                CommonUtils.equalsIgnoreCase(chrsJobInfo.EMP_CAT_C, ApplicationConstants.PTT_CODE) ||
+                CommonUtils.equalsIgnoreCase(chrsJobInfo.EMP_CAT_C, ApplicationConstants.CW_CODE) ||
+                (CommonUtils.equalsIgnoreCase(chrsJobInfo.EMP_CAT_C, ApplicationConstants.OT_CODE) &&
+                    CommonUtils.equalsIgnoreCase(chrsJobInfo.APPT_TRACK_C, ApplicationConstants.APP_TRACT_CODE))
+            ) {
+                codeDetail = await DashboardConfigRepo.fetchClaimCode(
+                    chrsJobInfo.EMP_CAT_C,
+                    inputRequest.PROCESS_CODE,
+                    chrsJobInfo.STF_NUMBER
+                );
 
                 let configKeyList = [...new Set(codeDetail.map(item => item.CONFIG_KEY))];
-                
-                if(configKeyList.length){
+
+                if (configKeyList.length) {
                     approverMatrixList = await ApproverMatrixRepo.fetchCAAndDADetails(ulu, fdlu, configKeyList);
                 }
-                
 
                 if (!CommonUtils.isEmptyObject(approverMatrixList)) {
                     eligibility.empCategoryCode(codeDetail[0].CONFIG_KEY);
@@ -312,8 +337,8 @@ module.exports = {
                         // fetch name
                         let name = await ChrsJobInfoRepo.fetchName(ap.STAFF_ID);
                         let eclaims = {};
-                        let role = CommonUtils.equalsIgnoreCase(ap.STAFF_USER_GRP,
-                            ApplicationConstants.CLAIM_ASSISTANT) ? ApplicationConstants.CA_ALIAS
+                        let role = CommonUtils.equalsIgnoreCase(ap.STAFF_USER_GRP, ApplicationConstants.CLAIM_ASSISTANT)
+                            ? ApplicationConstants.CA_ALIAS
                             : ApplicationConstants.DEPT_ADMIN_ALIAS;
                         eclaims.setRoleName(role);
                         eclaims.setUluCode(ulu);
@@ -328,38 +353,46 @@ module.exports = {
 
                     eligibility.eclaims = uniqueUserList;
 
-                    oReturnObj.userProfile.elligible = eligibility
+                    oReturnObj.userProfile.elligible = eligibility;
                     oReturnObj.visible.elligible = true;
                 }
             }
         }
-
     },
     populateTbRequestDetails: async function (chrsJobInfo, role, processCode) {
         let statusBreakdownDTOList = [];
         let totalCount = 0;
         let staffId = chrsJobInfo.STF_NUMBER;
-        let statusHeaderList = await DashboardConfigRepo.fetchHeaderListByRole(ApplicationConstants.REQUEST_HEADER, role, processCode);
+        let statusHeaderList = await DashboardConfigRepo.fetchHeaderListByRole(
+            ApplicationConstants.REQUEST_HEADER,
+            role,
+            processCode
+        );
         for (let headerConfig of statusHeaderList) {
             let statusCodeList = [];
             let roleList = [];
             roleList.push(role);
 
-            let statusList = await DashboardConfigRepo.fetchStatusDetailsByRole(headerConfig.CONFIG_KEY, processCode, role);
+            let statusList = await DashboardConfigRepo.fetchStatusDetailsByRole(
+                headerConfig.CONFIG_KEY,
+                processCode,
+                role
+            );
             statusList.forEach(statusCode => {
                 statusCodeList.push({
-                    STATUS_CODE : statusCode.CONFIG_VALUE
-            });
+                    STATUS_CODE: statusCode.CONFIG_VALUE,
+                });
             });
             let count = 0;
-            let sStatusCodeListToString = CommonUtils.convertListToString(statusCodeList,'STATUS_CODE');
-            if (CommonUtils.equalsIgnoreCase("INPROCESS_REQUEST", headerConfig.CONFIG_KEY)
-                || CommonUtils.equalsIgnoreCase("COMPLETED_REQUEST", headerConfig.CONFIG_KEY)) {
+            let sStatusCodeListToString = CommonUtils.convertListToString(statusCodeList, "STATUS_CODE");
+            if (
+                CommonUtils.equalsIgnoreCase("INPROCESS_REQUEST", headerConfig.CONFIG_KEY) ||
+                CommonUtils.equalsIgnoreCase("COMPLETED_REQUEST", headerConfig.CONFIG_KEY)
+            ) {
                 count = await EclaimsHeaderDataRepo.fetchTbClaimStatusCountById(staffId, sStatusCodeListToString);
             } else {
                 count = await EclaimsHeaderDataRepo.fetchTbClaimStatusCount(staffId, sStatusCodeListToString);
             }
-
 
             count = Array.isArray(count) ? count : [];
             totalCount = totalCount + count.length;
@@ -372,8 +405,6 @@ module.exports = {
             statusBreakdownDto.action = ApplicationConstants.d_DISPLAY;
             statusBreakdownDto.startupparameters = ApplicationConstants.ROLE_CMASST;
             statusBreakdownDTOList.push(statusBreakdownDto);
-
-
         }
         return statusBreakdownDTOList;
     },
@@ -383,19 +414,29 @@ module.exports = {
         let totalCount = 0;
         let staffId = chrsJobInfo.STF_NUMBER;
         // let sRole = CommonUtils.convertListToString(role,"STAFF_USER_GRP");
-        let statusHeaderList = await DashboardConfigRepo.fetchHeaderListByRole(ApplicationConstants.REQUEST_HEADER, role, processCode);
+        let statusHeaderList = await DashboardConfigRepo.fetchHeaderListByRole(
+            ApplicationConstants.REQUEST_HEADER,
+            role,
+            processCode
+        );
         for (let headerConfig of statusHeaderList) {
             let statusCodeList = [];
             // let roleList = [];
             // roleList.push(role);
-            let statusList = await DashboardConfigRepo.fetchStatusDetailsByRole(headerConfig.CONFIG_KEY, processCode, role);
+            let statusList = await DashboardConfigRepo.fetchStatusDetailsByRole(
+                headerConfig.CONFIG_KEY,
+                processCode,
+                role
+            );
             statusList.forEach(statusCode => {
                 statusCodeList.push(statusCode.CONFIG_VALUE);
             });
             let count = 0;
             if (ApplicationConstants.CLAIMANT === role) {
-                if (CommonUtils.equalsIgnoreCase("INPROCESS_REQUEST", headerConfig.CONFIG_KEY)
-                    || CommonUtils.equalsIgnoreCase("COMPLETED_REQUEST", headerConfig.CONFIG_KEY)) {
+                if (
+                    CommonUtils.equalsIgnoreCase("INPROCESS_REQUEST", headerConfig.CONFIG_KEY) ||
+                    CommonUtils.equalsIgnoreCase("COMPLETED_REQUEST", headerConfig.CONFIG_KEY)
+                ) {
                     count = await EclaimsHeaderDataRepo.fetchClaimStatusCountById(staffId, statusCodeList);
                 } else {
                     count = await EclaimsHeaderDataRepo.fetchClaimStatusCount(staffId, statusCodeList);
@@ -429,8 +470,6 @@ module.exports = {
             }
 
             statusBreakdownDTOList.push(statusBreakdownDto);
-
-
         }
         return statusBreakdownDTOList;
     },
@@ -462,16 +501,15 @@ module.exports = {
         let jobInfoList = await ChrsJobInfoRepo.fetchRmRole(chrsJobInfo.STF_NUMBER);
         if (!CommonUtils.isEmptyObject(jobInfoList)) {
             role.push({
-                STAFF_USER_GRP: ApplicationConstants.REPORTING_MGR
-            })
+                STAFF_USER_GRP: ApplicationConstants.REPORTING_MGR,
+            });
         }
 
         // role is still empty then add CLAIMANT as default role
         if (CommonUtils.isEmptyObject(role)) {
-            role = []
+            role = [];
             role.push({ STAFF_USER_GRP: ApplicationConstants.CLAIMANT });
         }
-
 
         return [...new Set(role)];
     },
@@ -479,34 +517,29 @@ module.exports = {
         // we will get approver, verifier, CA role from approver matrix table.
         let role = await ApproverMatrixRepo.fetchCWRoleForDashboard(chrsJobInfo.STF_NUMBER);
 
-
-
         //fetch RM
         let jobInfoList = await ChrsJobInfoRepo.fetchRmRole(chrsJobInfo.STF_NUMBER);
         if (!CommonUtils.isEmptyObject(jobInfoList)) {
-            role.push(ApplicationConstants.CW_REPORTING_MGR)
+            role.push(ApplicationConstants.CW_REPORTING_MGR);
         }
 
         //fetch Manager RM
         let rmJobInfoList = await ChrsJobInfoRepo.fetchRmsManagerJobInfo(chrsJobInfo.STF_NUMBER);
         if (!CommonUtils.isEmptyObject(rmJobInfoList)) {
-            role.push(ApplicationConstants.CW_MANAGERS_MGR)
+            role.push(ApplicationConstants.CW_MANAGERS_MGR);
         }
 
         //fetch Manager RM
         let chrsHrpInfoList = await ChrsHrpInfoRepo.fetchHrpStaffDetails(chrsJobInfo.STF_NUMBER);
         if (!CommonUtils.isEmptyObject(chrsHrpInfoList)) {
-            role.push(ApplicationConstants.CW_HRP)
+            role.push(ApplicationConstants.CW_HRP);
         }
-
-
 
         // role is still empty then add CLAIMANT as default role
         if (CommonUtils.isEmptyObject(role)) {
-            role = []
+            role = [];
             role.push(ApplicationConstants.CW_ESS);
         }
-
 
         return [...new Set(role)];
     },
@@ -525,13 +558,19 @@ module.exports = {
         return oData;
     },
     populateGroups: async function (inputRequest, chrsJobInfo, chrsJobInfoList) {
-        let headerConfigList = await DashboardConfigRepo.fetchHeaderList(ApplicationConstants.HEADER, inputRequest.PROCESS_CODE);
+        let headerConfigList = await DashboardConfigRepo.fetchHeaderList(
+            ApplicationConstants.HEADER,
+            inputRequest.PROCESS_CODE
+        );
         let staffId = null;
         let aGroups = [];
         for (let headerConfig of headerConfigList) {
             let oGroups = {};
             oGroups.title = headerConfig.CONFIG_VALUE;
-            let dashboardConfigDetails = await DashboardConfigRepo.fetchHeaderDetails(headerConfig.CONFIG_KEY, inputRequest.PROCESS_CODE);
+            let dashboardConfigDetails = await DashboardConfigRepo.fetchHeaderDetails(
+                headerConfig.CONFIG_KEY,
+                inputRequest.PROCESS_CODE
+            );
             if (CommonUtils.equalsIgnoreCase(ApplicationConstants.MANAGER_DATA, headerConfig.CONFIG_KEY)) {
                 staffId = chrsJobInfo.RM_STF_N;
             } else {
@@ -543,19 +582,19 @@ module.exports = {
                 let uluFdluList = [];
                 let oItems = {
                     label: "Employee Number",
-                    value: chrsJobInfo.STF_NUMBER
-                }
+                    value: chrsJobInfo.STF_NUMBER,
+                };
                 items.push(oItems);
                 chrsJobInfoList.forEach(info => {
                     const uluFdluBuilder = `${info.ULU_T}(${info.ULU_C}) / ${info.FDLU_T}(${info.FDLU_C})`;
                     uluFdluList.push(uluFdluBuilder + ApplicationConstants.NEW_LINE);
                 });
-                const uniqueValues = [...new Set(uluFdluList)];  // Remove duplicates
-                const uluFdlu = uniqueValues.reduce((acc, e) => acc + e, '');  // Concatenate the values
+                const uniqueValues = [...new Set(uluFdluList)]; // Remove duplicates
+                const uluFdlu = uniqueValues.reduce((acc, e) => acc + e, ""); // Concatenate the values
 
                 oItems = {
                     label: "ULU / FDLU",
-                    value: uluFdlu
+                    value: uluFdlu,
                 };
                 items.push(oItems);
             } else {
@@ -563,12 +602,10 @@ module.exports = {
                 list.forEach(oList => {
                     let oItems = {
                         label: oList.CONFIG_KEY,
-                        value: oList
-                    }
+                        value: oList,
+                    };
                     items.push(oItems);
                 });
-
-
             }
             oGroups.items = items;
             aGroups.push(oGroups);
@@ -577,21 +614,23 @@ module.exports = {
         return aGroups;
     },
     populateJobInfoDetails: async function (dashboardConfigDetails, staffId) {
-        let sColumns = '';
+        let sColumns = "";
         for (let dbConfig of dashboardConfigDetails) {
             if (!CommonUtils.isEmpty(dbConfig.CONFIG_KEY)) {
-                sColumns += dbConfig.CONFIG_KEY + ","
+                sColumns += dbConfig.CONFIG_KEY + ",";
             }
-
         }
         sColumns = sColumns.substring(0, sColumns.length - 1);
         let rsList = await ChrsJobInfoRepo.fetchJobInfoDetailsForDashboard(sColumns, staffId);
-        rsList = (rsList && rsList.length) ? rsList : [];
+        rsList = rsList && rsList.length ? rsList : [];
         return rsList;
     },
     populateUluFdlu: async function (chrsJobInfo, inputRequest, aEclaimGroups) {
         let staffId = chrsJobInfo.STF_NUMBER;
-        let headerConfigList = await DashboardConfigRepo.fetchHeaderList(ApplicationConstants.ROLE, inputRequest.PROCESS_CODE);
+        let headerConfigList = await DashboardConfigRepo.fetchHeaderList(
+            ApplicationConstants.ROLE,
+            inputRequest.PROCESS_CODE
+        );
 
         for (let headerConfig of headerConfigList) {
             let uluFdlu = await this.populateApproverDetails(staffId, headerConfig.CONFIG_KEY);
@@ -613,30 +652,38 @@ module.exports = {
         let uluFdlu = "";
         let caUluAndFdluList = await ChrsUluFdluRepo.fetchUluFdluDetails(staffId, role);
         caUluAndFdluList.forEach(userDetailsDto => {
-            uluFdlu += userDetailsDto.ULUFDLU + '\n';  // '\n' is for the newline character
+            uluFdlu += userDetailsDto.ULUFDLU + "\n"; // '\n' is for the newline character
         });
         return uluFdlu;
     },
     populateQuickLinks: async function (oReturnObj, role, inputRequest) {
         let qLinksResponse = [];
         // let sRole = CommonUtils.convertListToString(role,"STAFF_USER_GRP");
-        let applicationList = await DashboardConfigRepo.fetchStatusDetailsByRoles(ApplicationConstants.QUICK_LINKS, inputRequest.PROCESS_CODE, role, "STAFF_USER_GRP");
+        let applicationList = await DashboardConfigRepo.fetchStatusDetailsByRoles(
+            ApplicationConstants.QUICK_LINKS,
+            inputRequest.PROCESS_CODE,
+            role,
+            "STAFF_USER_GRP"
+        );
         let applicationDetailsList = [];
         let appnMap = {};
         for (let key of applicationList) {
-            applicationDetailsList = await DashboardConfigRepo.fetchHeaderDetails(key.CONFIG_KEY, inputRequest.PROCESS_CODE);
+            applicationDetailsList = await DashboardConfigRepo.fetchHeaderDetails(
+                key.CONFIG_KEY,
+                inputRequest.PROCESS_CODE
+            );
             appnMap = {};
             let applicationsDTO = {
-                value: '',
-                title: ''
+                value: "",
+                title: "",
             };
             applicationDetailsList.forEach(applicationDetails => {
                 appnMap[applicationDetails.CONFIG_KEY] = applicationDetails.CONFIG_VALUE;
                 appnMap[ApplicationConstants.URL] = ApplicationConstants.TRUE;
 
-                if (applicationDetails.CONFIG_KEY === 'semantic') {
+                if (applicationDetails.CONFIG_KEY === "semantic") {
                     applicationsDTO.value = applicationDetails.CONFIG_VALUE;
-                } else if (applicationDetails.CONFIG_KEY === 'name') {
+                } else if (applicationDetails.CONFIG_KEY === "name") {
                     applicationsDTO.title = applicationDetails.CONFIG_VALUE;
                 }
             });
@@ -644,5 +691,5 @@ module.exports = {
             qLinksResponse.push(appnMap);
         }
         return qLinksResponse;
-    }
-}
+    },
+};

@@ -6,6 +6,10 @@ const { ApplicationConstants } = require("../util/constant");
 const CommonUtils = require("../util/commonUtil");
 const ChrsCompInfoRepo = require("../repository/chrsCompInfo.repo");
 
+/**
+ *
+ * @param request
+ */
 async function fetchRateTypes(request) {
     let approveTasksRes = [];
     try {
@@ -19,27 +23,23 @@ async function fetchRateTypes(request) {
         }
 
         const inputRequest = request.data.data;
-        if (!inputRequest)
-            return req.error(400, "Request is Empty / Not valid.");
+        if (!inputRequest) {return req.error(400, "Request is Empty / Not valid.");}
         const staffId = inputRequest.STAFF_ID;
         const claimMonth = inputRequest.CLAIM_MONTH;
         const ulu = inputRequest.ULU;
         const fdlu = inputRequest.FDLU;
         const processCode = inputRequest.PROCESS_CODE;
-        if (!staffId || !claimMonth)
-            return req.error(400, "Invalid Staff id/Claim Month");
-        if (!ulu || !fdlu)
-            return req.error(400, "Pls provide ULU/FDLU");
-
+        if (!staffId || !claimMonth) {return req.error(400, "Invalid Staff id/Claim Month");}
+        if (!ulu || !fdlu) {return req.error(400, "Pls provide ULU/FDLU");}
 
         const oResponse = {
-            "message": "Rate Types fetched successfully",
-            "error": false,
-            "eligibleRateTypes": []
-        }
+            message: "Rate Types fetched successfully",
+            error: false,
+            eligibleRateTypes: [],
+        };
         // Parse CLAIM_MONTH (e.g. "06-2023" as MM-YYYY)
-        if (claimMonth.includes('-')) {
-            const [monthStr, yearStr] = claimMonth.split('-');
+        if (claimMonth.includes("-")) {
+            const [monthStr, yearStr] = claimMonth.split("-");
             const month = parseInt(monthStr, 10);
             const year = parseInt(yearStr, 10);
 
@@ -48,7 +48,14 @@ async function fetchRateTypes(request) {
             const endDate = new Date(year, month, 0); // day=0 of next month = last day of this month
 
             // Fetch from DB (adapt WHERE condition to your model/DB)
-            const response = await ChrsCompInfoRepo.fetchRateTypes(staffId, DateUtils.formatDateAsString(startDate, 'yyyy-MM-dd'), DateUtils.formatDateAsString(endDate, 'yyyy-MM-dd'), ulu, fdlu, processCode)
+            const response = await ChrsCompInfoRepo.fetchRateTypes(
+                staffId,
+                DateUtils.formatDateAsString(startDate, "yyyy-MM-dd"),
+                DateUtils.formatDateAsString(endDate, "yyyy-MM-dd"),
+                ulu,
+                fdlu,
+                processCode
+            );
 
             // Build the response map by RATE_CODE
             const responseMap = {};
@@ -64,7 +71,7 @@ async function fetchRateTypes(request) {
                             MAX_LIMIT: item.MAX_LIMIT,
                             WAGE_CODE: item.WAGE_CODE,
                             WORKING_HOURS: item.WORKING_HOURS,
-                            items: []
+                            items: [],
                         };
 
                         // Prepare the child item
@@ -79,7 +86,7 @@ async function fetchRateTypes(request) {
                             SF_STF_NUMBER: item.SF_STF_NUMBER,
                             STF_NUMBER: item.STF_NUMBER,
                             WAGE_CODE: item.WAGE_CODE,
-                            WORKING_HOURS: item.WORKING_HOURS
+                            WORKING_HOURS: item.WORKING_HOURS,
                         };
                         updatedResponseItem.items.push(childItem);
                         responseMap[item.RATE_CODE] = updatedResponseItem;
@@ -108,24 +115,16 @@ async function fetchRateTypes(request) {
             const updatedResponse = [];
             Object.values(responseMap).forEach(val => updatedResponse.push(val));
 
-            oResponse.eligibleRateTypes = responseMap
+            oResponse.eligibleRateTypes = responseMap;
         }
 
-
-
-
         return oResponse;
-
-
-
-
     } catch (err) {
         // If there is a global error, rethrow or return as per your CAP error handling
         throw err;
     }
 }
 
-
 module.exports = {
-    fetchRateTypes
-}
+    fetchRateTypes,
+};

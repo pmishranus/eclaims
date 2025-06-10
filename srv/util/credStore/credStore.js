@@ -2,16 +2,25 @@ const fetch = require("node-fetch");
 const jose = require("node-jose");
 
 // Utility to check HTTP response status
+/**
+ *
+ * @param response
+ */
 function checkStatus(response) {
-    if (!response.ok) throw Error("Unexpected status code: " + response.status);
+    if (!response.ok) {throw Error("Unexpected status code: " + response.status);}
     return response;
 }
 
 // Decrypt JWE payload using private key
+/**
+ *
+ * @param privateKey
+ * @param payload
+ */
 async function decryptPayload(privateKey, payload) {
     const key = await jose.JWK.asKey(`-----BEGIN PRIVATE KEY-----${privateKey}-----END PRIVATE KEY-----`, "pem", {
         alg: "RSA-OAEP-256",
-        enc: "A256GCM"
+        enc: "A256GCM",
     });
 
     const decrypt = await jose.JWE.createDecrypt(key).decrypt(payload);
@@ -19,23 +28,34 @@ async function decryptPayload(privateKey, payload) {
 }
 
 // Encrypt a payload using public key
+/**
+ *
+ * @param publicKey
+ * @param payload
+ */
 async function encryptPayload(publicKey, payload) {
     const key = await jose.JWK.asKey(`-----BEGIN PUBLIC KEY-----${publicKey}-----END PUBLIC KEY-----`, "pem", {
-        alg: "RSA-OAEP-256"
+        alg: "RSA-OAEP-256",
     });
 
     const options = {
         contentAlg: "A256GCM",
         compact: true,
         fields: {
-            iat: Math.floor(Date.now() / 1000)
-        }
+            iat: Math.floor(Date.now() / 1000),
+        },
     };
 
     return jose.JWE.createEncrypt(options, key).update(Buffer.from(payload, "utf8")).final();
 }
 
 // Build headers for SAP CP credential store
+/**
+ *
+ * @param binding
+ * @param namespace
+ * @param initHeaders
+ */
 function buildHeaders(binding, namespace, initHeaders = {}) {
     const headers = new fetch.Headers(initHeaders);
     headers.set("Authorization", `Basic ${Buffer.from(`${binding.username}:${binding.password}`).toString("base64")}`);
@@ -44,6 +64,14 @@ function buildHeaders(binding, namespace, initHeaders = {}) {
 }
 
 // Fetch and decrypt a response
+/**
+ *
+ * @param privateKey
+ * @param url
+ * @param method
+ * @param headers
+ * @param body
+ */
 async function fetchAndDecrypt(privateKey, url, method, headers, body) {
     const response = await fetch(url, { method, headers, body });
     checkStatus(response);
@@ -53,6 +81,13 @@ async function fetchAndDecrypt(privateKey, url, method, headers, body) {
 }
 
 // Read credential from the store
+/**
+ *
+ * @param binding
+ * @param namespace
+ * @param type
+ * @param name
+ */
 async function readCredential(binding, namespace, type, name) {
     return fetchAndDecrypt(
         binding.encryption.client_private_key,
@@ -63,6 +98,13 @@ async function readCredential(binding, namespace, type, name) {
 }
 
 // Write credential to the store
+/**
+ *
+ * @param binding
+ * @param namespace
+ * @param type
+ * @param credential
+ */
 async function writeCredential(binding, namespace, type, credential) {
     const encrypted = await encryptPayload(binding.encryption.server_public_key, JSON.stringify(credential));
     return fetchAndDecrypt(
@@ -75,14 +117,18 @@ async function writeCredential(binding, namespace, type, credential) {
 }
 
 // Delete credential from the store
+/**
+ *
+ * @param binding
+ * @param namespace
+ * @param type
+ * @param name
+ */
 async function deleteCredential(binding, namespace, type, name) {
-    const response = await fetch(
-        `${binding.url}/${type}?name=${encodeURIComponent(name)}`,
-        {
-            method: "delete",
-            headers: buildHeaders(binding, namespace)
-        }
-    );
+    const response = await fetch(`${binding.url}/${type}?name=${encodeURIComponent(name)}`, {
+        method: "delete",
+        headers: buildHeaders(binding, namespace),
+    });
     checkStatus(response);
 }
 
@@ -95,5 +141,5 @@ module.exports = {
     fetchAndDecrypt,
     readCredential,
     writeCredential,
-    deleteCredential
+    deleteCredential,
 };

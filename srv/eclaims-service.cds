@@ -13,14 +13,20 @@ service EclaimsService @(path: '/eclaims') {
 
 
   /********************************************************************* Functions ***************************************************************************************************/
-  function dummy()                                                                         returns {};
-  function fetchClaimTypes(staffId : String, userGroup : String)                           returns array of {};
-  function fetchUluFdlu(claimType : String, userGroup : String, period : String)           returns {};
-  function caStaffLookup(ulu : String, fdlu : String, claimType : String, period : String,searchValue : String) returns array of {};
+  function dummy()                                                                                               returns {};
+  function fetchClaimTypes(staffId : String, userGroup : String)                                                 returns array of {};
+  function fetchUluFdlu(claimType : String, userGroup : String, period : String)                                 returns {};
+  function caStaffLookup(ulu : String, fdlu : String, claimType : String, period : String, searchValue : String) returns array of {};
+
+  function draftEclaimData(claimType : String,
+                           ulu : String,
+                           fdlu : String,
+                           period : String,
+                           staffId : String)                                                                     returns {};
   /********************************************************************* Actions ***************************************************************************************************/
 
-  action   eclaimsOverviewDashboard(data : object)                                         returns String;
-  action   rateTypes(data : object)                                                        returns object;
+  action   eclaimsOverviewDashboard(data : object)                                                               returns String;
+  action   rateTypes(data : object)                                                                              returns object;
 
 
   /******************************************************************** Calculation Views Exposed *********************************************************************************/

@@ -1,9 +1,16 @@
 const cds = require("@sap/cds");
 const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
 
-
+/**
+ *
+ * @param nusNetId
+ * @param startDate
+ * @param endDate
+ * @param ulu
+ * @param fdlu
+ * @param processCode
+ */
 async function fetchRateTypes(nusNetId, startDate, endDate, ulu, fdlu, processCode) {
-
     let query = `SELECT 
 	cc.RATE_TYPE_C,
 	cc.RATE_TYPE_T,
@@ -53,14 +60,12 @@ WHERE (cj.STF_NUMBER IN (SELECT cj1.STF_NUMBER
 	AND ec.END_DATE >= '${startDate}'
 	AND ec.STF_NUMBER = cj.STF_NUMBER
 	AND ec.CLAIM_TYPE = '${processCode}';
-`
+`;
 
     let fetchRateTypes = await cds.run(query);
     return fetchRateTypes;
 }
 
-
-
 module.exports = {
-    fetchRateTypes
-}
+    fetchRateTypes,
+};

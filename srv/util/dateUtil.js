@@ -1,5 +1,16 @@
-const { format, parse, parseISO, formatISO, addDays, startOfDay, differenceInDays, isBefore, isAfter, isSameDay } = require('date-fns');
-const { enUS } = require('date-fns/locale');
+const {
+    format,
+    parse,
+    parseISO,
+    formatISO,
+    addDays,
+    startOfDay,
+    differenceInDays,
+    isBefore,
+    isAfter,
+    isSameDay,
+} = require("date-fns");
+const { enUS } = require("date-fns/locale");
 
 // Constants
 const DATE_TIME_FORMATTER = "yyyy-MM-dd'T'HH:mm:ss.SSS";
@@ -7,34 +18,34 @@ const APPN_DATE_FORMATTER = "dd.MM.yyyy";
 const APPN_DATE_FORMATTER1 = "yyyy-MM-dd";
 
 // Utility functions
-const convertForMassUploadFormat = (inputDate) => {
-    return inputDate ? format(inputDate, APPN_DATE_FORMATTER1, { locale: enUS }) : '';
+const convertForMassUploadFormat = inputDate => {
+    return inputDate ? format(inputDate, APPN_DATE_FORMATTER1, { locale: enUS }) : "";
 };
 
 const extractTimeFromStringDate = (inputTime, dateTimeFormatter) => {
     const parsedDate = parse(inputTime, dateTimeFormatter, new Date(), { locale: enUS });
-    return format(parsedDate, 'HH:mm:ss', { locale: enUS });
+    return format(parsedDate, "HH:mm:ss", { locale: enUS });
 };
 
 const convertDateToString = (inputDate, formatter = DATE_TIME_FORMATTER) => {
     return format(inputDate, formatter, { locale: enUS });
 };
 
-const convertInSpecificFormat = (inputDate) => {
+const convertInSpecificFormat = inputDate => {
     const currentDate = new Date();
-    const monthDisplay = format(currentDate, 'MM', { locale: enUS });
+    const monthDisplay = format(currentDate, "MM", { locale: enUS });
     return `${inputDate}/${monthDisplay}/${currentDate.getFullYear()}`;
 };
 
-const convertMonthNYearForOFNEmail = (period) => {
-    if (!period) return null;
+const convertMonthNYearForOFNEmail = period => {
+    if (!period) {return null;}
 
-    const [month, year] = period.split('-');
+    const [month, year] = period.split("-");
     const periodDate = parse(`${year}-${month}-01`, APPN_DATE_FORMATTER1, new Date(), { locale: enUS });
-    return format(periodDate, 'MMM yyyy', { locale: enUS });
+    return format(periodDate, "MMM yyyy", { locale: enUS });
 };
 
-const convertInToDateFormat = (inputDate) => {
+const convertInToDateFormat = inputDate => {
     const currentDate = new Date();
     const currentDay = currentDate.getDate();
     const month = inputDate < currentDay ? currentDate.getMonth() + 2 : currentDate.getMonth() + 1;
@@ -44,7 +55,7 @@ const convertInToDateFormat = (inputDate) => {
 
 const getCurrentMonth = () => {
     const currentDate = new Date();
-    const monthDisplay = format(currentDate, 'MM', { locale: enUS });
+    const monthDisplay = format(currentDate, "MM", { locale: enUS });
     return monthDisplay;
 };
 
@@ -52,36 +63,39 @@ const convertStringToDate = (inputDate, formatter) => {
     return parse(inputDate, formatter, new Date(), { locale: enUS });
 };
 
-const fetchMonthName = (monthVal) => {
-    const month = new Date(0, monthVal - 1).toLocaleString('en-US', { month: 'short' });
+const fetchMonthName = monthVal => {
+    const month = new Date(0, monthVal - 1).toLocaleString("en-US", { month: "short" });
     return month;
 };
 
-const convertToLocalDateTimeViaInstant = (dateToConvert) => {
-    return dateToConvert.toISOString().split('T')[0];
+const convertToLocalDateTimeViaInstant = dateToConvert => {
+    return dateToConvert.toISOString().split("T")[0];
 };
 
 const changeDateFormat = (inputDate, targetFormat) => {
     return format(parseISO(inputDate), targetFormat, { locale: enUS });
 };
 
-const extractTime = (inputTime) => {
+const extractTime = inputTime => {
     const parsedDate = parseISO(inputTime);
-    return format(parsedDate, 'HH:mm:ss', { locale: enUS });
+    return format(parsedDate, "HH:mm:ss", { locale: enUS });
 };
 
-const convertLocalDateToDate = (inputDate) => {
+const convertLocalDateToDate = inputDate => {
     return new Date(inputDate);
 };
 
 const getDayStringFromDate = (inputDate, locale = enUS) => {
     const date = parseISO(inputDate);
-    return format(date, 'EEEE', { locale });
+    return format(date, "EEEE", { locale });
 };
 
 const fetchDatesFromMonthAndYear = (inputMonth, inputYear) => {
-    const startDate = formatDateAsString(new Date(inputYear, inputMonth - 1, 1),'yyyy-MM-dd');
-    const endDate = formatDateAsString(new Date(inputYear, inputMonth - 1, new Date(inputYear, inputMonth, 0).getDate()),'yyyy-MM-dd');
+    const startDate = formatDateAsString(new Date(inputYear, inputMonth - 1, 1), "yyyy-MM-dd");
+    const endDate = formatDateAsString(
+        new Date(inputYear, inputMonth - 1, new Date(inputYear, inputMonth, 0).getDate()),
+        "yyyy-MM-dd"
+    );
     return [startDate, endDate];
 };
 
@@ -148,15 +162,15 @@ const frameLocalDateTime = (year, month, dayOfMonth, hour, minute) => {
 };
 
 const frameLocalDateTimeFromString = (claimStartDate, time) => {
-    if (claimStartDate.includes('-') && time.includes(':')) {
-        const [year, month, day] = claimStartDate.split('-').map(Number);
-        const [hour, minute] = time.split(':').map(Number);
+    if (claimStartDate.includes("-") && time.includes(":")) {
+        const [year, month, day] = claimStartDate.split("-").map(Number);
+        const [hour, minute] = time.split(":").map(Number);
         return frameLocalDateTime(year, month, day, hour, minute);
     }
     return null;
 };
 
-const isNumeric = (stringNumeric) => {
+const isNumeric = stringNumeric => {
     return !isNaN(parseFloat(stringNumeric)) && isFinite(stringNumeric);
 };
 
@@ -178,7 +192,9 @@ const differenceInCutOffDates = (configCutOff, noOfDays, isBeforeCheck) => {
 
 const differenceDatesInCurrentMonth = (configCutOff, noOfDays, isBeforeCheck) => {
     if (configCutOff && noOfDays) {
-        const cutoffDate = parse(convertInSpecificFormat(configCutOff), APPN_DATE_FORMATTER, new Date(), { locale: enUS });
+        const cutoffDate = parse(convertInSpecificFormat(configCutOff), APPN_DATE_FORMATTER, new Date(), {
+            locale: enUS,
+        });
         const today = new Date();
         const diff = differenceInDays(startOfDay(today), startOfDay(cutoffDate));
 
@@ -202,8 +218,8 @@ const getCwsBatchEmailDate = (strDate, timeRange) => {
         startCal.setTime(date);
     }
 
-    if (timeRange && timeRange.includes('-')) {
-        const [startRange, endRange] = timeRange.split('-').map(Number);
+    if (timeRange && timeRange.includes("-")) {
+        const [startRange, endRange] = timeRange.split("-").map(Number);
 
         if (startRange >= endRange) {
             startCal.setDate(startCal.getDate() - 1);
@@ -224,7 +240,7 @@ const getCwsBatchEmailDate = (strDate, timeRange) => {
     return calList;
 };
 
-const fetchQuarterlyDates = (inputDate) => {
+const fetchQuarterlyDates = inputDate => {
     const date = parse(inputDate, APPN_DATE_FORMATTER, new Date(), { locale: enUS });
     const dayOfMonth = date.getDate();
     const quarter = Math.floor((date.getMonth() + 3) / 3);
@@ -235,7 +251,7 @@ const fetchQuarterlyDates = (inputDate) => {
 
     return {
         start: firstDay,
-        end: lastDay
+        end: lastDay,
     };
 };
 
@@ -243,41 +259,42 @@ const convertOffsetDateToDate = (inputDate, offset) => {
     return addDays(parseISO(inputDate), offset);
 };
 
-const getFirstAndLastDateFromOffset = (dateOffset) => {
+const getFirstAndLastDateFromOffset = dateOffset => {
     const date = new Date();
     return addDays(date, dateOffset);
 };
 
-	/*
-			 * Format Date as String
-			 */
-  const  formatDateAsString = (dateValue, format, isYearFormat, localData) => {
-        var response = "";
-        if (dateValue && dateValue !== "NA" && dateValue !== "/Date(0)/") {
-            if (dateValue) {
-                if (typeof (dateValue) === "string" && dateValue.indexOf("/Date") > -1) {
-                    dateValue = parseFloat(dateValue.substr(dateValue.lastIndexOf("(") + 1, dateValue.lastIndexOf(")") - 1));
-                }
-                dateValue = new Date(dateValue);
+/*
+ * Format Date as String
+ */
+const formatDateAsString = (dateValue, format, isYearFormat, localData) => {
+    var response = "";
+    if (dateValue && dateValue !== "NA" && dateValue !== "/Date(0)/") {
+        if (dateValue) {
+            if (typeof dateValue === "string" && dateValue.indexOf("/Date") > -1) {
+                dateValue = parseFloat(
+                    dateValue.substr(dateValue.lastIndexOf("(") + 1, dateValue.lastIndexOf(")") - 1)
+                );
             }
-            /*else {
+            dateValue = new Date(dateValue);
+        }
+        /*else {
                 dateValue = new Date();
             }*/
-            if (dateValue) {
+        if (dateValue) {
+            var yyyy = dateValue.getFullYear() + "";
+            var tempDateStr = new Date().getFullYear();
+            if (isYearFormat && isYearFormat != "false" && parseInt(yyyy) < tempDateStr) {
+                yyyy = tempDateStr.toString().substring(0, 2) + yyyy.substring(2, yyyy.length);
+            }
+            var mm = dateValue.getMonth() + 1 + "";
+            mm = mm.length > 1 ? mm : "0" + mm;
+            var dd = dateValue.getDate() + "";
+            dd = dd.length > 1 ? dd : "0" + dd;
 
-                var yyyy = dateValue.getFullYear() + "";
-                var tempDateStr = new Date().getFullYear();
-                if (isYearFormat && isYearFormat != 'false' && (parseInt(yyyy) < tempDateStr)) {
-                    yyyy = tempDateStr.toString().substring(0, 2) + yyyy.substring(2, yyyy.length);
-                }
-                var mm = (dateValue.getMonth() + 1) + "";
-                mm = (mm.length > 1) ? mm : "0" + mm;
-                var dd = dateValue.getDate() + "";
-                dd = (dd.length > 1) ? dd : "0" + dd;
+            var hh, mins, secs;
 
-                var hh, mins, secs;
-
-                switch (format) {
+            switch (format) {
                 case "yyyyMMdd":
                     response = yyyy + mm + dd;
                     break;
@@ -298,91 +315,91 @@ const getFirstAndLastDateFromOffset = (dateOffset) => {
                     break;
                 case "yyyy-MM-ddThh:MM:ss":
                     hh = dateValue.getHours() + "";
-                    hh = (hh.length > 1) ? hh : "0" + hh;
+                    hh = hh.length > 1 ? hh : "0" + hh;
                     mins = dateValue.getMinutes() + "";
-                    mins = (mins.length > 1) ? mins : "0" + mins;
+                    mins = mins.length > 1 ? mins : "0" + mins;
                     secs = dateValue.getSeconds() + "";
-                    secs = (secs.length > 1) ? secs : "0" + secs;
+                    secs = secs.length > 1 ? secs : "0" + secs;
                     response = yyyy + "-" + mm + "-" + dd + "T" + hh + ":" + mins + ":" + secs;
                     break;
                 case "yyyy-MM-dd hh:MM:ss":
                     hh = dateValue.getHours() + "";
-                    hh = (hh.length > 1) ? hh : "0" + hh;
+                    hh = hh.length > 1 ? hh : "0" + hh;
                     mins = dateValue.getMinutes() + "";
-                    mins = (mins.length > 1) ? mins : "0" + mins;
+                    mins = mins.length > 1 ? mins : "0" + mins;
                     secs = dateValue.getSeconds() + "";
-                    secs = (secs.length > 1) ? secs : "0" + secs;
+                    secs = secs.length > 1 ? secs : "0" + secs;
                     response = yyyy + "-" + mm + "-" + dd + " " + hh + ":" + mins + ":" + secs;
                     break;
                 case "hh:MM:ss":
                     hh = dateValue.getHours() + "";
-                    hh = (hh.length > 1) ? hh : "0" + hh;
+                    hh = hh.length > 1 ? hh : "0" + hh;
                     mins = dateValue.getMinutes() + "";
-                    mins = (mins.length > 1) ? mins : "0" + mins;
+                    mins = mins.length > 1 ? mins : "0" + mins;
                     secs = dateValue.getSeconds() + "";
-                    secs = (secs.length > 1) ? secs : "0" + secs;
+                    secs = secs.length > 1 ? secs : "0" + secs;
                     response = hh + ":" + mins + ":" + secs;
                     break;
                 case "dd/MM/yyyy hh:MM:ss":
                     response = dd + "/" + mm + "/" + yyyy + " ";
                     hh = dateValue.getHours() + "";
-                    hh = (hh.length > 1) ? hh : "0" + hh;
+                    hh = hh.length > 1 ? hh : "0" + hh;
                     mins = dateValue.getMinutes() + "";
-                    mins = (mins.length > 1) ? mins : "0" + mins;
+                    mins = mins.length > 1 ? mins : "0" + mins;
                     secs = dateValue.getSeconds() + "";
-                    secs = (secs.length > 1) ? secs : "0" + secs;
+                    secs = secs.length > 1 ? secs : "0" + secs;
                     response += hh + ":" + mins + ":" + secs;
                     break;
                 case "dd/MM/yyyy hh:MM:ss aa":
                     response = mm + "/" + dd + "/" + yyyy + " ";
                     hh = dateValue.getHours();
-                    var ampm = (hh >= 12) ? 'PM' : 'AM';
+                    var ampm = hh >= 12 ? "PM" : "AM";
                     hh = hh % 12;
-                    hh = (hh ? (hh < 10 ? "0" + hh : hh) : 12);
+                    hh = hh ? (hh < 10 ? "0" + hh : hh) : 12;
                     // hh = (hh.length > 1) ? hh : "0" + hh;
                     mins = dateValue.getMinutes() + "";
-                    mins = (mins.length > 1) ? mins : "0" + mins;
+                    mins = mins.length > 1 ? mins : "0" + mins;
                     secs = dateValue.getSeconds() + "";
-                    secs = (secs.length > 1) ? secs : "0" + secs;
+                    secs = secs.length > 1 ? secs : "0" + secs;
                     response += hh + ":" + mins + ":" + secs + " " + ampm;
                     break;
                 case "dd Mmm,yyyy":
                     response = mm + "/" + dd + "/" + yyyy + " ";
                     mm = localData[Number(mm) - 1].substring(0, 3);
                     hh = dateValue.getHours();
-                    var ampm = (hh >= 12) ? 'PM' : 'AM';
+                    var ampm = hh >= 12 ? "PM" : "AM";
                     hh = hh % 12;
-                    hh = (hh ? (hh < 10 ? "0" + hh : hh) : 12);
+                    hh = hh ? (hh < 10 ? "0" + hh : hh) : 12;
                     // hh = (hh.length > 1) ? hh : "0" + hh;
                     mins = dateValue.getMinutes() + "";
-                    mins = (mins.length > 1) ? mins : "0" + mins;
+                    mins = mins.length > 1 ? mins : "0" + mins;
                     secs = dateValue.getSeconds() + "";
-                    secs = (secs.length > 1) ? secs : "0" + secs;
+                    secs = secs.length > 1 ? secs : "0" + secs;
                     response = dd + " " + mm + "," + yyyy;
                     break;
                 case "dd Mmm, yyyy":
                     response = mm + "/" + dd + "/" + yyyy + " ";
                     mm = localData[Number(mm) - 1].substring(0, 3);
                     hh = dateValue.getHours();
-                    var ampm = (hh >= 12) ? 'PM' : 'AM';
+                    var ampm = hh >= 12 ? "PM" : "AM";
                     hh = hh % 12;
-                    hh = (hh ? (hh < 10 ? "0" + hh : hh) : 12);
+                    hh = hh ? (hh < 10 ? "0" + hh : hh) : 12;
                     // hh = (hh.length > 1) ? hh : "0" + hh;
                     mins = dateValue.getMinutes() + "";
-                    mins = (mins.length > 1) ? mins : "0" + mins;
+                    mins = mins.length > 1 ? mins : "0" + mins;
                     secs = dateValue.getSeconds() + "";
-                    secs = (secs.length > 1) ? secs : "0" + secs;
+                    secs = secs.length > 1 ? secs : "0" + secs;
                     response = dd + " " + mm + ", " + yyyy;
                     break;
                 default:
                     response = dateValue;
                     break;
-                }
             }
         }
-        return response;
-        //Format Year
     }
+    return response;
+    //Format Year
+};
 
 module.exports = {
     convertForMassUploadFormat,
@@ -413,5 +430,5 @@ module.exports = {
     fetchQuarterlyDates,
     convertOffsetDateToDate,
     getFirstAndLastDateFromOffset,
-    formatDateAsString
+    formatDateAsString,
 };
