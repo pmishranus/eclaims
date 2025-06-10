@@ -80,8 +80,8 @@ const getDayStringFromDate = (inputDate, locale = enUS) => {
 };
 
 const fetchDatesFromMonthAndYear = (inputMonth, inputYear) => {
-    const startDate = new Date(inputYear, inputMonth - 1, 1);
-    const endDate = new Date(inputYear, inputMonth - 1, new Date(inputYear, inputMonth, 0).getDate());
+    const startDate = formatDateAsString(new Date(inputYear, inputMonth - 1, 1),'yyyy-MM-dd');
+    const endDate = formatDateAsString(new Date(inputYear, inputMonth - 1, new Date(inputYear, inputMonth, 0).getDate()),'yyyy-MM-dd');
     return [startDate, endDate];
 };
 

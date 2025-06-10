@@ -1,0 +1,17 @@
+{
+  "printWidth": 100,
+  "tabWidth": 2,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "semi": true,
+  "overrides": [
+    {
+      "files": "*.cds",
+      "options": {
+        "tabWidth": 4,                 // CAP CDS style recommends 4 spaces for CDS
+        "singleQuote": false
+      }
+    }
+  ],
+  "plugins": ["@cap-js/prettier-plugin-cds"]
+}

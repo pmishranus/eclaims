@@ -1,0 +1,6 @@
+node_modules
+dist
+gen
+coverage
+default-env.json
+.env

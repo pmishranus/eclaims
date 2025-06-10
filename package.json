@@ -39,6 +39,7 @@
     "eslint": "^9"
   },
  "scripts": {
+  "format": "prettier --write \"**/*.{js,mjs,cjs,json,cds,ts,md,yaml,yml}\"",
     "start": "cds-serve",
     "approuter": "npm start --prefix app",
     "profile": "cds watch --profile hybrid",

@@ -2,7 +2,8 @@ const cds = require("@sap/cds");
 const eclaimsOverviewDashboardCtrl = require("./controller/eclaimsOverviewDashboard.controller");
 const singleRequestCtrl = require("./controller/singleRequest.controller");
 const fetchClaimTypesCtrl = require("./controller/fetchClaimTypes.controller");
-const fetchUluFdluCtrl = require("./controller/fetchUluFdlu.controller");
+const rateTypesCtrl = require("./controller/rateTypes.controller");
+const CAStaffCtrl = require("./controller/caStaffLookup.controller");
 
 class EclaimsService extends cds.ApplicationService {
   init() {
@@ -34,6 +35,13 @@ class EclaimsService extends cds.ApplicationService {
       return await fetchUluFdluCtrl.fetchUluFdlu(request);
     });
     
+    this.on("rateTypes", async (request) => {
+      return await rateTypesCtrl.fetchRateTypes(request);
+    });
+
+    this.on("caStaffLookup", async (request) => {
+      return await CAStaffCtrl.fetchCaStaffLookup(request);
+    });
     
   
     this.on("singleRequest", async (request) => {

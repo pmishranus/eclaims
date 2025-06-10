@@ -13,12 +13,14 @@ service EclaimsService @(path: '/eclaims') {
 
 
   /********************************************************************* Functions ***************************************************************************************************/
-  function dummy()                                 returns {};
-  function fetchClaimTypes(staffId : String, userGroup : String)                       returns array of {};
-    function fetchUluFdlu(claimType : String, userGroup : String,period : String)                       returns  {};
+  function dummy()                                                                         returns {};
+  function fetchClaimTypes(staffId : String, userGroup : String)                           returns array of {};
+  function fetchUluFdlu(claimType : String, userGroup : String, period : String)           returns {};
+  function caStaffLookup(ulu : String, fdlu : String, claimType : String, period : String,searchValue : String) returns array of {};
   /********************************************************************* Actions ***************************************************************************************************/
 
-  action   eclaimsOverviewDashboard(data : object) returns String;
+  action   eclaimsOverviewDashboard(data : object)                                         returns String;
+  action   rateTypes(data : object)                                                        returns object;
 
 
   /******************************************************************** Calculation Views Exposed *********************************************************************************/
@@ -30,10 +32,13 @@ service EclaimsService @(path: '/eclaims') {
   entity v_eclaim_request_view      as
     projection on PRJ_ECLAIM_REQUEST_VIEW {
       *,
-      ![MasterClaimTypeDetails] : Association to many db.MASTER_DATA.MASTER_CLAIM_TYPE on ![MasterClaimTypeDetails].CLAIM_TYPE_C = CLAIM_TYPE,
-      ![EclaimsItemDataDetails] : Association to many db.ECLAIMS.ITEMS_DATA on ![EclaimsItemDataDetails].DRAFT_ID = DRAFT_ID,
-      ![StatusConfigDetails]    : Association to many db.UTILITY.STATUS_CONFIG on ![StatusConfigDetails].STATUS_CODE = REQUEST_STATUS
-    }
+      ![MasterClaimTypeDetails] : Association to many db.MASTER_DATA.MASTER_CLAIM_TYPE
+                                    on ![MasterClaimTypeDetails].CLAIM_TYPE_C = CLAIM_TYPE,
+      ![EclaimsItemDataDetails] : Association to many db.ECLAIMS.ITEMS_DATA
+                                    on ![EclaimsItemDataDetails].DRAFT_ID = DRAFT_ID,
+      ![StatusConfigDetails]    : Association to many db.UTILITY.STATUS_CONFIG
+                                    on ![StatusConfigDetails].STATUS_CODE = REQUEST_STATUS
+                                  }
 
   // @readonly
   // entity v_eclaim_item_view         as projection on ECLAIMS_ITEM_VIEW;
@@ -178,10 +183,10 @@ service EclaimsService @(path: '/eclaims') {
   //     STATUS_CONFIG.STATUS_CODE;
 
 
-/********************************************************************************************************************************************************************************/
+  /********************************************************************************************************************************************************************************/
 
-@protocol       : 'rest'
+  @protocol: 'rest'
 
-  action singleRequest(data : object)  
+  action   singleRequest(data : object)
 
 }

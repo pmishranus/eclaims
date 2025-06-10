@@ -128,12 +128,174 @@ module.exports = {
         return checkStaffIsActiveAndValidForMonthly;
     },
 
-    retrieveJobInfoDetails: async function(nusNetId){
+    retrieveJobInfoDetails: async function (nusNetId) {
         let query = ` STF_NUMBER = SF_STF_NUMBER AND (UPPER(NUSNET_ID) = '${nusNetId.toUpperCase()}' OR UPPER(STF_NUMBER) = '${nusNetId.toUpperCase()}') AND START_DATE <= CURRENT_DATE AND END_DATE >= CURRENT_DATE `;
         let retrieveJobInfoDetails = await cds.run(
             SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
-            .where(query)
+                .where(query)
         );
         return retrieveJobInfoDetails;
+    },
+
+    claimAssistantStaffLookup: async function (nusNetId,
+        ulu,
+        fdlu,
+        startDate,
+        endDate,
+        claimType,
+        searchValue
+    )
+    // searchValue2,
+    // searchValue3,
+    // searchValue4,
+    // searchValue5,
+    // searchValue6,
+    // searchValue7)
+    {
+        const query = `SELECT
+    cj.SF_STF_NUMBER,
+    cj.STF_NUMBER,
+    MIN(cj.START_DATE) AS START_DATE,
+    MAX(cj.END_DATE) AS END_DATE,
+    cj.FIRST_NM,
+    cj.LAST_NM,
+    cj.FULL_NM,
+    cj.NUSNET_ID,
+    cj.ULU_C,
+    cj.ULU_T,
+    cj.FDLU_C,
+    cj.FDLU_T,
+    cj.EMAIL,
+    cj.JOIN_DATE
+FROM
+    NUSEXT_MASTER_DATA_CHRS_JOB_INFO cj
+INNER JOIN
+    NUSEXT_MASTER_DATA_CHRS_ELIG_CRITERIA ec
+    ON ec.STF_NUMBER = cj.STF_NUMBER
+    AND ec.SF_STF_NUMBER = cj.SF_STF_NUMBER
+WHERE
+    cj.START_DATE <= ?
+    AND cj.END_DATE >= ?
+    AND UPPER(cj.NUSNET_ID) != UPPER(?)
+    AND cj.ULU_C = ?
+    AND cj.FDLU_C = ?
+    AND ec.START_DATE <= ?
+    AND ec.END_DATE >= ?
+    AND ec.CLAIM_TYPE = ?
+    AND cj.EMPL_STS_C = 'A'
+    AND (
+        cj.STF_NUMBER LIKE ?
+        OR UPPER(cj.FULL_NM) LIKE ?
+        OR UPPER(cj.NUSNET_ID) LIKE ?
+        OR cj.ULU_C LIKE ?
+        OR cj.FDLU_C LIKE ?
+        OR UPPER(cj.ULU_T) LIKE ?
+        OR UPPER(cj.FDLU_T) LIKE ?
+    )
+GROUP BY
+    cj.SF_STF_NUMBER,
+    cj.STF_NUMBER,
+    cj.FIRST_NM,
+    cj.LAST_NM,
+    cj.FULL_NM,
+    cj.NUSNET_ID,
+    cj.ULU_C,
+    cj.ULU_T,
+    cj.FDLU_C,
+    cj.FDLU_T,
+    cj.EMAIL,
+    cj.JOIN_DATE
+ORDER BY
+    cj.STF_NUMBER DESC
+`;
+
+        const params = [
+            endDate,
+            startDate,
+            nusNetId,
+            ulu,
+            fdlu,
+            endDate,
+            startDate,
+            claimType,
+            `%${searchValue}%`,
+            `%${searchValue.toUpperCase()}%`,
+            `%${searchValue.toUpperCase()}%`,
+            `%${searchValue}%`,
+            `%${searchValue}%`,
+            `%${searchValue.toUpperCase()}%`,
+            `%${searchValue.toUpperCase()}%`
+        ];
+
+        const results = await cds.run(query, params);
+        return results;
+
+    },
+
+    claimAssistantStaffLookup: async function (nusNetId,
+        ulu,
+        fdlu,
+        startDate,
+        endDate,
+        claimType) {
+        const params = [
+            endDate,
+            startDate,
+            nusNetId,
+            ulu,
+            fdlu,
+            endDate,
+            startDate,
+            claimType
+        ];
+        const query = `SELECT
+    cj.SF_STF_NUMBER,
+    cj.STF_NUMBER,
+    MIN(cj.START_DATE) AS START_DATE,
+    MAX(cj.END_DATE) AS END_DATE,
+    cj.FIRST_NM,
+    cj.LAST_NM,
+    cj.FULL_NM,
+    cj.NUSNET_ID,
+    cj.ULU_C,
+    cj.ULU_T,
+    cj.FDLU_C,
+    cj.FDLU_T,
+    cj.EMAIL,
+    cj.JOIN_DATE
+FROM
+    NUSEXT_MASTER_DATA_CHRS_JOB_INFO cj
+INNER JOIN
+    NUSEXT_MASTER_DATA_CHRS_ELIG_CRITERIA ec
+    ON ec.STF_NUMBER = cj.STF_NUMBER
+    AND ec.SF_STF_NUMBER = cj.SF_STF_NUMBER
+WHERE
+    cj.START_DATE <= ?
+    AND cj.END_DATE >= ?
+    AND UPPER(cj.NUSNET_ID) != UPPER(?)
+    AND cj.ULU_C = ?
+    AND cj.FDLU_C = ?
+    AND ec.START_DATE <= ?
+    AND ec.END_DATE >= ?
+    AND ec.CLAIM_TYPE = ?
+    AND cj.EMPL_STS_C = 'A'
+GROUP BY
+    cj.SF_STF_NUMBER,
+    cj.STF_NUMBER,
+    cj.FIRST_NM,
+    cj.LAST_NM,
+    cj.FULL_NM,
+    cj.NUSNET_ID,
+    cj.ULU_C,
+    cj.ULU_T,
+    cj.FDLU_C,
+    cj.FDLU_T,
+    cj.EMAIL,
+    cj.JOIN_DATE
+ORDER BY
+    cj.STF_NUMBER DESC`;
+        const results = await cds.run(query, params);
+        return results;
     }
+
 }
