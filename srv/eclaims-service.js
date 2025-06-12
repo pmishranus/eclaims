@@ -5,6 +5,7 @@ const draftEclaimRequestCtrl = require("./controller/fetchDraftEclaimRequest.con
 const fetchClaimTypesCtrl = require("./controller/fetchClaimTypes.controller");
 const rateTypesCtrl = require("./controller/rateTypes.controller");
 const caStaffCtrl = require("./controller/caStaffLookup.controller");
+const claimantStaffInfoCtrl = require("./controller/claimantStaffInfo.controller");
 
 class EclaimsService extends cds.ApplicationService {
     init() {
@@ -50,6 +51,10 @@ class EclaimsService extends cds.ApplicationService {
 
         this.on("draftEclaimData", async request => {
             return await draftEclaimRequestCtrl.fetchDraftEclaimRequest(request);
+        });
+
+        this.on("claimantStaffInfo", async request => {
+            return await claimantStaffInfoCtrl.fetchClaimantStaffInfo(request);
         });
 
         return super.init();

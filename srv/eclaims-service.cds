@@ -23,6 +23,8 @@ service EclaimsService @(path: '/eclaims') {
                            fdlu : String,
                            period : String,
                            staffId : String)                                                                     returns {};
+
+  function claimantStaffInfo(username : String)                                                                  returns {};                           
   /********************************************************************* Actions ***************************************************************************************************/
 
   action   eclaimsOverviewDashboard(data : object)                                                               returns String;

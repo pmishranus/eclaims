@@ -15,7 +15,7 @@ async function fetchDraftEclaimRequest(request) {
         // const tx = cds.tx(request);
         const user = request.user.id;
         const { claimType, ulu, fdlu, period, staffId } = request.data;
-        const userName = "OT_CA1";
+        const userName = "CW_UID151515";
         const upperNusNetId = userName.toUpperCase();
         let userInfoDetails = await CommonRepo.fetchUserInfo(upperNusNetId);
         if (!userName) {

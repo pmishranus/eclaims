@@ -316,4 +316,20 @@ context UTILITY {
             STAFF_FULL_NAME  : VAR_TEXT_100;
             IS_DELETED       : VAR_TEXT_2; // Column added for soft deleting data
     };
+
+     /*********************************************Holiday List table***************************/
+    @cds.persistence.exists
+    entity NUS_CHRS_HOLIDAYS {
+        key SEQ_NO       : VAR_INT;
+            DATE         : VAR_DATE;
+            DAY          : VAR_TEXT_50;
+            MONTH        : VAR_TEXT_50;
+            YEAR         : VAR_TEXT_50;
+            HOLIDAY_TYPE : VAR_TEXT_10;
+            HOLIDAY_NAME : VAR_TEXT_50;
+            HOLIDAY_DESC : VAR_TEXT_50;
+            PTT          : VAR_TEXT_50;
+            OT           : VAR_TEXT_50;
+            CW           : VAR_TEXT_50;
+    };
 }

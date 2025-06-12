@@ -150,4 +150,30 @@ module.exports = {
 
         return fetchCAClaimTypes;
     },
+
+    fetchAuthDetails: async function (staffId) {
+        let queryParameter = ` (UPPER(eam.STAFF_NUSNET_ID) = '${staffId}' or eam.STAFF_ID = '${staffId}')
+          and eam.ULU = u.ULU_C and u.FDLU_C = CASE WHEN eam.FDLU = 'ALL' THEN u.FDLU_C ELSE eam.FDLU END 
+         and eam.VALID_FROM <= CURRENT_DATE and eam.VALID_TO >= CURRENT_DATE and eam.IS_DELETED='N'`
+        let fetchAuthDetails = await cds.run(
+            SELECT
+                .from(' NUSEXT_UTILITY_CHRS_APPROVER_MATRIX as eam')
+                    .join('NUSEXT_MASTER_DATA_CHRS_FDLU_ULU AS u')
+                    .on(' eam.ULU = u.ULU_C ')
+                    .columns("eam.PROCESS_CODE","eam.STAFF_ID","u.ULU_C","u.ULU_T","u.FDLU_C","u.FDLU_T","eam.VALID_FROM","eam.VALID_TO","eam.STAFF_USER_GRP")
+                    .where(queryParameter)
+                );
+        return fetchAuthDetails;
+    },
+    fetchInboxApproverMatrix: async function(staffId) {
+        let queryParameter = ` (UPPER(eam.STAFF_NUSNET_ID) = '${staffId}' or eam.STAFF_ID = '${staffId}')
+          and eam.VALID_FROM <= CURRENT_DATE and eam.VALID_TO >= CURRENT_DATE and eam.IS_DELETED='N'`
+        let fetchInboxApproverMatrix = await cds.run(
+            SELECT
+                .from("NUSEXT_UTILITY_CHRS_APPROVER_MATRIX as eam")
+                .columns("eam.STAFF_USER_GRP","eam.PROCESS_CODE","eam.STAFF_ID","eam.ULU","eam.FDLU","eam.VALID_FROM","eam.VALID_TO")
+                    .where(queryParameter)
+                );
+        return fetchInboxApproverMatrix;
+    },
 };

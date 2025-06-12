@@ -102,6 +102,19 @@ Authorization: Bearer {{access_token}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
-GET {{unsecureProtocol}}://{{host}}/v2/eclaims/draftEclaimData?ulu=0231054600&fdlu=0005690002&claimType=103&period=04-2025&staffId=151398
+GET {{unsecureProtocol}}://{{host}}/v2/eclaims/draftEclaimData?ulu=0210010100&fdlu=0001010001&claimType=102&period=04-2025&staffId=151515
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+### Request-2 Get eclaims header data
+#==================================================================#
+GET {{unsecureProtocol}}://{{host}}/v2/eclaims/claimantStaffInfo?username=151398
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+### Request-2 Get eclaims header data
+#==================================================================#
+GET {{unsecureProtocol}}://{{host}}/catalog/$metadata
 Content-Type: application/json
 Authorization: Bearer {{access_token}}

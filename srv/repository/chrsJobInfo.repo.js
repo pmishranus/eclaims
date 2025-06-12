@@ -1,5 +1,5 @@
 const cds = require("@sap/cds");
-const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
+const { SELECT, func } = require("@sap/cds/lib/ql/cds-ql");
 const { query } = require("express");
 module.exports = {
     fetchUserDetails: async function (upperNusNetId) {
@@ -267,4 +267,27 @@ ORDER BY
         const results = await cds.run(query, params);
         return results;
     },
+
+    fetchStaffInfoDetails : async function(nusNetId) {
+        const currentDate = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+        let query = SELECT.distinct
+                .from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
+                .where({
+                    START_DATE: {
+                        "<=": currentDate,
+                    },
+                    END_DATE: {
+                        ">=": currentDate,
+                    },
+                    and: {
+                        "UPPER(NUSNET_ID)": nusNetId.toUpperCase(),
+                        or: { STF_NUMBER: nusNetId },
+                    },
+                })
+                .orderBy('END_DATE desc')
+            let fetchStaffInfoDetails = await cds.run(query);
+        
+            return fetchStaffInfoDetails;
+    }
+    
 };
