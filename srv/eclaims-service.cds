@@ -24,7 +24,8 @@ service EclaimsService @(path: '/eclaims') {
                            period : String,
                            staffId : String)                                                                     returns {};
 
-  function claimantStaffInfo(username : String)                                                                  returns {};                           
+  function claimantStaffInfo(username : String)                                                                  returns {};       
+  function fetchWBS(staffId : String, claimDate : String)                                                         returns {};
   /********************************************************************* Actions ***************************************************************************************************/
 
   action   eclaimsOverviewDashboard(data : object)                                                               returns String;

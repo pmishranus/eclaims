@@ -1,5 +1,6 @@
 const cds = require("@sap/cds");
-const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
+const { ApplicationConstants } = require("../util/constant");
+const DateUtils = require("../util/dateUtil");
 /**
  *
  * @param staffId
@@ -184,6 +185,28 @@ async function fetchDraftStatusEclaimsData(ULU, FDLU, CLAIM_TYPE, CLAIM_MONTH, C
 
 }
 
+async function fetchPastThreeMonthsWbs(stfNumber,requestClaimDate) {
+    
+        // Calculate the date 90 days ago from the claimDate
+        const pastThreeMonthsDate = new Date(requestClaimDate);
+        pastThreeMonthsDate.setDate(pastThreeMonthsDate.getDate() - 90);
+        const pastThreeMonthsDateFormat = DateUtils.formatDateAsString(pastThreeMonthsDate, ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT);
+        const results = await cds.run(
+            SELECT.from('NUSEXT_ECLAIMS_ITEMS_DATA as itmdata')
+                
+                .join('NUSEXT_ECLAIMS_HEADER_DATA as hdrdata').on('hdrdata.DRAFT_ID = itmdata.DRAFT_ID')
+                .where({
+                    'hdrdata.STAFF_ID': stfNumber,
+                    'hdrdata.SUBMITTED_ON': { '>=': pastThreeMonthsDateFormat },
+                    'hdrdata.REQUEST_STATUS': { '>=': ApplicationConstants.STATUS_ECLAIMS_APPROVED }
+                })
+                .columns('WBS', 'WBS_DESC')
+                .groupBy('WBS', 'WBS_DESC')
+        );
+        return results || [];
+}
+
+
 
 module.exports = {
     fetchByDraftId,
@@ -198,4 +221,5 @@ module.exports = {
     fetchMonthlyClaimsOnSubmittedOn,
     fetchRequestId,
     fetchDraftStatusEclaimsData,
+    fetchPastThreeMonthsWbs
 };

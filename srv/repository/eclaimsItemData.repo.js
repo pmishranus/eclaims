@@ -1,5 +1,4 @@
 const cds = require("@sap/cds");
-const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
 const { ApplicationConstants } = require("../util/constant");
 
 /**
@@ -202,6 +201,7 @@ async function softDeleteByDraftId(tx, draftId, nusNetId, date) {
     // result will be an object; affected rows may be in result.affectedRows or result.length
     return result;
 }
+
 
 module.exports = {
     queryDayMonthAndYearRequests,

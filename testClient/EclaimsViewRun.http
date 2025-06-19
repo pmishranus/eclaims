@@ -113,8 +113,16 @@ GET {{unsecureProtocol}}://{{host}}/v2/eclaims/claimantStaffInfo?username=151398
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
+
 ### Request-2 Get eclaims header data
 #==================================================================#
-GET {{unsecureProtocol}}://{{host}}/catalog/$metadata
+GET {{unsecureProtocol}}://{{host}}/v2/eclaims/fetchWBS?staffId=151390&claimDate=2025-04-01
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+### Request-2 Get eclaims header data
+#==================================================================#
+GET {{unsecureProtocol}}://{{host}}/v2/eclaims/v_base_eclaim_request_view?$top=20
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
