@@ -5,17 +5,11 @@ module.exports = {
     fetchProcessActiveDelegationDetails: async function (refKey, processCode, staffId) {
         let fetchDelegations = await cds.run(
             SELECT.from(" NUSEXT_UTILITY_TASK_DELEGATION_DETAILS ")
-                .where({
-                    or: [
-                        { DELEGATED_TO: staffId },
-                        { DELEGATED_FOR: staffId }
-                    ],
-                    VALID_TO: { ">=": "CURRENT_DATE" },
-                    or: [
-                        { IS_DELETE: null },
-                        { IS_DELETE: "N" }
-                    ]
-                })
+                .where({ DELEGATED_TO: staffId })
+                .or({ DELEGATED_FOR: staffId })
+                .where({ VALID_TO: { ">=": "CURRENT_DATE" } })
+                .where({ IS_DELETE: null })
+                .or({ IS_DELETE: "N" })
                 .orderBy("ID desc")
         );
         return fetchDelegations;

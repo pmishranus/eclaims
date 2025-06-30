@@ -27,19 +27,15 @@ async function queryDayMonthAndYearRequests(staffNusNetId, claimCode, month, yea
             .columns("item.*")
             .join("NUSEXT_ECLAIMS_ITEMS_DATA", "ec")
             .on("ec.DRAFT_ID = item.DRAFT_ID")
-            .where(
-                { "item.IS_DELETED": "N" },
-                { "ec.CLAIM_TYPE": claimCode },
-                { "item.CLAIM_START_DATE": date },
-                { "ec.CLAIM_MONTH": month },
-                { "ec.CLAIM_YEAR": year },
-                cds.or(cds.fn("upper", "ec.STAFF_NUSNET_ID"), "=", staffNusNetId.toUpperCase(), {
-                    "ec.STAFF_ID": staffNusNetId,
-                }),
-                { "ec.REQUEST_STATUS": { "not in": STATUS_LIST } }
-            )
+            .where({ "item.IS_DELETED": "N" })
+            .where({ "ec.CLAIM_TYPE": claimCode })
+            .where({ "item.CLAIM_START_DATE": date })
+            .where({ "ec.CLAIM_MONTH": month })
+            .where({ "ec.CLAIM_YEAR": year })
+            .where({ "ec.STAFF_NUSNET_ID": staffNusNetId.toUpperCase() })
+            .or({ "ec.STAFF_ID": staffNusNetId })
+            .where({ "ec.REQUEST_STATUS": { "not in": STATUS_LIST } })
     );
-
     return queryDayMonthAndYearRequests;
 }
 /**

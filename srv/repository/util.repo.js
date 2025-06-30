@@ -22,12 +22,10 @@ module.exports = {
     },
     fetchUserInfo: async function (upperNusNetId) {
         let fetchStaffInfo = await cds.run(
-            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").where({
-                or: [
-                    { NUSNET_ID: upperNusNetId },
-                    { STF_NUMBER: upperNusNetId }
-                ]
-            }).orderBy("END_DATE desc")
+            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
+            .where({ NUSNET_ID: upperNusNetId })
+            .or({ STF_NUMBER: upperNusNetId })
+            .orderBy("END_DATE desc")
         );
         return fetchStaffInfo;
     },

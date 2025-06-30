@@ -6,28 +6,22 @@ module.exports = {
     fetchUserDetails: async function (upperNusNetId) {
         // Using CDS query builder instead of string concatenation
         let fetchUserDetails = await cds.run(
-            SELECT.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").where({
-                or: [
-                    { NUSNET_ID: upperNusNetId },
-                    { STF_NUMBER: upperNusNetId }
-                ],
-                START_DATE: { "<=" : "CURRENT_DATE" },
-                END_DATE: { ">=" : "CURRENT_DATE" }
-            })
+            SELECT.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
+                .where({ NUSNET_ID: upperNusNetId })
+                .or({ STF_NUMBER: upperNusNetId })
+                .where({ START_DATE: { "<=" : "CURRENT_DATE" } })
+                .where({ END_DATE: { ">=" : "CURRENT_DATE" } })
         );
         return fetchUserDetails;
     },
     retrieveExternalUserDetails: async function (upperNusNetId) {
         // Using CDS query builder instead of string concatenation
         let retrieveExternalUserDetails = await cds.run(
-            SELECT.from("NUSEXT_UTILITY_CHRS_EXTERNAL_USERS").where({
-                or: [
-                    { NUSNET_ID: upperNusNetId },
-                    { STF_NUMBER: upperNusNetId }
-                ],
-                START_DATE: { "<=" : "CURRENT_DATE" },
-                END_DATE: { ">=" : "CURRENT_DATE" }
-            })
+            SELECT.from("NUSEXT_UTILITY_CHRS_EXTERNAL_USERS")
+                .where({ NUSNET_ID: upperNusNetId })
+                .or({ STF_NUMBER: upperNusNetId })
+                .where({ START_DATE: { "<=" : "CURRENT_DATE" } })
+                .where({ END_DATE: { ">=" : "CURRENT_DATE" } })
         );
         return retrieveExternalUserDetails;
     },
@@ -157,15 +151,12 @@ module.exports = {
     retrieveJobInfoDetails: async function (nusNetId) {
         // Using CDS query builder instead of string concatenation
         let retrieveJobInfoDetails = await cds.run(
-            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").where({
-                STF_NUMBER: { "=" : { ref: ["SF_STF_NUMBER"] } },
-                or: [
-                    { NUSNET_ID: nusNetId.toUpperCase() },
-                    { STF_NUMBER: nusNetId.toUpperCase() }
-                ],
-                START_DATE: { "<=" : "CURRENT_DATE" },
-                END_DATE: { ">=" : "CURRENT_DATE" }
-            })
+            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
+                .where({ STF_NUMBER: { "=" : { ref: ["SF_STF_NUMBER"] } } })
+                .where({ NUSNET_ID: nusNetId.toUpperCase() })
+                .or({ STF_NUMBER: nusNetId.toUpperCase() })
+                .where({ START_DATE: { "<=" : "CURRENT_DATE" } })
+                .where({ END_DATE: { ">=" : "CURRENT_DATE" } })
         );
         return retrieveJobInfoDetails;
     },
