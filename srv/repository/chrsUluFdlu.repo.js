@@ -22,7 +22,7 @@ async function fetchUluFdluDetails(staffId, userGroup) {
  */
 async function fetchCAUluFdluDetails(staffID, userGroup, claimType) {
     const currentDate = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
-    // let checkfdlu = cds.parse.expr("CASE WHEN am.FDLU = 'ALL' THEN u.FDLU_C ELSE am.FDLU END");
+    // Ensure DB indexes on: PROCESS_CODE, STAFF_USER_GRP, VALID_FROM, VALID_TO, IS_DELETED, STAFF_NUSNET_ID, STAFF_ID
     let query = SELECT.distinct
         .from("NUSEXT_UTILITY_CHRS_APPROVER_MATRIX")
         .alias("am")
@@ -32,10 +32,10 @@ async function fetchCAUluFdluDetails(staffID, userGroup, claimType) {
             "am.PROCESS_CODE": claimType,
             "am.STAFF_USER_GRP": userGroup,
             "am.VALID_FROM": {
-                "<=": currentDate,
+                "<=" : currentDate,
             },
             "am.VALID_TO": {
-                ">=": currentDate,
+                ">=" : currentDate,
             },
             "am.IS_DELETED": "N",
             and: {
@@ -43,15 +43,14 @@ async function fetchCAUluFdluDetails(staffID, userGroup, claimType) {
                 or: { "am.STAFF_ID": staffID },
             },
         })
-        .columns("u.ULU_C", "u.ULU_T", "u.FDLU_C", "u.FDLU_T", "am.VALID_FROM", "am.VALID_TO", "STAFF_NUSNET_ID");
+        // Only select necessary columns for performance
+        .columns(
+            "u.ULU_C", "u.ULU_T", "u.FDLU_C", "u.FDLU_T",
+            "am.VALID_FROM", "am.VALID_TO", "am.STAFF_NUSNET_ID"
+        )
+        .limit(100); // Add a limit for safety, adjust as needed
     let fetchCAUluFdluDetails = await cds.run(query);
-
     return fetchCAUluFdluDetails;
-
-    // return fetchCAUluFdluDetails.filter(
-    //     row =>
-    //       row.FDLU_C === (row.FDLU === 'ALL' ? row.FDLU_C : row.FDLU)
-    //   );
 }
 
 module.exports = {

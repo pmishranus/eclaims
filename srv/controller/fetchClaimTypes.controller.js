@@ -4,83 +4,87 @@ const ApproverMatrixRepo = require("../repository/approverMatrix.repo");
 const { ApplicationConstants } = require("../util/constant");
 const CommonUtils = require("../util/commonUtil");
 const ElligibleCriteriaRepo = require("../repository/eligibilityCriteria.repo");
+const { monitor } = require("../util/performanceMonitor");
 
 /**
- *
- * @param request
+ * Optimized fetchClaimTypes function with improved performance and error handling
+ * @param {Object} request - The CAP request object
+ * @returns {Array} Array of claim types with configuration
  */
 async function fetchClaimTypes(request) {
-    let approveTasksRes = [];
-    try {
-        const tx = cds.tx(request);
-        const user = request.user.id;
-        const { staffId, userGroup } = request.data;
-        const userName = "PTT_CA1";
-        const upperNusNetId = userName.toUpperCase();
-        let userInfoDetails = await CommonRepo.fetchUserInfo(upperNusNetId);
-        if (!userName) {
-            throw new Error("User not found..!!");
-        }
+    return monitor.async("fetchClaimTypes", async () => {
+        try {
+            // Input validation
+            const { staffId, userGroup } = request.data;
+            
+            if (!staffId || staffId.trim() === "") {
+                throw new Error("StaffId is required and cannot be empty");
+            }
+            
+            if (!userGroup || userGroup.trim() === "") {
+                throw new Error("UserGroup is required and cannot be empty");
+            }
 
-        console.log("EligibilityCriteriaServiceImpl fetchClaimTypes start()");
+            console.log("EligibilityCriteriaServiceImpl fetchClaimTypes start()");
 
-        if (!staffId || staffId.trim() === "") {
-            req.reject(400, "StaffId passed is Empty/Null. Please provide valid staffId");
-            return;
-        }
-        if (!userGroup || userGroup.trim() === "") {
-            req.reject(400, "UserGroup passed is Empty/Null. Please provide valid userGroup");
-            return;
-        }
+            let results = [];
+            let skip = false;
 
-        let results = [];
-        let skip = false;
+            // Determine which queries to execute based on user group
+            if (CommonUtils.equalsIgnoreCase(userGroup, ApplicationConstants.ESS_MONTH)) {
+                // Execute both queries in parallel for better performance
+                const [eclaimsResults, cwResults] = await Promise.all([
+                    ElligibleCriteriaRepo.fetchClaimTypes(staffId),
+                    ElligibleCriteriaRepo.fetchClaimTypesForCw(staffId)
+                ]);
+                
+                results = [...eclaimsResults, ...cwResults];
+                skip = true;
+            } else {
+                results = await ApproverMatrixRepo.fetchCAClaimTypes(staffId);
+            }
 
-        if (CommonUtils.equalsIgnoreCase(userGroup, ApplicationConstants.ESS_MONTH)) {
-            const eclaimsResults = await ElligibleCriteriaRepo.fetchClaimTypes(staffId);
-            const cwResults = await ElligibleCriteriaRepo.fetchClaimTypesForCw(staffId);
-            results = [...eclaimsResults, ...cwResults];
-            skip = true;
-        } else {
-            results = await ApproverMatrixRepo.fetchCAClaimTypes(staffId);
-        }
+            if (!results || results.length === 0) {
+                console.log("EligibilityCriteriaServiceImpl fetchClaimTypes end() - No results found");
+                return [];
+            }
 
-        let response = [];
-
-        if (results && results.length > 0) {
+            // Deduplicate results if needed
+            let response = results;
             if (!skip) {
-                // Deduplicate by CLAIM_TYPE_C
                 const seen = new Set();
                 response = results.filter(item => {
-                    if (seen.has(item.CLAIM_TYPE_C)) {return false;}
+                    if (seen.has(item.CLAIM_TYPE_C)) {
+                        return false;
+                    }
                     seen.add(item.CLAIM_TYPE_C);
                     return true;
                 });
-            } else {
-                response = results;
             }
 
-            if (response && response.length > 0) {
-                for (const eligibleClaims of response) {
-                    const configList = await AppConfigRepo.fetchByConfigKeyAndProcessCode(
-                        userGroup,
-                        eligibleClaims.CLAIM_TYPE_C
-                    );
-                    if (configList && configList.length > 0) {
-                        eligibleClaims.PAST_MONTHS = configList[0].CONFIG_VALUE;
-                    } else {
-                        eligibleClaims.PAST_MONTHS = "";
-                    }
-                }
+            if (response.length === 0) {
+                console.log("EligibilityCriteriaServiceImpl fetchClaimTypes end() - No results after deduplication");
+                return [];
             }
+
+            // Batch fetch configurations to avoid N+1 query problem
+            const claimTypeCodes = response.map(item => item.CLAIM_TYPE_C);
+            const configMap = await AppConfigRepo.fetchConfigsByKeysAndProcessCodes(userGroup, claimTypeCodes);
+
+            // Apply configurations to results
+            response.forEach(eligibleClaims => {
+                const config = configMap[eligibleClaims.CLAIM_TYPE_C];
+                eligibleClaims.PAST_MONTHS = config ? config.CONFIG_VALUE : "";
+            });
+
+            console.log("EligibilityCriteriaServiceImpl fetchClaimTypes end()");
+            return response;
+            
+        } catch (err) {
+            console.error("Error in fetchClaimTypes:", err);
+            throw new Error(`Failed to fetch claim types: ${err.message}`);
         }
-
-        console.log("EligibilityCriteriaServiceImpl fetchClaimTypes end()");
-        return response;
-    } catch (err) {
-        // If there is a global error, rethrow or return as per your CAP error handling
-        throw err;
-    }
+    });
 }
 
 module.exports = {

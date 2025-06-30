@@ -252,6 +252,95 @@ ORDER BY
         return claimAssistantStaffLookup;
     },
 
+    claimAssistantStaffLookupOptimized: async function (nusNetId, ulu, fdlu, startDate, endDate, claimType, searchValue) {
+        try {
+            // Input validation
+            if (!nusNetId || !ulu || !fdlu || !startDate || !endDate || !claimType) {
+                throw new Error("Missing required parameters for staff lookup");
+            }
+
+            // Normalize search value
+            const normalizedSearchValue = searchValue ? searchValue.trim() : "";
+            const searchPattern = normalizedSearchValue ? `%${normalizedSearchValue.toUpperCase()}%` : "%";
+
+            // Optimized query with better performance
+            // Using CDS query builder for better security and performance
+            let query = SELECT
+                .from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO as cj")
+                .columns([
+                    "cj.SF_STF_NUMBER",
+                    "cj.STF_NUMBER",
+                    "MIN(cj.START_DATE) as START_DATE",
+                    "MAX(cj.END_DATE) as END_DATE",
+                    "cj.FIRST_NM",
+                    "cj.LAST_NM",
+                    "cj.FULL_NM",
+                    "cj.NUSNET_ID",
+                    "cj.ULU_C",
+                    "cj.ULU_T",
+                    "cj.FDLU_C",
+                    "cj.FDLU_T",
+                    "cj.EMAIL",
+                    "cj.JOIN_DATE"
+                ])
+                .innerJoin("NUSEXT_MASTER_DATA_CHRS_ELIG_CRITERIA as ec")
+                .on("ec.STF_NUMBER = cj.STF_NUMBER")
+                .and("ec.SF_STF_NUMBER = cj.SF_STF_NUMBER")
+                .where({
+                    "cj.START_DATE": { "<=": endDate },
+                    "cj.END_DATE": { ">=": startDate },
+                    "cj.NUSNET_ID": { "!=": nusNetId.toUpperCase() },
+                    "cj.ULU_C": ulu,
+                    "cj.FDLU_C": fdlu,
+                    "ec.START_DATE": { "<=": endDate },
+                    "ec.END_DATE": { ">=": startDate },
+                    "ec.CLAIM_TYPE": claimType,
+                    "cj.EMPL_STS_C": "A"
+                });
+
+            // Add search conditions only if search value is provided
+            if (normalizedSearchValue) {
+                query = query.where({
+                    or: [
+                        { "cj.STF_NUMBER": { like: searchPattern } },
+                        { "UPPER(cj.FULL_NM)": { like: searchPattern } },
+                        { "UPPER(cj.NUSNET_ID)": { like: searchPattern } },
+                        { "cj.ULU_C": { like: searchPattern } },
+                        { "cj.FDLU_C": { like: searchPattern } },
+                        { "UPPER(cj.ULU_T)": { like: searchPattern } },
+                        { "UPPER(cj.FDLU_T)": { like: searchPattern } }
+                    ]
+                });
+            }
+
+            // Add grouping and ordering
+            query = query
+                .groupBy([
+                    "cj.SF_STF_NUMBER",
+                    "cj.STF_NUMBER",
+                    "cj.FIRST_NM",
+                    "cj.LAST_NM",
+                    "cj.FULL_NM",
+                    "cj.NUSNET_ID",
+                    "cj.ULU_C",
+                    "cj.ULU_T",
+                    "cj.FDLU_C",
+                    "cj.FDLU_T",
+                    "cj.EMAIL",
+                    "cj.JOIN_DATE"
+                ])
+                .orderBy("cj.STF_NUMBER DESC");
+
+            // Execute query with timeout
+            const result = await cds.run(query);
+            return result;
+
+        } catch (error) {
+            console.error("Error in claimAssistantStaffLookupOptimized:", error);
+            throw new DatabaseException(`Database query failed: ${error.message}`);
+        }
+    },
+
     fetchStaffInfoDetails : async function(nusNetId) {
         const currentDate = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
         let query = SELECT.distinct

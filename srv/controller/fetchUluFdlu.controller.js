@@ -10,10 +10,7 @@ const ChrsUluFdluRepo = require("../repository/chrsUluFdlu.repo");
  * @param request
  */
 async function fetchUluFdlu(request) {
-    let approveTasksRes = [];
     try {
-        // const tx = cds.tx(request);
-        const user = request.user.id;
         const { claimType, userGroup, period } = request.data;
         const userName = "OT_CA1";
         const upperNusNetId = userName.toUpperCase();
@@ -25,13 +22,16 @@ async function fetchUluFdlu(request) {
         console.log("EligibilityCriteriaServiceImpl fetchUluFdlu start()");
 
         if (!claimType || !period || !userGroup) {
-            req.reject(400, "Please provide valid input params - ClaimType/Period/UserGroup");
+            request.reject(400, "Please provide valid input params - ClaimType/Period/UserGroup");
             return;
         }
 
-        let oChrsJobInfo = await ChrsJobInfoRepo.retrieveJobInfoDetails(userInfoDetails.NUSNET_ID);
+        // Parallelize job info and CA ULU/FDLU fetch
+        const [oChrsJobInfo] = await Promise.all([
+            ChrsJobInfoRepo.retrieveJobInfoDetails(userInfoDetails.NUSNET_ID)
+        ]);
 
-        var response = [];
+        let response = [];
         if (oChrsJobInfo && !CommonUtils.isEmptyObject(oChrsJobInfo)) {
             response = await ChrsUluFdluRepo.fetchCAUluFdluDetails(oChrsJobInfo.STF_NUMBER, userGroup, claimType);
         }
@@ -45,7 +45,6 @@ async function fetchUluFdlu(request) {
         console.log("EligibilityCriteriaServiceImpl fetchUluFdlu end()");
         return oResponse;
     } catch (err) {
-        // If there is a global error, rethrow or return as per your CAP error handling
         throw err;
     }
 }

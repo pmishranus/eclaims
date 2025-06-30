@@ -5,7 +5,15 @@ using {
   PRJ_ECLAIM_REQUEST_VIEW
 } from '../db/redefinemodel';
 
-
+/**
+ * @title Eclaims Service API
+ * @description Comprehensive API for Eclaims management system. This service provides endpoints for staff lookup, claim management, and administrative functions.
+ * @version 1.0.0
+ * @contact.name Eclaims Development Team
+ * @contact.email eclaims-support@nus.edu.sg
+ * @license.name Internal Use Only
+ * @license.url https://nus.edu.sg
+ */
 service EclaimsService @(path: '/eclaims') {
 
   @open
@@ -13,23 +21,92 @@ service EclaimsService @(path: '/eclaims') {
 
 
   /********************************************************************* Functions ***************************************************************************************************/
+  
+  /**
+   * @description Dummy function for testing purposes
+   * @returns Empty object
+   */
   function dummy()                                                                                               returns {};
+
+  /**
+   * @description Retrieves claim types based on staff ID and user group
+   * @param staffId Staff identifier
+   * @param userGroup User group for authorization
+   * @returns Array of claim type objects
+   */
   function fetchClaimTypes(staffId : String, userGroup : String)                                                 returns array of {};
+
+  /**
+   * @description Retrieves ULU and FDLU information for a given claim type, user group, and period
+   * @param claimType Type of claim
+   * @param userGroup User group for authorization
+   * @param period Time period for the data
+   * @returns ULU and FDLU information object
+   */
   function fetchUluFdlu(claimType : String, userGroup : String, period : String)                                 returns {};
+
+  /**
+   * @description Enhanced CA Staff Lookup function with improved performance and error handling
+   * @param ulu Unit Level Unit code
+   * @param fdlu Faculty Department Level Unit code
+   * @param claimType Type of claim
+   * @param period Time period in MM-YYYY format (optional, defaults to current date)
+   * @param searchValue Search term for filtering staff (optional)
+   * @returns Array of staff lookup results
+   */
   function caStaffLookup(ulu : String, fdlu : String, claimType : String, period : String, searchValue : String) returns array of {};
 
+  /**
+   * @description Retrieves draft eclaim data for a specific claim type, ULU, FDLU, period, and staff ID
+   * @param claimType Type of claim
+   * @param ulu Unit Level Unit code
+   * @param fdlu Faculty Department Level Unit code
+   * @param period Time period
+   * @param staffId Staff identifier
+   * @returns Draft eclaim data object
+   */
   function draftEclaimData(claimType : String,
                            ulu : String,
                            fdlu : String,
                            period : String,
                            staffId : String)                                                                     returns {};
 
+  /**
+   * @description Retrieves claimant staff information for a given username
+   * @param username Username to lookup
+   * @returns Claimant staff information object
+   */
   function claimantStaffInfo(username : String)                                                                  returns {};
+
+  /**
+   * @description Retrieves WBS (Work Breakdown Structure) information for a staff ID and claim date
+   * @param staffId Staff identifier
+   * @param claimDate Date of the claim
+   * @returns WBS information object
+   */
   function fetchWBS(staffId : String, claimDate : String)                                                        returns {};
+
   /********************************************************************* Actions ***************************************************************************************************/
 
+  /**
+   * @description Retrieves eclaims overview dashboard data
+   * @param data Dashboard configuration data
+   * @returns Dashboard data as string
+   */
   action   eclaimsOverviewDashboard(data : object)                                                               returns String;
+
+  /**
+   * @description Retrieves rate types information
+   * @param data Rate type configuration data
+   * @returns Rate types object
+   */
   action   rateTypes(data : object)                                                                              returns object;
+
+  /**
+   * @description Validates eclaims data
+   * @param data Eclaims data to validate
+   * @returns Validation results object
+   */
   action   validateEclaims(data : object)                                                                        returns object;
 
 
@@ -41,6 +118,9 @@ service EclaimsService @(path: '/eclaims') {
   entity PRJ_ECLAIMS_ITEMS_DATA     as projection on db.ECLAIMS.ITEMS_DATA;
   entity PRJ_UTILITY_STATUS_CONFIG  as projection on db.UTILITY.STATUS_CONFIG;
 
+  /**
+   * @description Eclaim request views with associated master data
+   */
   @readonly
   entity eclaimRequestViews         as
     projection on PRJ_ECLAIM_REQUEST_VIEW {

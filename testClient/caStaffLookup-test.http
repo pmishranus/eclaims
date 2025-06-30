@@ -1,0 +1,162 @@
+### CA Staff Lookup - Performance and Error Handling Tests
+
+### 1. Basic Valid Request
+POST {{baseUrl}}/eclaims/caStaffLookup
+Content-Type: application/json
+
+{
+  "claimType": "OT",
+  "ulu": "ULU001",
+  "fdlu": "FDLU001",
+  "period": "12-2024",
+  "searchValue": "john"
+}
+
+### 2. Request without Period (uses current date)
+POST {{baseUrl}}/eclaims/caStaffLookup
+Content-Type: application/json
+
+{
+  "claimType": "OT",
+  "ulu": "ULU001",
+  "fdlu": "FDLU001",
+  "searchValue": "smith"
+}
+
+### 3. Request without Search Value
+POST {{baseUrl}}/eclaims/caStaffLookup
+Content-Type: application/json
+
+{
+  "claimType": "OT",
+  "ulu": "ULU001",
+  "fdlu": "FDLU001",
+  "period": "11-2024"
+}
+
+### 4. Error Test - Missing Required Parameters
+POST {{baseUrl}}/eclaims/caStaffLookup
+Content-Type: application/json
+
+{
+  "claimType": "OT",
+  "ulu": "ULU001"
+  // Missing fdlu and period
+}
+
+### 5. Error Test - Invalid Period Format
+POST {{baseUrl}}/eclaims/caStaffLookup
+Content-Type: application/json
+
+{
+  "claimType": "OT",
+  "ulu": "ULU001",
+  "fdlu": "FDLU001",
+  "period": "2024-12"  // Wrong format
+}
+
+### 6. Error Test - Invalid Claim Type
+POST {{baseUrl}}/eclaims/caStaffLookup
+Content-Type: application/json
+
+{
+  "claimType": "",  // Empty string
+  "ulu": "ULU001",
+  "fdlu": "FDLU001",
+  "period": "12-2024"
+}
+
+### 7. Performance Test - Large Search
+POST {{baseUrl}}/eclaims/caStaffLookup
+Content-Type: application/json
+
+{
+  "claimType": "OT",
+  "ulu": "ULU001",
+  "fdlu": "FDLU001",
+  "period": "12-2024",
+  "searchValue": "a"  // Single character search
+}
+
+### 8. Cache Test - Same Request Multiple Times
+POST {{baseUrl}}/eclaims/caStaffLookup
+Content-Type: application/json
+
+{
+  "claimType": "OT",
+  "ulu": "ULU001",
+  "fdlu": "FDLU001",
+  "period": "12-2024",
+  "searchValue": "test"
+}
+
+### 9. Edge Case - Very Long Search Value
+POST {{baseUrl}}/eclaims/caStaffLookup
+Content-Type: application/json
+
+{
+  "claimType": "OT",
+  "ulu": "ULU001",
+  "fdlu": "FDLU001",
+  "period": "12-2024",
+  "searchValue": "verylongsearchvaluethatshouldbetruncatedorhandledappropriately"
+}
+
+### 10. Edge Case - Special Characters in Search
+POST {{baseUrl}}/eclaims/caStaffLookup
+Content-Type: application/json
+
+{
+  "claimType": "OT",
+  "ulu": "ULU001",
+  "fdlu": "FDLU001",
+  "period": "12-2024",
+  "searchValue": "O'Connor-Smith"
+}
+
+### Expected Results:
+
+### Performance Improvements:
+- Response time should be significantly faster (40-60% improvement)
+- Cache hits should be visible in logs for repeated requests
+- Performance metrics should be logged
+
+### Error Handling:
+- Invalid requests should return proper HTTP status codes (400 for validation errors)
+- Error messages should be descriptive and helpful
+- Database errors should return 500 status code
+- All errors should be logged with details
+
+### Response Format:
+```json
+{
+  "value": [
+    {
+      "SF_STF_NUMBER": "123456",
+      "STF_NUMBER": "123456",
+      "START_DATE": "2024-01-01",
+      "END_DATE": "2024-12-31",
+      "FIRST_NM": "John",
+      "LAST_NM": "Doe",
+      "FULL_NM": "John Doe",
+      "NUSNET_ID": "john.doe",
+      "ULU_C": "ULU001",
+      "ULU_T": "Unit Level Unit",
+      "FDLU_C": "FDLU001",
+      "FDLU_T": "Faculty Department Level Unit",
+      "EMAIL": "john.doe@nus.edu.sg",
+      "JOIN_DATE": "2020-01-01"
+    }
+  ]
+}
+```
+
+### Error Response Format:
+```json
+{
+  "error": {
+    "code": "400",
+    "message": "Missing required parameters: claimType, ulu, and fdlu are mandatory"
+  }
+}
+``` 
