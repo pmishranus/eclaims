@@ -1,4 +1,5 @@
 const cds = require("@sap/cds");
+const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
 const { ApplicationConstants } = require("../util/constant");
 
 /**
@@ -140,8 +141,9 @@ async function checkForExistingReq(staffNusNetId, claimStartDate, claimEndDate, 
  * @param draftId
  */
 async function fetchItemCount(draftId) {
-    let query = ` SELECT * FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = '${draftId}'`;
-    let fetchItemCount = await cds.run(query);
+    const query = `SELECT * FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = ?`;
+    const values = [draftId];
+    let fetchItemCount = await cds.run(query, values);
     return fetchItemCount;
 }
 
@@ -150,8 +152,9 @@ async function fetchItemCount(draftId) {
  * @param draftId
  */
 async function fetchByDraftId(draftId) {
-    let query = ` SELECT * FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = '${draftId}'`;
-    let fetchByDraftId = await cds.run(query);
+    const query = `SELECT * FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = ?`;
+    const values = [draftId];
+    let fetchByDraftId = await cds.run(query, values);
     return fetchByDraftId;
 }
 
@@ -160,8 +163,9 @@ async function fetchByDraftId(draftId) {
  * @param draftId
  */
 async function fetchItemIds(draftId) {
-    let query = ` SELECT ITEM_ID FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = '${draftId}'`;
-    let fetchItemIds = await cds.run(query);
+    const query = `SELECT ITEM_ID FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = ?`;
+    const values = [draftId];
+    let fetchItemIds = await cds.run(query, values);
     return fetchItemIds;
 }
 
@@ -173,8 +177,8 @@ async function fetchItemIds(draftId) {
  * @param date
  */
 async function softDeleteByItemId(tx, itemIds, nusNetId, date) {
-    const query = ` UPDATE NUSEXT_ECLAIMS_ITEMS_DATA set IS_DELETED = 'Y', UPDATED_BY = ?, UPDATED_ON = ? where ITEM_ID in ('${itemIds})`;
-    const values = [nusNetId, date];
+    const query = `UPDATE NUSEXT_ECLAIMS_ITEMS_DATA SET IS_DELETED = 'Y', UPDATED_BY = ?, UPDATED_ON = ? WHERE ITEM_ID IN (?)`;
+    const values = [nusNetId, date, itemIds];
     const result = await tx.run(query, values);
 
     // result will be an object; affected rows may be in result.affectedRows or result.length
@@ -189,16 +193,14 @@ async function softDeleteByItemId(tx, itemIds, nusNetId, date) {
  * @param date
  */
 async function softDeleteByDraftId(tx, draftId, nusNetId, date) {
-    const placeholders = itemIds.map(() => "?").join(", ");
     const query = `
-      UPDATE NUSEXT_ECLAIMS_ITEMS_DATA
-      SET IS_DELETED='Y', UPDATED_BY=?, UPDATED_ON=?
-      WHERE ITEM_ID IN (SELECT ITEM_ID FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = '${draftId}' AND IS_DELETED = 'N')
+        UPDATE NUSEXT_ECLAIMS_ITEMS_DATA
+        SET IS_DELETED = 'Y', UPDATED_BY = ?, UPDATED_ON = ?
+        WHERE ITEM_ID IN (SELECT ITEM_ID FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = ? AND IS_DELETED = 'N')
     `;
-    const values = [nusNetId, date];
+    const values = [nusNetId, date, draftId];
     const result = await tx.run(query, values);
 
-    // result will be an object; affected rows may be in result.affectedRows or result.length
     return result;
 }
 

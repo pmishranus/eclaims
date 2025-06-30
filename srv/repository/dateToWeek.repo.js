@@ -7,11 +7,13 @@ const ApplicationConstants = require("../util/constant");
  * @param claimStartDate
  */
 async function fetchWeekOfTheDay(claimStartDate) {
-    let query = ` select dtw.WEEK from NUSEXT_UTILITY_DATE_TO_WEEK dtw where ('${claimStartDate}' BETWEEN dtw.START_DATE and dtw.END_DATE)`;
-    let fetchWeekOfTheDay = await cds.run(query);
-    return fetchWeekOfTheDay;
+    // Using parameterized query to prevent SQL injection
+    const query = `SELECT dtw.WEEK FROM DateToWeek dtw WHERE (?) BETWEEN dtw.START_DATE AND dtw.END_DATE`;
+    const values = [claimStartDate];
+    let fetchWeek = await cds.run(query, values);
+    return fetchWeek;
 }
 
 module.exports = {
-    fetchWeekOfTheDay,
+    fetchWeekOfTheDay
 };

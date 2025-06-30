@@ -4,45 +4,68 @@ const { SELECT, UPSERT } = require("@sap/cds/lib/ql/cds-ql");
 module.exports = {
     fetchSequenceNumber: function (pattern, counter) {
         let fetchSequenceNumber = cds.run(
-            `CALL SEQ_NUMBER_GENERATION(PATTERN => '${pattern}',COUNTER => ${counter},RUNNINGNORESULT => ?)`
+            `CALL SEQ_NUMBER_GENERATION(PATTERN => ?, COUNTER => ?, RUNNINGNORESULT => ?)`,
+            [pattern, counter]
         );
         return fetchSequenceNumber;
     },
     fetchLoggedInUser: function (upperNusNetId) {
-        const stfInfoQueryParameter = ` ( NUSNET_ID = '${upperNusNetId}' OR STF_NUMBER = '${upperNusNetId}')`;
         let fetchStaffInfo = cds.run(
-            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").where(stfInfoQueryParameter).orderBy("END_DATE desc")
+            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").where({
+                or: [
+                    { NUSNET_ID: upperNusNetId },
+                    { STF_NUMBER: upperNusNetId }
+                ]
+            }).orderBy("END_DATE desc")
         );
         return fetchStaffInfo;
     },
     fetchUserInfo: async function (upperNusNetId) {
-        const stfInfoQueryParameter = ` ( NUSNET_ID = '${upperNusNetId}' OR STF_NUMBER = '${upperNusNetId}')`;
         let fetchStaffInfo = await cds.run(
-            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").where(stfInfoQueryParameter).orderBy("END_DATE desc")
+            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").where({
+                or: [
+                    { NUSNET_ID: upperNusNetId },
+                    { STF_NUMBER: upperNusNetId }
+                ]
+            }).orderBy("END_DATE desc")
         );
         return fetchStaffInfo;
     },
 
     fetchDistinctULU: async function (uluCode) {
-        const queryParameter = ` u.ULU_C = '${uluCode}`;
         let fetchDistinctULU = await cds.run(
-            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_FDLU_ULU AS u").where(queryParameter)
+            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_FDLU_ULU AS u").where({
+                "u.ULU_C": uluCode
+            })
         );
         return fetchDistinctULU;
     },
     fetchDistinctFDLU: function (fdluCode) {
-        const queryParameter = ` u.FDLU_C = '${fdluCode}`;
-        let fetchDistinctULU = cds.run(SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_FDLU_ULU AS u").where(queryParameter));
+        let fetchDistinctULU = cds.run(
+            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_FDLU_ULU AS u").where({
+                "u.FDLU_C": fdluCode
+            })
+        );
         return fetchDistinctULU;
     },
     fetchUluFdlu: function (uluCode, fdluCode) {
-        const queryParameter = ` u.ULU_C = '${uluCode} and u.FDLU_C = '${fdluCode}`;
-        let fetchUluFdlu = cds.run(SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_FDLU_ULU AS u").where(queryParameter));
+        let fetchUluFdlu = cds.run(
+            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_FDLU_ULU AS u").where({
+                "u.ULU_C": uluCode,
+                "u.FDLU_C": fdluCode
+            })
+        );
         return fetchUluFdlu;
     },
 
     checkForMatrixAdmin: function (staffId) {
-        const queryParameter = ` eam.STAFF_ID = '${staffId}' and eam.VALID_FROM <= CURRENT_DATE and eam.VALID_TO >= CURRENT_DATE and eam.IS_DELETED='N' and eam.STAFF_USER_GRP = 'MATRIX_ADMIN'`;
+        const queryParameter = {
+            "eam.STAFF_ID": staffId,
+            "eam.VALID_FROM": { "<=" : "CURRENT_DATE" },
+            "eam.VALID_TO": { ">=" : "CURRENT_DATE" },
+            "eam.IS_DELETED": "N",
+            "eam.STAFF_USER_GRP": "MATRIX_ADMIN"
+        };
         let checkForMatrixAdmin = cds.run(
             SELECT.from(" NUSEXT_UTILITY_CHRS_APPROVER_MATRIX as eam ").where(queryParameter)
         );

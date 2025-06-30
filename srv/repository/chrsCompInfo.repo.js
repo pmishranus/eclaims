@@ -11,7 +11,8 @@ const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
  * @param processCode
  */
 async function fetchRateTypes(nusNetId, startDate, endDate, ulu, fdlu, processCode) {
-    let query = `SELECT 
+    // Using parameterized query to prevent SQL injection
+    const query = `SELECT 
 	cc.RATE_TYPE_C,
 	cc.RATE_TYPE_T,
 	rm.RATE_CODE,
@@ -42,27 +43,35 @@ FROM
 	ON ec.STF_NUMBER = cj.STF_NUMBER
 WHERE (cj.STF_NUMBER IN (SELECT cj1.STF_NUMBER
 		FROM "NUSEXT_MASTER_DATA_CHRS_JOB_INFO" AS cj1
-		WHERE (UPPER(cj1.NUSNET_ID) = UPPER('${nusNetId}')
-			OR cj1.STF_NUMBER = '${nusNetId}')))
-	AND cc.START_DATE <= '${endDate}'
-	AND cc.END_DATE >= '${startDate}'
+		WHERE (UPPER(cj1.NUSNET_ID) = UPPER(?)
+			OR cj1.STF_NUMBER = ?)))
+	AND cc.START_DATE <= ?
+	AND cc.END_DATE >= ?
 	AND cj.STF_NUMBER = cc.STF_NUMBER
 	AND cj.SF_STF_NUMBER = cc.SF_STF_NUMBER
-	AND cj.ULU_C = '${ulu}'
-	AND cj.FDLU_C = '${fdlu}'
-	AND cj.START_DATE <= '${endDate}'
-	AND cj.END_DATE >= '${startDate}'
+	AND cj.ULU_C = ?
+	AND cj.FDLU_C = ?
+	AND cj.START_DATE <= ?
+	AND cj.END_DATE >= ?
 	AND rm.WAGE_CODE = cc.RATE_TYPE_C
 	AND (( cc.RATE_TYPE_C <> 'A002' )
 		OR (cc.RATE_TYPE_C = 'A002'
 		AND rm.FREQUENCY = cc.FREQUENCY))
-	AND ec.START_DATE <= '${endDate}'
-	AND ec.END_DATE >= '${startDate}'
+	AND ec.START_DATE <= ?
+	AND ec.END_DATE >= ?
 	AND ec.STF_NUMBER = cj.STF_NUMBER
-	AND ec.CLAIM_TYPE = '${processCode}';
-`;
+	AND ec.CLAIM_TYPE = ?`;
 
-    let fetchRateTypes = await cds.run(query);
+    const values = [
+        nusNetId, nusNetId, // For both UPPER(cj1.NUSNET_ID) and cj1.STF_NUMBER
+        endDate, startDate, // For cc.START_DATE and cc.END_DATE
+        ulu, fdlu, // For cj.ULU_C and cj.FDLU_C
+        endDate, startDate, // For cj.START_DATE and cj.END_DATE
+        endDate, startDate, // For ec.START_DATE and ec.END_DATE
+        processCode // For ec.CLAIM_TYPE
+    ];
+
+    let fetchRateTypes = await cds.run(query, values);
     return fetchRateTypes;
 }
 

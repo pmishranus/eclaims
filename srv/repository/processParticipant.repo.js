@@ -6,20 +6,30 @@ const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
  * @param STF_NUMBER
  */
 async function fetchRole(STF_NUMBER) {
-    const queryParameter = ` STAFF_ID = '${STF_NUMBER}' AND USER_DESIGNATION <> 'VERIFIER' `;
     let fetchRole = await cds.run(
-        SELECT.distinct.from("NUSEXT_UTILITY_PROCESS_PARTICIPANTS").columns("USER_DESIGNATION").where(queryParameter)
+        SELECT.distinct
+            .from("NUSEXT_UTILITY_PROCESS_PARTICIPANTS")
+            .columns("USER_DESIGNATION")
+            .where({
+                STAFF_ID: STF_NUMBER,
+                USER_DESIGNATION: { "!=": "VERIFIER" }
+            })
     );
     return fetchRole;
 }
+
 /**
  *
  * @param draftId
  */
 async function fetchPPNTIdDtls(draftId) {
-    const queryParameter = ` REFERENCE_ID = '${draftId}'`;
     let fetchPPNTIdDtls = await cds.run(
-        SELECT.distinct.from("NUSEXT_UTILITY_PROCESS_PARTICIPANTS").columns("PPNT_ID").where(queryParameter)
+        SELECT.distinct
+            .from("NUSEXT_UTILITY_PROCESS_PARTICIPANTS")
+            .columns("PPNT_ID")
+            .where({
+                REFERENCE_ID: draftId
+            })
     );
     return fetchPPNTIdDtls;
 }
@@ -30,12 +40,37 @@ async function fetchPPNTIdDtls(draftId) {
  * @param ppntIds
  */
 async function softDeleteByPPNTId(tx, ppntIds) {
-    const query = ` update NUSEXT_UTILITY_PROCESS_PARTICIPANTS set IS_DELETED='Y' where PPNT_ID in ('${ppntIds}') `;
-    const softDeleteByPPNTId = tx.run(query);
+    const query = `UPDATE NUSEXT_UTILITY_PROCESS_PARTICIPANTS SET IS_DELETED = 'Y' WHERE PPNT_ID IN (?)`;
+    const values = [ppntIds];
+    const softDeleteByPPNTId = await tx.run(query, values);
     return softDeleteByPPNTId;
 }
+
 module.exports = {
     fetchRole,
     fetchPPNTIdDtls,
     softDeleteByPPNTId,
+    fetchProcessParticipant: async function (STF_NUMBER) {
+        let fetchProcessParticipant = await cds.run(
+            SELECT.from("NUSEXT_UTILITY_PROCESS_PARTICIPANTS").where({
+                STAFF_ID: STF_NUMBER,
+                USER_DESIGNATION: { "!=": "VERIFIER" }
+            })
+        );
+        return fetchProcessParticipant;
+    },
+    fetchProcessParticipantByDraftId: async function (draftId) {
+        let fetchProcessParticipantByDraftId = await cds.run(
+            SELECT.from("NUSEXT_UTILITY_PROCESS_PARTICIPANTS").where({
+                REFERENCE_ID: draftId
+            })
+        );
+        return fetchProcessParticipantByDraftId;
+    },
+    softDeleteProcessParticipant: async function (ppntIds) {
+        const query = `UPDATE NUSEXT_UTILITY_PROCESS_PARTICIPANTS SET IS_DELETED = 'Y' WHERE PPNT_ID IN (?)`;
+        const values = [ppntIds];
+        let softDeleteProcessParticipant = await cds.run(query, values);
+        return softDeleteProcessParticipant;
+    },
 };
