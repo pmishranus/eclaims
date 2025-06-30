@@ -23,14 +23,14 @@ async function fetchRateTypes(request) {
         }
 
         const inputRequest = request.data.data;
-        if (!inputRequest) {return req.error(400, "Request is Empty / Not valid.");}
+        if (!inputRequest) {return request.reject(400, "Request is Empty / Not valid.");}
         const staffId = inputRequest.STAFF_ID;
         const claimMonth = inputRequest.CLAIM_MONTH;
         const ulu = inputRequest.ULU;
         const fdlu = inputRequest.FDLU;
         const processCode = inputRequest.PROCESS_CODE;
-        if (!staffId || !claimMonth) {return req.error(400, "Invalid Staff id/Claim Month");}
-        if (!ulu || !fdlu) {return req.error(400, "Pls provide ULU/FDLU");}
+        if (!staffId || !claimMonth) {return request.reject(400, "Invalid Staff id/Claim Month");}
+        if (!ulu || !fdlu) {return request.reject(400, "Pls provide ULU/FDLU");}
 
         const oResponse = {
             message: "Rate Types fetched successfully",

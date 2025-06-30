@@ -24,28 +24,32 @@ service EclaimsService @(path: '/eclaims') {
                            period : String,
                            staffId : String)                                                                     returns {};
 
-  function claimantStaffInfo(username : String)                                                                  returns {};       
-  function fetchWBS(staffId : String, claimDate : String)                                                         returns {};
+  function claimantStaffInfo(username : String)                                                                  returns {};
+  function fetchWBS(staffId : String, claimDate : String)                                                        returns {};
   /********************************************************************* Actions ***************************************************************************************************/
 
   action   eclaimsOverviewDashboard(data : object)                                                               returns String;
   action   rateTypes(data : object)                                                                              returns object;
+  action   validateEclaims(data : object)                                                                        returns object;
 
 
   /******************************************************************** Calculation Views Exposed *********************************************************************************/
 
   // @readonly
   entity v_base_eclaim_request_view as projection on PRJ_BASE_ECLAIM_REQUEST_VIEW;
+  entity PRJ_MASTER_CLAIM_TYPE      as projection on db.MASTER_DATA.MASTER_CLAIM_TYPE;
+  entity PRJ_ECLAIMS_ITEMS_DATA     as projection on db.ECLAIMS.ITEMS_DATA;
+  entity PRJ_UTILITY_STATUS_CONFIG  as projection on db.UTILITY.STATUS_CONFIG;
 
   @readonly
-  entity v_eclaim_request_view      as
+  entity eclaimRequestViews         as
     projection on PRJ_ECLAIM_REQUEST_VIEW {
       *,
-      ![MasterClaimTypeDetails] : Association to many db.MASTER_DATA.MASTER_CLAIM_TYPE
+      ![MasterClaimTypeDetails] : Association to many PRJ_MASTER_CLAIM_TYPE
                                     on ![MasterClaimTypeDetails].CLAIM_TYPE_C = CLAIM_TYPE,
-      ![EclaimsItemDataDetails] : Association to many db.ECLAIMS.ITEMS_DATA
+      ![EclaimsItemDataDetails] : Association to many PRJ_ECLAIMS_ITEMS_DATA
                                     on ![EclaimsItemDataDetails].DRAFT_ID = DRAFT_ID,
-      ![StatusConfigDetails]    : Association to many db.UTILITY.STATUS_CONFIG
+      ![StatusConfigDetails]    : Association to many PRJ_UTILITY_STATUS_CONFIG
                                     on ![StatusConfigDetails].STATUS_CODE = REQUEST_STATUS
                                   }
 

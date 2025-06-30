@@ -120,7 +120,7 @@ module.exports = {
                     "<=": "CURRENT_DATE",
                 },
                 VALID_TO: {
-                    "<=": "CURRENT_DATE",
+                    ">=": "CURRENT_DATE",
                 },
                 IS_DELETED: "N",
             })

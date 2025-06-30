@@ -7,6 +7,8 @@ const rateTypesCtrl = require("./controller/rateTypes.controller");
 const caStaffCtrl = require("./controller/caStaffLookup.controller");
 const claimantStaffInfoCtrl = require("./controller/claimantStaffInfo.controller");
 const fetchWBSCtrl = require("./controller/fetchWBS.controller");
+const validateEclaimsCtrl = require("./controller/validateEclaims.controller");
+const fetchUluFdluCtrl = require("./controller/fetchUluFdlu.controller");
 
 class EclaimsService extends cds.ApplicationService {
     init() {
@@ -52,6 +54,10 @@ class EclaimsService extends cds.ApplicationService {
 
         this.on("fetchWBS", async request => {
             return await fetchWBSCtrl.fetchWBS(request);
+        })
+
+        this.on("validateEclaims", async request => {
+            return await validateEclaimsCtrl.fetchValidateEclaims(request);
         })
 
         this.on("claimantStaffInfo", async request => {

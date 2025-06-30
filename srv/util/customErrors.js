@@ -12,8 +12,17 @@ class DatabaseException extends Error {
         this.name = "DatabaseException";
     }
 }
+class HttpClientErrorException extends Error {
+    constructor(statusText, statusCode) {
+        super(statusText);
+        this.name = 'HttpClientErrorException';
+        this.statusText = statusText;
+        this.statusCode = statusCode;
+    }
+}
 
 module.exports = {
     ApplicationException,
     DatabaseException,
+    HttpClientErrorException
 };

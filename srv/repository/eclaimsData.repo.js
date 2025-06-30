@@ -110,9 +110,12 @@ async function fetchTbClaimStatusCount(staffId, statusCode) {
  *
  * @param draftId
  */
-async function fetchByDraftId(draftId) {
-    let query = ` SELECT * FROM NUSEXT_ECLAIMS_HEADER_DATA WHERE DRAFT_ID = '${draftId}'`;
-    let fetchByDraftId = await cds.run(query);
+async function fetchByDraftId(DRAFT_ID) {
+    let fetchByDraftId = await cds.run(SELECT.one
+        .from("NUSEXT_ECLAIMS_HEADER_DATA")
+        .where({
+            DRAFT_ID
+        }));
     return fetchByDraftId;
 }
 /**
@@ -133,7 +136,7 @@ async function fetchRequestId(draftId) {
  * @param claimType
  */
 async function fetchMonthlyClaims(month, year, staffId, claimType) {
-    let query = ` SELECT COUNT(REQUEST_ID) FROM NUSEXT_ECLAIMS_HEADER_DATA WHERE WHERE CLAIM_MONTH = '${month}' AND CLAIM_YEAR = '${year}' AND STAFF_ID = '${staffId}' AND CLAIM_TYPE = '${claimType}' AND REQUEST_STATUS NOT IN ('07','08','10','11','12','18','19','20','15','17','16'))`;
+    let query = ` SELECT COUNT(REQUEST_ID) FROM NUSEXT_ECLAIMS_HEADER_DATA WHERE  CLAIM_MONTH = '${month}' AND CLAIM_YEAR = '${year}' AND STAFF_ID = '${staffId}' AND CLAIM_TYPE = '${claimType}' AND REQUEST_STATUS NOT IN ('07','08','10','11','12','18','19','20','15','17','16')`;
     let fetchMonthlyClaims = await cds.run(query);
     return fetchMonthlyClaims;
 }
@@ -148,7 +151,7 @@ async function fetchMonthlyClaims(month, year, staffId, claimType) {
  * @param endDate
  */
 async function fetchMonthlyClaimsOnSubmittedOn(month, year, staffId, claimType, startDate, endDate) {
-    let query = ` SELECT COUNT(REQUEST_ID) FROM NUSEXT_ECLAIMS_HEADER_DATA WHERE WHERE CLAIM_MONTH = '${month}' AND CLAIM_YEAR = '${year}' AND TO_DATE(SUBMITTED_ON) >= '${startDate}' AND TO_DATE(SUBMITTED_ON) <= '${endDate}' AND STAFF_ID = '${staffId}' AND CLAIM_TYPE = '${claimType}' AND REQUEST_STATUS NOT IN ('07','08','10','11','12','18','19','20','15','17','16'))`;
+    let query = ` SELECT COUNT(REQUEST_ID) FROM NUSEXT_ECLAIMS_HEADER_DATA WHERE  CLAIM_MONTH = '${month}' AND CLAIM_YEAR = '${year}' AND TO_DATE(SUBMITTED_ON) >= '${startDate}' AND TO_DATE(SUBMITTED_ON) <= '${endDate}' AND STAFF_ID = '${staffId}' AND CLAIM_TYPE = '${claimType}' AND REQUEST_STATUS NOT IN ('07','08','10','11','12','18','19','20','15','17','16')`;
     let fetchMonthlyClaimsOnSubmittedOn = await cds.run(query);
     return fetchMonthlyClaimsOnSubmittedOn;
 }
@@ -172,12 +175,12 @@ async function fetchDraftStatusEclaimsData(ULU, FDLU, CLAIM_TYPE, CLAIM_MONTH, C
             CLAIM_TYPE,
             CLAIM_MONTH,
             CLAIM_YEAR,
-            REQUEST_STATUS : '01',
+            REQUEST_STATUS: '01',
             and: {
                 STAFF_ID: STAFF_ID.toUpperCase(),
                 or: { STAFF_NUSNET_ID: STAFF_ID.toUpperCase() }
             },
-            SUBMITTED_BY_NID : NUSNET_ID.toUpperCase()
+            SUBMITTED_BY_NID: NUSNET_ID.toUpperCase()
         });
     let fetchDraftStatusEclaimsData = await cds.run(query);
 
@@ -185,25 +188,25 @@ async function fetchDraftStatusEclaimsData(ULU, FDLU, CLAIM_TYPE, CLAIM_MONTH, C
 
 }
 
-async function fetchPastThreeMonthsWbs(stfNumber,requestClaimDate) {
-    
-        // Calculate the date 90 days ago from the claimDate
-        const pastThreeMonthsDate = new Date(requestClaimDate);
-        pastThreeMonthsDate.setDate(pastThreeMonthsDate.getDate() - 90);
-        const pastThreeMonthsDateFormat = DateUtils.formatDateAsString(pastThreeMonthsDate, ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT);
-        const results = await cds.run(
-            SELECT.from('NUSEXT_ECLAIMS_ITEMS_DATA as itmdata')
-                
-                .join('NUSEXT_ECLAIMS_HEADER_DATA as hdrdata').on('hdrdata.DRAFT_ID = itmdata.DRAFT_ID')
-                .where({
-                    'hdrdata.STAFF_ID': stfNumber,
-                    'hdrdata.SUBMITTED_ON': { '>=': pastThreeMonthsDateFormat },
-                    'hdrdata.REQUEST_STATUS': { '>=': ApplicationConstants.STATUS_ECLAIMS_APPROVED }
-                })
-                .columns('WBS', 'WBS_DESC')
-                .groupBy('WBS', 'WBS_DESC')
-        );
-        return results || [];
+async function fetchPastThreeMonthsWbs(stfNumber, requestClaimDate) {
+
+    // Calculate the date 90 days ago from the claimDate
+    const pastThreeMonthsDate = new Date(requestClaimDate);
+    pastThreeMonthsDate.setDate(pastThreeMonthsDate.getDate() - 90);
+    const pastThreeMonthsDateFormat = DateUtils.formatDateAsString(pastThreeMonthsDate, ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT);
+    const results = await cds.run(
+        SELECT.from('NUSEXT_ECLAIMS_ITEMS_DATA as itmdata')
+
+            .join('NUSEXT_ECLAIMS_HEADER_DATA as hdrdata').on('hdrdata.DRAFT_ID = itmdata.DRAFT_ID')
+            .where({
+                'hdrdata.STAFF_ID': stfNumber,
+                'hdrdata.SUBMITTED_ON': { '>=': pastThreeMonthsDateFormat },
+                'hdrdata.REQUEST_STATUS': { '>=': ApplicationConstants.STATUS_ECLAIMS_APPROVED }
+            })
+            .columns('WBS', 'WBS_DESC')
+            .groupBy('WBS', 'WBS_DESC')
+    );
+    return results || [];
 }
 
 

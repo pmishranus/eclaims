@@ -42,7 +42,7 @@ module.exports = {
     },
 
     checkForMatrixAdmin: function (staffId) {
-        queryParameter = ` eam.STAFF_ID = '${staffId}' and eam.VALID_FROM <= CURRENT_DATE and eam.VALID_TO >= CURRENT_DATE and eam.IS_DELETED='N' and eam.STAFF_USER_GRP = 'MATRIX_ADMIN'`;
+        const queryParameter = ` eam.STAFF_ID = '${staffId}' and eam.VALID_FROM <= CURRENT_DATE and eam.VALID_TO >= CURRENT_DATE and eam.IS_DELETED='N' and eam.STAFF_USER_GRP = 'MATRIX_ADMIN'`;
         let checkForMatrixAdmin = cds.run(
             SELECT.from(" NUSEXT_UTILITY_CHRS_APPROVER_MATRIX as eam ").where(queryParameter)
         );

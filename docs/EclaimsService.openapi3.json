@@ -1,0 +1,3142 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Use @title: '...' on your CDS service to provide a meaningful title.",
+    "description": "Use @Core.LongDescription: '...' on your CDS service to provide a meaningful description.",
+    "version": ""
+  },
+  "x-sap-api-type": "ODATAV4",
+  "x-odata-version": "4.01",
+  "x-sap-shortText": "Use @Core.Description: '...' on your CDS service to provide a meaningful short text.",
+  "servers": [
+    {
+      "url": "/eclaims"
+    }
+  ],
+  "tags": [
+    {
+      "name": "v_base_eclaim_request_view"
+    },
+    {
+      "name": "v_eclaim_request_view"
+    }
+  ],
+  "paths": {
+    "/$batch": {
+      "post": {
+        "summary": "Sends a group of requests",
+        "description": "Group multiple requests into a single request payload, see [Batch Requests](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_BatchRequests).\n\n*Please note that \"Try it out\" is not supported for this request.*",
+        "tags": [
+          "Batch Requests"
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Batch request",
+          "content": {
+            "multipart/mixed;boundary=request-separator": {
+              "schema": {
+                "type": "string"
+              },
+              "example": "--request-separator\nContent-Type: application/http\nContent-Transfer-Encoding: binary\n\nGET v_base_eclaim_request_view HTTP/1.1\nAccept: application/json\n\n\n--request-separator--"
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch response",
+            "content": {
+              "multipart/mixed": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "--response-separator\nContent-Type: application/http\n\nHTTP/1.1 200 OK\nContent-Type: application/json\n\n{...}\n--response-separator--"
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    },
+    "/caStaffLookup": {
+      "get": {
+        "summary": "Invokes function caStaffLookup",
+        "tags": [
+          "Service Operations"
+        ],
+        "parameters": [
+          {
+            "required": false,
+            "in": "query",
+            "name": "ulu",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          },
+          {
+            "required": false,
+            "in": "query",
+            "name": "fdlu",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          },
+          {
+            "required": false,
+            "in": "query",
+            "name": "claimType",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          },
+          {
+            "required": false,
+            "in": "query",
+            "name": "period",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          },
+          {
+            "required": false,
+            "in": "query",
+            "name": "searchValue",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Collection of return_EclaimsService_caStaffLookup",
+                  "properties": {
+                    "@count": {
+                      "$ref": "#/components/schemas/count"
+                    },
+                    "value": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/EclaimsService.return_EclaimsService_caStaffLookup"
+                          }
+                        ],
+                        "nullable": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    },
+    "/claimantStaffInfo": {
+      "get": {
+        "summary": "Invokes function claimantStaffInfo",
+        "tags": [
+          "Service Operations"
+        ],
+        "parameters": [
+          {
+            "required": false,
+            "in": "query",
+            "name": "username",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EclaimsService.return_EclaimsService_claimantStaffInfo"
+                    }
+                  ],
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    },
+    "/draftEclaimData": {
+      "get": {
+        "summary": "Invokes function draftEclaimData",
+        "tags": [
+          "Service Operations"
+        ],
+        "parameters": [
+          {
+            "required": false,
+            "in": "query",
+            "name": "claimType",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          },
+          {
+            "required": false,
+            "in": "query",
+            "name": "ulu",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          },
+          {
+            "required": false,
+            "in": "query",
+            "name": "fdlu",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          },
+          {
+            "required": false,
+            "in": "query",
+            "name": "period",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          },
+          {
+            "required": false,
+            "in": "query",
+            "name": "staffId",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EclaimsService.return_EclaimsService_draftEclaimData"
+                    }
+                  ],
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    },
+    "/dummy": {
+      "get": {
+        "summary": "Invokes function dummy",
+        "tags": [
+          "Service Operations"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EclaimsService.return_EclaimsService_dummy"
+                    }
+                  ],
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    },
+    "/eclaimsOverviewDashboard": {
+      "post": {
+        "summary": "Invokes action eclaimsOverviewDashboard",
+        "tags": [
+          "Service Operations"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        },
+        "requestBody": {
+          "description": "Action parameters",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/EclaimsService.object"
+                      }
+                    ],
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fetchClaimTypes": {
+      "get": {
+        "summary": "Invokes function fetchClaimTypes",
+        "tags": [
+          "Service Operations"
+        ],
+        "parameters": [
+          {
+            "required": false,
+            "in": "query",
+            "name": "staffId",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          },
+          {
+            "required": false,
+            "in": "query",
+            "name": "userGroup",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Collection of return_EclaimsService_fetchClaimTypes",
+                  "properties": {
+                    "@count": {
+                      "$ref": "#/components/schemas/count"
+                    },
+                    "value": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/EclaimsService.return_EclaimsService_fetchClaimTypes"
+                          }
+                        ],
+                        "nullable": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    },
+    "/fetchUluFdlu": {
+      "get": {
+        "summary": "Invokes function fetchUluFdlu",
+        "tags": [
+          "Service Operations"
+        ],
+        "parameters": [
+          {
+            "required": false,
+            "in": "query",
+            "name": "claimType",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          },
+          {
+            "required": false,
+            "in": "query",
+            "name": "userGroup",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          },
+          {
+            "required": false,
+            "in": "query",
+            "name": "period",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EclaimsService.return_EclaimsService_fetchUluFdlu"
+                    }
+                  ],
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    },
+    "/fetchWBS": {
+      "get": {
+        "summary": "Invokes function fetchWBS",
+        "tags": [
+          "Service Operations"
+        ],
+        "parameters": [
+          {
+            "required": false,
+            "in": "query",
+            "name": "staffId",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          },
+          {
+            "required": false,
+            "in": "query",
+            "name": "claimDate",
+            "description": "String value needs to be enclosed in single quotes",
+            "schema": {
+              "type": "string",
+              "nullable": true,
+              "pattern": "^(null|'([^']|'')*')$",
+              "default": "null"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EclaimsService.return_EclaimsService_fetchWBS"
+                    }
+                  ],
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    },
+    "/rateTypes": {
+      "post": {
+        "summary": "Invokes action rateTypes",
+        "tags": [
+          "Service Operations"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/EclaimsService.object"
+                    }
+                  ],
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        },
+        "requestBody": {
+          "description": "Action parameters",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/EclaimsService.object"
+                      }
+                    ],
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/singleRequest": {
+      "post": {
+        "summary": "Invokes action singleRequest",
+        "tags": [
+          "Service Operations"
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        },
+        "requestBody": {
+          "description": "Action parameters",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/EclaimsService.object"
+                      }
+                    ],
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v_base_eclaim_request_view": {
+      "get": {
+        "summary": "Retrieves a list of v_base_eclaim_request_view.",
+        "tags": [
+          "v_base_eclaim_request_view"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/top"
+          },
+          {
+            "$ref": "#/components/parameters/skip"
+          },
+          {
+            "$ref": "#/components/parameters/search"
+          },
+          {
+            "name": "$filter",
+            "description": "Filter items by property values, see [Filtering](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionfilter)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/count"
+          },
+          {
+            "name": "$orderby",
+            "description": "Order items by property values, see [Sorting](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionorderby)",
+            "in": "query",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "DRAFT_ID",
+                  "DRAFT_ID desc",
+                  "REQUEST_ID",
+                  "REQUEST_ID desc",
+                  "CLAIM_TYPE",
+                  "CLAIM_TYPE desc",
+                  "STAFF_ID",
+                  "STAFF_ID desc",
+                  "STAFF_NUSNET_ID",
+                  "STAFF_NUSNET_ID desc",
+                  "CONCURRENT_STAFF_ID",
+                  "CONCURRENT_STAFF_ID desc",
+                  "ULU",
+                  "ULU desc",
+                  "FDLU",
+                  "FDLU desc",
+                  "EMPLOYEE_GRP",
+                  "EMPLOYEE_GRP desc",
+                  "DATE_JOINED",
+                  "DATE_JOINED desc",
+                  "EMP_RATE_TYPE",
+                  "EMP_RATE_TYPE desc",
+                  "CLAIM_YEAR",
+                  "CLAIM_YEAR desc",
+                  "CLAIM_MONTH",
+                  "CLAIM_MONTH desc",
+                  "REQUEST_STATUS",
+                  "REQUEST_STATUS desc",
+                  "SUBMITTED_ON",
+                  "SUBMITTED_ON desc",
+                  "SUBMITTED_BY",
+                  "SUBMITTED_BY desc",
+                  "SUBMITTED_BY_NID",
+                  "SUBMITTED_BY_NID desc",
+                  "REQUESTOR_GRP",
+                  "REQUESTOR_GRP desc",
+                  "CREATED_ON",
+                  "CREATED_ON desc",
+                  "CLAIM_REQUEST_TYPE",
+                  "CLAIM_REQUEST_TYPE desc",
+                  "MODIFIED_BY_NID",
+                  "MODIFIED_BY_NID desc",
+                  "MODIFIED_ON",
+                  "MODIFIED_ON desc",
+                  "WORKING_HOURS",
+                  "WORKING_HOURS desc",
+                  "STF_CLAIM_TYPE_CAT",
+                  "STF_CLAIM_TYPE_CAT desc",
+                  "APPOINTMENT_TRACK",
+                  "APPOINTMENT_TRACK desc",
+                  "CLAIM_TYPE_T",
+                  "CLAIM_TYPE_T desc",
+                  "STATUS_CODE",
+                  "STATUS_CODE desc",
+                  "STATUS_TYPE",
+                  "STATUS_TYPE desc",
+                  "STATUS_ALIAS",
+                  "STATUS_ALIAS desc",
+                  "STATUS_COLOR_CODE",
+                  "STATUS_COLOR_CODE desc",
+                  "EMP_GP_C",
+                  "EMP_GP_C desc",
+                  "EMP_GP_T",
+                  "EMP_GP_T desc",
+                  "FDLU_C",
+                  "FDLU_C desc",
+                  "FULL_NM",
+                  "FULL_NM desc",
+                  "JOIN_DATE",
+                  "JOIN_DATE desc",
+                  "SF_STF_NUMBER",
+                  "SF_STF_NUMBER desc"
+                ]
+              }
+            }
+          },
+          {
+            "name": "$select",
+            "description": "Select properties to be returned, see [Select](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionselect)",
+            "in": "query",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "DRAFT_ID",
+                  "REQUEST_ID",
+                  "CLAIM_TYPE",
+                  "STAFF_ID",
+                  "STAFF_NUSNET_ID",
+                  "CONCURRENT_STAFF_ID",
+                  "ULU",
+                  "FDLU",
+                  "EMPLOYEE_GRP",
+                  "DATE_JOINED",
+                  "EMP_RATE_TYPE",
+                  "CLAIM_YEAR",
+                  "CLAIM_MONTH",
+                  "REQUEST_STATUS",
+                  "SUBMITTED_ON",
+                  "SUBMITTED_BY",
+                  "SUBMITTED_BY_NID",
+                  "REQUESTOR_GRP",
+                  "CREATED_ON",
+                  "CLAIM_REQUEST_TYPE",
+                  "MODIFIED_BY_NID",
+                  "MODIFIED_ON",
+                  "WORKING_HOURS",
+                  "STF_CLAIM_TYPE_CAT",
+                  "APPOINTMENT_TRACK",
+                  "CLAIM_TYPE_T",
+                  "STATUS_CODE",
+                  "STATUS_TYPE",
+                  "STATUS_ALIAS",
+                  "STATUS_COLOR_CODE",
+                  "EMP_GP_C",
+                  "EMP_GP_T",
+                  "FDLU_C",
+                  "FULL_NM",
+                  "JOIN_DATE",
+                  "SF_STF_NUMBER"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved v_base_eclaim_request_view",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Collection of v_base_eclaim_request_view",
+                  "properties": {
+                    "@count": {
+                      "$ref": "#/components/schemas/count"
+                    },
+                    "value": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EclaimsService.v_base_eclaim_request_view"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Creates a single v_base_eclaim_request_view.",
+        "tags": [
+          "v_base_eclaim_request_view"
+        ],
+        "requestBody": {
+          "description": "New v_base_eclaim_request_view",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EclaimsService.v_base_eclaim_request_view-create"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created v_base_eclaim_request_view",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EclaimsService.v_base_eclaim_request_view"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    },
+    "/v_base_eclaim_request_view(DRAFT_ID='{DRAFT_ID}',REQUEST_ID='{REQUEST_ID}',CLAIM_TYPE='{CLAIM_TYPE}',STAFF_ID='{STAFF_ID}',STAFF_NUSNET_ID='{STAFF_NUSNET_ID}',CONCURRENT_STAFF_ID='{CONCURRENT_STAFF_ID}',ULU='{ULU}',FDLU='{FDLU}',EMPLOYEE_GRP='{EMPLOYEE_GRP}',DATE_JOINED='{DATE_JOINED}',EMP_RATE_TYPE='{EMP_RATE_TYPE}',CLAIM_YEAR='{CLAIM_YEAR}',CLAIM_MONTH='{CLAIM_MONTH}',REQUEST_STATUS='{REQUEST_STATUS}',SUBMITTED_ON={SUBMITTED_ON},SUBMITTED_BY='{SUBMITTED_BY}',SUBMITTED_BY_NID='{SUBMITTED_BY_NID}',REQUESTOR_GRP='{REQUESTOR_GRP}',CREATED_ON={CREATED_ON},CLAIM_REQUEST_TYPE='{CLAIM_REQUEST_TYPE}',MODIFIED_BY_NID='{MODIFIED_BY_NID}',MODIFIED_ON={MODIFIED_ON},WORKING_HOURS='{WORKING_HOURS}',STF_CLAIM_TYPE_CAT='{STF_CLAIM_TYPE_CAT}',APPOINTMENT_TRACK='{APPOINTMENT_TRACK}',CLAIM_TYPE_T='{CLAIM_TYPE_T}',STATUS_CODE='{STATUS_CODE}',STATUS_TYPE='{STATUS_TYPE}',STATUS_ALIAS='{STATUS_ALIAS}',EMP_GP_C='{EMP_GP_C}',EMP_GP_T='{EMP_GP_T}',FDLU_C='{FDLU_C}',FULL_NM='{FULL_NM}',JOIN_DATE={JOIN_DATE},SF_STF_NUMBER='{SF_STF_NUMBER}')": {
+      "parameters": [
+        {
+          "description": "key: DRAFT_ID",
+          "in": "path",
+          "name": "DRAFT_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: REQUEST_ID",
+          "in": "path",
+          "name": "REQUEST_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: CLAIM_TYPE",
+          "in": "path",
+          "name": "CLAIM_TYPE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 6
+          }
+        },
+        {
+          "description": "key: STAFF_ID",
+          "in": "path",
+          "name": "STAFF_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: STAFF_NUSNET_ID",
+          "in": "path",
+          "name": "STAFF_NUSNET_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: CONCURRENT_STAFF_ID",
+          "in": "path",
+          "name": "CONCURRENT_STAFF_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: ULU",
+          "in": "path",
+          "name": "ULU",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: FDLU",
+          "in": "path",
+          "name": "FDLU",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: EMPLOYEE_GRP",
+          "in": "path",
+          "name": "EMPLOYEE_GRP",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: DATE_JOINED",
+          "in": "path",
+          "name": "DATE_JOINED",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 25
+          }
+        },
+        {
+          "description": "key: EMP_RATE_TYPE",
+          "in": "path",
+          "name": "EMP_RATE_TYPE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 10
+          }
+        },
+        {
+          "description": "key: CLAIM_YEAR",
+          "in": "path",
+          "name": "CLAIM_YEAR",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 4
+          }
+        },
+        {
+          "description": "key: CLAIM_MONTH",
+          "in": "path",
+          "name": "CLAIM_MONTH",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 2
+          }
+        },
+        {
+          "description": "key: REQUEST_STATUS",
+          "in": "path",
+          "name": "REQUEST_STATUS",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 2
+          }
+        },
+        {
+          "description": "key: SUBMITTED_ON",
+          "in": "path",
+          "name": "SUBMITTED_ON",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "example": "2017-04-13"
+          }
+        },
+        {
+          "description": "key: SUBMITTED_BY",
+          "in": "path",
+          "name": "SUBMITTED_BY",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: SUBMITTED_BY_NID",
+          "in": "path",
+          "name": "SUBMITTED_BY_NID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: REQUESTOR_GRP",
+          "in": "path",
+          "name": "REQUESTOR_GRP",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 50
+          }
+        },
+        {
+          "description": "key: CREATED_ON",
+          "in": "path",
+          "name": "CREATED_ON",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2017-04-13T15:51:04.0000000Z"
+          }
+        },
+        {
+          "description": "key: CLAIM_REQUEST_TYPE",
+          "in": "path",
+          "name": "CLAIM_REQUEST_TYPE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 10
+          }
+        },
+        {
+          "description": "key: MODIFIED_BY_NID",
+          "in": "path",
+          "name": "MODIFIED_BY_NID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: MODIFIED_ON",
+          "in": "path",
+          "name": "MODIFIED_ON",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2017-04-13T15:51:04.0000000Z"
+          }
+        },
+        {
+          "description": "key: WORKING_HOURS",
+          "in": "path",
+          "name": "WORKING_HOURS",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: STF_CLAIM_TYPE_CAT",
+          "in": "path",
+          "name": "STF_CLAIM_TYPE_CAT",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 10
+          }
+        },
+        {
+          "description": "key: APPOINTMENT_TRACK",
+          "in": "path",
+          "name": "APPOINTMENT_TRACK",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 10
+          }
+        },
+        {
+          "description": "key: CLAIM_TYPE_T",
+          "in": "path",
+          "name": "CLAIM_TYPE_T",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: STATUS_CODE",
+          "in": "path",
+          "name": "STATUS_CODE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 2
+          }
+        },
+        {
+          "description": "key: STATUS_TYPE",
+          "in": "path",
+          "name": "STATUS_TYPE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 10
+          }
+        },
+        {
+          "description": "key: STATUS_ALIAS",
+          "in": "path",
+          "name": "STATUS_ALIAS",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: EMP_GP_C",
+          "in": "path",
+          "name": "EMP_GP_C",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: EMP_GP_T",
+          "in": "path",
+          "name": "EMP_GP_T",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: FDLU_C",
+          "in": "path",
+          "name": "FDLU_C",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: FULL_NM",
+          "in": "path",
+          "name": "FULL_NM",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 256
+          }
+        },
+        {
+          "description": "key: JOIN_DATE",
+          "in": "path",
+          "name": "JOIN_DATE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "example": "2017-04-13"
+          }
+        },
+        {
+          "description": "key: SF_STF_NUMBER",
+          "in": "path",
+          "name": "SF_STF_NUMBER",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        }
+      ],
+      "get": {
+        "summary": "Retrieves a single v_base_eclaim_request_view.",
+        "tags": [
+          "v_base_eclaim_request_view"
+        ],
+        "parameters": [
+          {
+            "name": "$select",
+            "description": "Select properties to be returned, see [Select](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionselect)",
+            "in": "query",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "DRAFT_ID",
+                  "REQUEST_ID",
+                  "CLAIM_TYPE",
+                  "STAFF_ID",
+                  "STAFF_NUSNET_ID",
+                  "CONCURRENT_STAFF_ID",
+                  "ULU",
+                  "FDLU",
+                  "EMPLOYEE_GRP",
+                  "DATE_JOINED",
+                  "EMP_RATE_TYPE",
+                  "CLAIM_YEAR",
+                  "CLAIM_MONTH",
+                  "REQUEST_STATUS",
+                  "SUBMITTED_ON",
+                  "SUBMITTED_BY",
+                  "SUBMITTED_BY_NID",
+                  "REQUESTOR_GRP",
+                  "CREATED_ON",
+                  "CLAIM_REQUEST_TYPE",
+                  "MODIFIED_BY_NID",
+                  "MODIFIED_ON",
+                  "WORKING_HOURS",
+                  "STF_CLAIM_TYPE_CAT",
+                  "APPOINTMENT_TRACK",
+                  "CLAIM_TYPE_T",
+                  "STATUS_CODE",
+                  "STATUS_TYPE",
+                  "STATUS_ALIAS",
+                  "STATUS_COLOR_CODE",
+                  "EMP_GP_C",
+                  "EMP_GP_T",
+                  "FDLU_C",
+                  "FULL_NM",
+                  "JOIN_DATE",
+                  "SF_STF_NUMBER"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved v_base_eclaim_request_view",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EclaimsService.v_base_eclaim_request_view"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Changes a single v_base_eclaim_request_view.",
+        "tags": [
+          "v_base_eclaim_request_view"
+        ],
+        "requestBody": {
+          "description": "New property values",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EclaimsService.v_base_eclaim_request_view-update"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletes a single v_base_eclaim_request_view.",
+        "tags": [
+          "v_base_eclaim_request_view"
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    },
+    "/v_eclaim_request_view": {
+      "get": {
+        "summary": "Retrieves a list of v_eclaim_request_view.",
+        "tags": [
+          "v_eclaim_request_view"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/top"
+          },
+          {
+            "$ref": "#/components/parameters/skip"
+          },
+          {
+            "$ref": "#/components/parameters/search"
+          },
+          {
+            "name": "$filter",
+            "description": "Filter items by property values, see [Filtering](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionfilter)",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/count"
+          },
+          {
+            "name": "$orderby",
+            "description": "Order items by property values, see [Sorting](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionorderby)",
+            "in": "query",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "CLAIM_MONTH",
+                  "CLAIM_MONTH desc",
+                  "CLAIM_TYPE",
+                  "CLAIM_TYPE desc",
+                  "CLAIM_YEAR",
+                  "CLAIM_YEAR desc",
+                  "CONCURRENT_STAFF_ID",
+                  "CONCURRENT_STAFF_ID desc",
+                  "DATE_JOINED",
+                  "DATE_JOINED desc",
+                  "DRAFT_ID",
+                  "DRAFT_ID desc",
+                  "EMPLOYEE_GRP",
+                  "EMPLOYEE_GRP desc",
+                  "EMP_RATE_TYPE",
+                  "EMP_RATE_TYPE desc",
+                  "FDLU",
+                  "FDLU desc",
+                  "REQUESTOR_GRP",
+                  "REQUESTOR_GRP desc",
+                  "REQUEST_ID",
+                  "REQUEST_ID desc",
+                  "REQUEST_STATUS",
+                  "REQUEST_STATUS desc",
+                  "STAFF_ID",
+                  "STAFF_ID desc",
+                  "STAFF_NUSNET_ID",
+                  "STAFF_NUSNET_ID desc",
+                  "SUBMITTED_BY",
+                  "SUBMITTED_BY desc",
+                  "SUBMITTED_BY_NID",
+                  "SUBMITTED_BY_NID desc",
+                  "SUBMITTED_ON",
+                  "SUBMITTED_ON desc",
+                  "ULU",
+                  "ULU desc",
+                  "CLAIM_TYPE_T",
+                  "CLAIM_TYPE_T desc",
+                  "STATUS_ALIAS",
+                  "STATUS_ALIAS desc",
+                  "STATUS_CODE",
+                  "STATUS_CODE desc",
+                  "STATUS_COLOR_CODE",
+                  "STATUS_COLOR_CODE desc",
+                  "STATUS_TYPE",
+                  "STATUS_TYPE desc",
+                  "EMP_GP_C",
+                  "EMP_GP_C desc",
+                  "EMP_GP_T",
+                  "EMP_GP_T desc",
+                  "FDLU_C",
+                  "FDLU_C desc",
+                  "FULL_NM",
+                  "FULL_NM desc",
+                  "JOIN_DATE",
+                  "JOIN_DATE desc",
+                  "SF_STF_NUMBER",
+                  "SF_STF_NUMBER desc",
+                  "CREATED_ON",
+                  "CREATED_ON desc",
+                  "VERIFIER_NUSNET_ID",
+                  "VERIFIER_NUSNET_ID desc",
+                  "VERIFIER_STAFF_FULL_NAME",
+                  "VERIFIER_STAFF_FULL_NAME desc",
+                  "VERIFIER_STAFF_ID",
+                  "VERIFIER_STAFF_ID desc",
+                  "VERIFIER_USER_DESIGNATION",
+                  "VERIFIER_USER_DESIGNATION desc",
+                  "VERIFIER_REFERENCE_ID",
+                  "VERIFIER_REFERENCE_ID desc",
+                  "ADD_APP_1_NUSNET_ID",
+                  "ADD_APP_1_NUSNET_ID desc",
+                  "ADD_APP_1_REFERENCE_ID",
+                  "ADD_APP_1_REFERENCE_ID desc",
+                  "ADD_APP_1_STAFF_FULL_NAME",
+                  "ADD_APP_1_STAFF_FULL_NAME desc",
+                  "ADD_APP_1_STAFF_ID",
+                  "ADD_APP_1_STAFF_ID desc",
+                  "ADD_APP_1_USER_DESIGNATION",
+                  "ADD_APP_1_USER_DESIGNATION desc",
+                  "ADDITIONAL_APP_2_NUSNET_ID",
+                  "ADDITIONAL_APP_2_NUSNET_ID desc",
+                  "ADDITIONAL_APP_2_REFERENCE_ID",
+                  "ADDITIONAL_APP_2_REFERENCE_ID desc",
+                  "ADDITIONAL_APP_2_STAFF_FULL_NAME",
+                  "ADDITIONAL_APP_2_STAFF_FULL_NAME desc",
+                  "ADDITIONAL_APP_2_STAFF_ID",
+                  "ADDITIONAL_APP_2_STAFF_ID desc",
+                  "ADDITIONAL_APP_2_USER_DESIGNATION",
+                  "ADDITIONAL_APP_2_USER_DESIGNATION desc",
+                  "CLAIM_REQUEST_TYPE",
+                  "CLAIM_REQUEST_TYPE desc",
+                  "PROCESS_CODE",
+                  "PROCESS_CODE desc",
+                  "PROCESS_STATUS",
+                  "PROCESS_STATUS desc",
+                  "PROCESS_INST_ID",
+                  "PROCESS_INST_ID desc",
+                  "IS_LOCKED",
+                  "IS_LOCKED desc",
+                  "LOCKED_BY_USER_NID",
+                  "LOCKED_BY_USER_NID desc",
+                  "LOCKED_STAFF_USER_GRP",
+                  "LOCKED_STAFF_USER_GRP desc",
+                  "VERIFIER_PPNT_ID",
+                  "VERIFIER_PPNT_ID desc",
+                  "ADDITIONAL_APP_2_PPNT_ID",
+                  "ADDITIONAL_APP_2_PPNT_ID desc",
+                  "ADD_APP_1_PPNT_ID",
+                  "ADD_APP_1_PPNT_ID desc",
+                  "MODIFIED_ON",
+                  "MODIFIED_ON desc",
+                  "MODIFIED_BY_NID",
+                  "MODIFIED_BY_NID desc",
+                  "FDLU_T",
+                  "FDLU_T desc",
+                  "ULU_T",
+                  "ULU_T desc",
+                  "LOCKED_USER_FULL_NM",
+                  "LOCKED_USER_FULL_NM desc",
+                  "WORKING_HOURS",
+                  "WORKING_HOURS desc",
+                  "STF_CLAIM_TYPE_CAT",
+                  "STF_CLAIM_TYPE_CAT desc",
+                  "PROCESS_ACTUAL_DOC",
+                  "PROCESS_ACTUAL_DOC desc",
+                  "APPOINTMENT_TRACK",
+                  "APPOINTMENT_TRACK desc",
+                  "PROCESS_STATUS_ALIAS",
+                  "PROCESS_STATUS_ALIAS desc",
+                  "PROCESS_STATUS_COLOR_CODE",
+                  "PROCESS_STATUS_COLOR_CODE desc"
+                ]
+              }
+            }
+          },
+          {
+            "name": "$select",
+            "description": "Select properties to be returned, see [Select](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionselect)",
+            "in": "query",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "CLAIM_MONTH",
+                  "CLAIM_TYPE",
+                  "CLAIM_YEAR",
+                  "CONCURRENT_STAFF_ID",
+                  "DATE_JOINED",
+                  "DRAFT_ID",
+                  "EMPLOYEE_GRP",
+                  "EMP_RATE_TYPE",
+                  "FDLU",
+                  "REQUESTOR_GRP",
+                  "REQUEST_ID",
+                  "REQUEST_STATUS",
+                  "STAFF_ID",
+                  "STAFF_NUSNET_ID",
+                  "SUBMITTED_BY",
+                  "SUBMITTED_BY_NID",
+                  "SUBMITTED_ON",
+                  "ULU",
+                  "CLAIM_TYPE_T",
+                  "STATUS_ALIAS",
+                  "STATUS_CODE",
+                  "STATUS_COLOR_CODE",
+                  "STATUS_TYPE",
+                  "EMP_GP_C",
+                  "EMP_GP_T",
+                  "FDLU_C",
+                  "FULL_NM",
+                  "JOIN_DATE",
+                  "SF_STF_NUMBER",
+                  "CREATED_ON",
+                  "VERIFIER_NUSNET_ID",
+                  "VERIFIER_STAFF_FULL_NAME",
+                  "VERIFIER_STAFF_ID",
+                  "VERIFIER_USER_DESIGNATION",
+                  "VERIFIER_REFERENCE_ID",
+                  "ADD_APP_1_NUSNET_ID",
+                  "ADD_APP_1_REFERENCE_ID",
+                  "ADD_APP_1_STAFF_FULL_NAME",
+                  "ADD_APP_1_STAFF_ID",
+                  "ADD_APP_1_USER_DESIGNATION",
+                  "ADDITIONAL_APP_2_NUSNET_ID",
+                  "ADDITIONAL_APP_2_REFERENCE_ID",
+                  "ADDITIONAL_APP_2_STAFF_FULL_NAME",
+                  "ADDITIONAL_APP_2_STAFF_ID",
+                  "ADDITIONAL_APP_2_USER_DESIGNATION",
+                  "CLAIM_REQUEST_TYPE",
+                  "PROCESS_CODE",
+                  "PROCESS_STATUS",
+                  "PROCESS_INST_ID",
+                  "IS_LOCKED",
+                  "LOCKED_BY_USER_NID",
+                  "LOCKED_STAFF_USER_GRP",
+                  "VERIFIER_PPNT_ID",
+                  "ADDITIONAL_APP_2_PPNT_ID",
+                  "ADD_APP_1_PPNT_ID",
+                  "MODIFIED_ON",
+                  "MODIFIED_BY_NID",
+                  "FDLU_T",
+                  "ULU_T",
+                  "LOCKED_USER_FULL_NM",
+                  "WORKING_HOURS",
+                  "STF_CLAIM_TYPE_CAT",
+                  "PROCESS_ACTUAL_DOC",
+                  "APPOINTMENT_TRACK",
+                  "PROCESS_STATUS_ALIAS",
+                  "PROCESS_STATUS_COLOR_CODE"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved v_eclaim_request_view",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Collection of v_eclaim_request_view",
+                  "properties": {
+                    "@count": {
+                      "$ref": "#/components/schemas/count"
+                    },
+                    "value": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EclaimsService.v_eclaim_request_view"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    },
+    "/v_eclaim_request_view(CLAIM_MONTH='{CLAIM_MONTH}',CLAIM_TYPE='{CLAIM_TYPE}',CLAIM_YEAR='{CLAIM_YEAR}',CONCURRENT_STAFF_ID='{CONCURRENT_STAFF_ID}',DATE_JOINED='{DATE_JOINED}',DRAFT_ID='{DRAFT_ID}',EMPLOYEE_GRP='{EMPLOYEE_GRP}',EMP_RATE_TYPE='{EMP_RATE_TYPE}',FDLU='{FDLU}',REQUESTOR_GRP='{REQUESTOR_GRP}',REQUEST_ID='{REQUEST_ID}',REQUEST_STATUS='{REQUEST_STATUS}',STAFF_ID='{STAFF_ID}',STAFF_NUSNET_ID='{STAFF_NUSNET_ID}',SUBMITTED_BY='{SUBMITTED_BY}',SUBMITTED_BY_NID='{SUBMITTED_BY_NID}',ULU='{ULU}',CLAIM_TYPE_T='{CLAIM_TYPE_T}',STATUS_ALIAS='{STATUS_ALIAS}',STATUS_CODE='{STATUS_CODE}',STATUS_COLOR_CODE={STATUS_COLOR_CODE},STATUS_TYPE='{STATUS_TYPE}',EMP_GP_C='{EMP_GP_C}',EMP_GP_T='{EMP_GP_T}',FDLU_C='{FDLU_C}',FULL_NM='{FULL_NM}',JOIN_DATE={JOIN_DATE},SF_STF_NUMBER='{SF_STF_NUMBER}',CREATED_ON={CREATED_ON},VERIFIER_NUSNET_ID='{VERIFIER_NUSNET_ID}',VERIFIER_STAFF_FULL_NAME='{VERIFIER_STAFF_FULL_NAME}',VERIFIER_STAFF_ID='{VERIFIER_STAFF_ID}',VERIFIER_USER_DESIGNATION='{VERIFIER_USER_DESIGNATION}',VERIFIER_REFERENCE_ID='{VERIFIER_REFERENCE_ID}',ADD_APP_1_NUSNET_ID='{ADD_APP_1_NUSNET_ID}',ADD_APP_1_REFERENCE_ID='{ADD_APP_1_REFERENCE_ID}',ADD_APP_1_STAFF_FULL_NAME='{ADD_APP_1_STAFF_FULL_NAME}',ADD_APP_1_STAFF_ID='{ADD_APP_1_STAFF_ID}',ADD_APP_1_USER_DESIGNATION='{ADD_APP_1_USER_DESIGNATION}',ADDITIONAL_APP_2_NUSNET_ID='{ADDITIONAL_APP_2_NUSNET_ID}',ADDITIONAL_APP_2_REFERENCE_ID='{ADDITIONAL_APP_2_REFERENCE_ID}',ADDITIONAL_APP_2_STAFF_FULL_NAME='{ADDITIONAL_APP_2_STAFF_FULL_NAME}',ADDITIONAL_APP_2_STAFF_ID='{ADDITIONAL_APP_2_STAFF_ID}',ADDITIONAL_APP_2_USER_DESIGNATION='{ADDITIONAL_APP_2_USER_DESIGNATION}',CLAIM_REQUEST_TYPE='{CLAIM_REQUEST_TYPE}',PROCESS_CODE='{PROCESS_CODE}',PROCESS_STATUS='{PROCESS_STATUS}',PROCESS_INST_ID='{PROCESS_INST_ID}',IS_LOCKED='{IS_LOCKED}',LOCKED_BY_USER_NID='{LOCKED_BY_USER_NID}',LOCKED_STAFF_USER_GRP='{LOCKED_STAFF_USER_GRP}',VERIFIER_PPNT_ID='{VERIFIER_PPNT_ID}',ADDITIONAL_APP_2_PPNT_ID='{ADDITIONAL_APP_2_PPNT_ID}',ADD_APP_1_PPNT_ID='{ADD_APP_1_PPNT_ID}',MODIFIED_BY_NID='{MODIFIED_BY_NID}',FDLU_T='{FDLU_T}',ULU_T='{ULU_T}',LOCKED_USER_FULL_NM='{LOCKED_USER_FULL_NM}',WORKING_HOURS='{WORKING_HOURS}',STF_CLAIM_TYPE_CAT='{STF_CLAIM_TYPE_CAT}',APPOINTMENT_TRACK='{APPOINTMENT_TRACK}',PROCESS_STATUS_ALIAS='{PROCESS_STATUS_ALIAS}')": {
+      "parameters": [
+        {
+          "description": "key: CLAIM_MONTH",
+          "in": "path",
+          "name": "CLAIM_MONTH",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 2
+          }
+        },
+        {
+          "description": "key: CLAIM_TYPE",
+          "in": "path",
+          "name": "CLAIM_TYPE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 6
+          }
+        },
+        {
+          "description": "key: CLAIM_YEAR",
+          "in": "path",
+          "name": "CLAIM_YEAR",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 4
+          }
+        },
+        {
+          "description": "key: CONCURRENT_STAFF_ID",
+          "in": "path",
+          "name": "CONCURRENT_STAFF_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: DATE_JOINED",
+          "in": "path",
+          "name": "DATE_JOINED",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 25
+          }
+        },
+        {
+          "description": "key: DRAFT_ID",
+          "in": "path",
+          "name": "DRAFT_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: EMPLOYEE_GRP",
+          "in": "path",
+          "name": "EMPLOYEE_GRP",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: EMP_RATE_TYPE",
+          "in": "path",
+          "name": "EMP_RATE_TYPE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 10
+          }
+        },
+        {
+          "description": "key: FDLU",
+          "in": "path",
+          "name": "FDLU",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: REQUESTOR_GRP",
+          "in": "path",
+          "name": "REQUESTOR_GRP",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 50
+          }
+        },
+        {
+          "description": "key: REQUEST_ID",
+          "in": "path",
+          "name": "REQUEST_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: REQUEST_STATUS",
+          "in": "path",
+          "name": "REQUEST_STATUS",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 2
+          }
+        },
+        {
+          "description": "key: STAFF_ID",
+          "in": "path",
+          "name": "STAFF_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: STAFF_NUSNET_ID",
+          "in": "path",
+          "name": "STAFF_NUSNET_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: SUBMITTED_BY",
+          "in": "path",
+          "name": "SUBMITTED_BY",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: SUBMITTED_BY_NID",
+          "in": "path",
+          "name": "SUBMITTED_BY_NID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: ULU",
+          "in": "path",
+          "name": "ULU",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: CLAIM_TYPE_T",
+          "in": "path",
+          "name": "CLAIM_TYPE_T",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: STATUS_ALIAS",
+          "in": "path",
+          "name": "STATUS_ALIAS",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: STATUS_CODE",
+          "in": "path",
+          "name": "STATUS_CODE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 2
+          }
+        },
+        {
+          "description": "key: STATUS_COLOR_CODE",
+          "in": "path",
+          "name": "STATUS_COLOR_CODE",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        {
+          "description": "key: STATUS_TYPE",
+          "in": "path",
+          "name": "STATUS_TYPE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 10
+          }
+        },
+        {
+          "description": "key: EMP_GP_C",
+          "in": "path",
+          "name": "EMP_GP_C",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: EMP_GP_T",
+          "in": "path",
+          "name": "EMP_GP_T",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: FDLU_C",
+          "in": "path",
+          "name": "FDLU_C",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: FULL_NM",
+          "in": "path",
+          "name": "FULL_NM",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 256
+          }
+        },
+        {
+          "description": "key: JOIN_DATE",
+          "in": "path",
+          "name": "JOIN_DATE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "date",
+            "example": "2017-04-13"
+          }
+        },
+        {
+          "description": "key: SF_STF_NUMBER",
+          "in": "path",
+          "name": "SF_STF_NUMBER",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: CREATED_ON",
+          "in": "path",
+          "name": "CREATED_ON",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2017-04-13T15:51:04.0000000Z"
+          }
+        },
+        {
+          "description": "key: VERIFIER_NUSNET_ID",
+          "in": "path",
+          "name": "VERIFIER_NUSNET_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: VERIFIER_STAFF_FULL_NAME",
+          "in": "path",
+          "name": "VERIFIER_STAFF_FULL_NAME",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: VERIFIER_STAFF_ID",
+          "in": "path",
+          "name": "VERIFIER_STAFF_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: VERIFIER_USER_DESIGNATION",
+          "in": "path",
+          "name": "VERIFIER_USER_DESIGNATION",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: VERIFIER_REFERENCE_ID",
+          "in": "path",
+          "name": "VERIFIER_REFERENCE_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: ADD_APP_1_NUSNET_ID",
+          "in": "path",
+          "name": "ADD_APP_1_NUSNET_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: ADD_APP_1_REFERENCE_ID",
+          "in": "path",
+          "name": "ADD_APP_1_REFERENCE_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: ADD_APP_1_STAFF_FULL_NAME",
+          "in": "path",
+          "name": "ADD_APP_1_STAFF_FULL_NAME",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: ADD_APP_1_STAFF_ID",
+          "in": "path",
+          "name": "ADD_APP_1_STAFF_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: ADD_APP_1_USER_DESIGNATION",
+          "in": "path",
+          "name": "ADD_APP_1_USER_DESIGNATION",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: ADDITIONAL_APP_2_NUSNET_ID",
+          "in": "path",
+          "name": "ADDITIONAL_APP_2_NUSNET_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: ADDITIONAL_APP_2_REFERENCE_ID",
+          "in": "path",
+          "name": "ADDITIONAL_APP_2_REFERENCE_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: ADDITIONAL_APP_2_STAFF_FULL_NAME",
+          "in": "path",
+          "name": "ADDITIONAL_APP_2_STAFF_FULL_NAME",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: ADDITIONAL_APP_2_STAFF_ID",
+          "in": "path",
+          "name": "ADDITIONAL_APP_2_STAFF_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: ADDITIONAL_APP_2_USER_DESIGNATION",
+          "in": "path",
+          "name": "ADDITIONAL_APP_2_USER_DESIGNATION",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 20
+          }
+        },
+        {
+          "description": "key: CLAIM_REQUEST_TYPE",
+          "in": "path",
+          "name": "CLAIM_REQUEST_TYPE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 10
+          }
+        },
+        {
+          "description": "key: PROCESS_CODE",
+          "in": "path",
+          "name": "PROCESS_CODE",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 6
+          }
+        },
+        {
+          "description": "key: PROCESS_STATUS",
+          "in": "path",
+          "name": "PROCESS_STATUS",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 2
+          }
+        },
+        {
+          "description": "key: PROCESS_INST_ID",
+          "in": "path",
+          "name": "PROCESS_INST_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 12
+          }
+        },
+        {
+          "description": "key: IS_LOCKED",
+          "in": "path",
+          "name": "IS_LOCKED",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 2
+          }
+        },
+        {
+          "description": "key: LOCKED_BY_USER_NID",
+          "in": "path",
+          "name": "LOCKED_BY_USER_NID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: LOCKED_STAFF_USER_GRP",
+          "in": "path",
+          "name": "LOCKED_STAFF_USER_GRP",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 50
+          }
+        },
+        {
+          "description": "key: VERIFIER_PPNT_ID",
+          "in": "path",
+          "name": "VERIFIER_PPNT_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: ADDITIONAL_APP_2_PPNT_ID",
+          "in": "path",
+          "name": "ADDITIONAL_APP_2_PPNT_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: ADD_APP_1_PPNT_ID",
+          "in": "path",
+          "name": "ADD_APP_1_PPNT_ID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 15
+          }
+        },
+        {
+          "description": "key: MODIFIED_BY_NID",
+          "in": "path",
+          "name": "MODIFIED_BY_NID",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: FDLU_T",
+          "in": "path",
+          "name": "FDLU_T",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: ULU_T",
+          "in": "path",
+          "name": "ULU_T",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: LOCKED_USER_FULL_NM",
+          "in": "path",
+          "name": "LOCKED_USER_FULL_NM",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 256
+          }
+        },
+        {
+          "description": "key: WORKING_HOURS",
+          "in": "path",
+          "name": "WORKING_HOURS",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        {
+          "description": "key: STF_CLAIM_TYPE_CAT",
+          "in": "path",
+          "name": "STF_CLAIM_TYPE_CAT",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 10
+          }
+        },
+        {
+          "description": "key: APPOINTMENT_TRACK",
+          "in": "path",
+          "name": "APPOINTMENT_TRACK",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 10
+          }
+        },
+        {
+          "description": "key: PROCESS_STATUS_ALIAS",
+          "in": "path",
+          "name": "PROCESS_STATUS_ALIAS",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "maxLength": 100
+          }
+        }
+      ],
+      "get": {
+        "summary": "Retrieves a single v_eclaim_request_view.",
+        "tags": [
+          "v_eclaim_request_view"
+        ],
+        "parameters": [
+          {
+            "name": "$select",
+            "description": "Select properties to be returned, see [Select](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionselect)",
+            "in": "query",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "CLAIM_MONTH",
+                  "CLAIM_TYPE",
+                  "CLAIM_YEAR",
+                  "CONCURRENT_STAFF_ID",
+                  "DATE_JOINED",
+                  "DRAFT_ID",
+                  "EMPLOYEE_GRP",
+                  "EMP_RATE_TYPE",
+                  "FDLU",
+                  "REQUESTOR_GRP",
+                  "REQUEST_ID",
+                  "REQUEST_STATUS",
+                  "STAFF_ID",
+                  "STAFF_NUSNET_ID",
+                  "SUBMITTED_BY",
+                  "SUBMITTED_BY_NID",
+                  "SUBMITTED_ON",
+                  "ULU",
+                  "CLAIM_TYPE_T",
+                  "STATUS_ALIAS",
+                  "STATUS_CODE",
+                  "STATUS_COLOR_CODE",
+                  "STATUS_TYPE",
+                  "EMP_GP_C",
+                  "EMP_GP_T",
+                  "FDLU_C",
+                  "FULL_NM",
+                  "JOIN_DATE",
+                  "SF_STF_NUMBER",
+                  "CREATED_ON",
+                  "VERIFIER_NUSNET_ID",
+                  "VERIFIER_STAFF_FULL_NAME",
+                  "VERIFIER_STAFF_ID",
+                  "VERIFIER_USER_DESIGNATION",
+                  "VERIFIER_REFERENCE_ID",
+                  "ADD_APP_1_NUSNET_ID",
+                  "ADD_APP_1_REFERENCE_ID",
+                  "ADD_APP_1_STAFF_FULL_NAME",
+                  "ADD_APP_1_STAFF_ID",
+                  "ADD_APP_1_USER_DESIGNATION",
+                  "ADDITIONAL_APP_2_NUSNET_ID",
+                  "ADDITIONAL_APP_2_REFERENCE_ID",
+                  "ADDITIONAL_APP_2_STAFF_FULL_NAME",
+                  "ADDITIONAL_APP_2_STAFF_ID",
+                  "ADDITIONAL_APP_2_USER_DESIGNATION",
+                  "CLAIM_REQUEST_TYPE",
+                  "PROCESS_CODE",
+                  "PROCESS_STATUS",
+                  "PROCESS_INST_ID",
+                  "IS_LOCKED",
+                  "LOCKED_BY_USER_NID",
+                  "LOCKED_STAFF_USER_GRP",
+                  "VERIFIER_PPNT_ID",
+                  "ADDITIONAL_APP_2_PPNT_ID",
+                  "ADD_APP_1_PPNT_ID",
+                  "MODIFIED_ON",
+                  "MODIFIED_BY_NID",
+                  "FDLU_T",
+                  "ULU_T",
+                  "LOCKED_USER_FULL_NM",
+                  "WORKING_HOURS",
+                  "STF_CLAIM_TYPE_CAT",
+                  "PROCESS_ACTUAL_DOC",
+                  "APPOINTMENT_TRACK",
+                  "PROCESS_STATUS_ALIAS",
+                  "PROCESS_STATUS_COLOR_CODE"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved v_eclaim_request_view",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EclaimsService.v_eclaim_request_view"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EclaimsService.object": {
+        "title": "object",
+        "type": "object"
+      },
+      "EclaimsService.return_EclaimsService_caStaffLookup": {
+        "title": "return_EclaimsService_caStaffLookup",
+        "type": "object"
+      },
+      "EclaimsService.return_EclaimsService_claimantStaffInfo": {
+        "title": "return_EclaimsService_claimantStaffInfo",
+        "type": "object"
+      },
+      "EclaimsService.return_EclaimsService_draftEclaimData": {
+        "title": "return_EclaimsService_draftEclaimData",
+        "type": "object"
+      },
+      "EclaimsService.return_EclaimsService_dummy": {
+        "title": "return_EclaimsService_dummy",
+        "type": "object"
+      },
+      "EclaimsService.return_EclaimsService_fetchClaimTypes": {
+        "title": "return_EclaimsService_fetchClaimTypes",
+        "type": "object"
+      },
+      "EclaimsService.return_EclaimsService_fetchUluFdlu": {
+        "title": "return_EclaimsService_fetchUluFdlu",
+        "type": "object"
+      },
+      "EclaimsService.return_EclaimsService_fetchWBS": {
+        "title": "return_EclaimsService_fetchWBS",
+        "type": "object"
+      },
+      "EclaimsService.v_base_eclaim_request_view": {
+        "title": "v_base_eclaim_request_view",
+        "type": "object",
+        "properties": {
+          "DRAFT_ID": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "REQUEST_ID": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "CLAIM_TYPE": {
+            "type": "string",
+            "maxLength": 6
+          },
+          "STAFF_ID": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "STAFF_NUSNET_ID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "CONCURRENT_STAFF_ID": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "ULU": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "FDLU": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "EMPLOYEE_GRP": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "DATE_JOINED": {
+            "type": "string",
+            "maxLength": 25
+          },
+          "EMP_RATE_TYPE": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "CLAIM_YEAR": {
+            "type": "string",
+            "maxLength": 4
+          },
+          "CLAIM_MONTH": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "REQUEST_STATUS": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "SUBMITTED_ON": {
+            "type": "string",
+            "format": "date",
+            "example": "2017-04-13"
+          },
+          "SUBMITTED_BY": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "SUBMITTED_BY_NID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "REQUESTOR_GRP": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "CREATED_ON": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2017-04-13T15:51:04.0000000Z"
+          },
+          "CLAIM_REQUEST_TYPE": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "MODIFIED_BY_NID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "MODIFIED_ON": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2017-04-13T15:51:04.0000000Z"
+          },
+          "WORKING_HOURS": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "STF_CLAIM_TYPE_CAT": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "APPOINTMENT_TRACK": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "CLAIM_TYPE_T": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "STATUS_CODE": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "STATUS_TYPE": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "STATUS_ALIAS": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "STATUS_COLOR_CODE": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "EMP_GP_C": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "EMP_GP_T": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "FDLU_C": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "FULL_NM": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "JOIN_DATE": {
+            "type": "string",
+            "format": "date",
+            "example": "2017-04-13"
+          },
+          "SF_STF_NUMBER": {
+            "type": "string",
+            "maxLength": 100
+          }
+        }
+      },
+      "EclaimsService.v_base_eclaim_request_view-create": {
+        "title": "v_base_eclaim_request_view (for create)",
+        "type": "object",
+        "properties": {
+          "DRAFT_ID": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "REQUEST_ID": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "CLAIM_TYPE": {
+            "type": "string",
+            "maxLength": 6
+          },
+          "STAFF_ID": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "STAFF_NUSNET_ID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "CONCURRENT_STAFF_ID": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "ULU": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "FDLU": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "EMPLOYEE_GRP": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "DATE_JOINED": {
+            "type": "string",
+            "maxLength": 25
+          },
+          "EMP_RATE_TYPE": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "CLAIM_YEAR": {
+            "type": "string",
+            "maxLength": 4
+          },
+          "CLAIM_MONTH": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "REQUEST_STATUS": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "SUBMITTED_ON": {
+            "type": "string",
+            "format": "date",
+            "example": "2017-04-13"
+          },
+          "SUBMITTED_BY": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "SUBMITTED_BY_NID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "REQUESTOR_GRP": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "CREATED_ON": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2017-04-13T15:51:04.0000000Z"
+          },
+          "CLAIM_REQUEST_TYPE": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "MODIFIED_BY_NID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "MODIFIED_ON": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2017-04-13T15:51:04.0000000Z"
+          },
+          "WORKING_HOURS": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "STF_CLAIM_TYPE_CAT": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "APPOINTMENT_TRACK": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "CLAIM_TYPE_T": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "STATUS_CODE": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "STATUS_TYPE": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "STATUS_ALIAS": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "STATUS_COLOR_CODE": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "EMP_GP_C": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "EMP_GP_T": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "FDLU_C": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "FULL_NM": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "JOIN_DATE": {
+            "type": "string",
+            "format": "date",
+            "example": "2017-04-13"
+          },
+          "SF_STF_NUMBER": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "DRAFT_ID",
+          "REQUEST_ID",
+          "CLAIM_TYPE",
+          "STAFF_ID",
+          "STAFF_NUSNET_ID",
+          "CONCURRENT_STAFF_ID",
+          "ULU",
+          "FDLU",
+          "EMPLOYEE_GRP",
+          "DATE_JOINED",
+          "EMP_RATE_TYPE",
+          "CLAIM_YEAR",
+          "CLAIM_MONTH",
+          "REQUEST_STATUS",
+          "SUBMITTED_ON",
+          "SUBMITTED_BY",
+          "SUBMITTED_BY_NID",
+          "REQUESTOR_GRP",
+          "CREATED_ON",
+          "CLAIM_REQUEST_TYPE",
+          "MODIFIED_BY_NID",
+          "MODIFIED_ON",
+          "WORKING_HOURS",
+          "STF_CLAIM_TYPE_CAT",
+          "APPOINTMENT_TRACK",
+          "CLAIM_TYPE_T",
+          "STATUS_CODE",
+          "STATUS_TYPE",
+          "STATUS_ALIAS",
+          "EMP_GP_C",
+          "EMP_GP_T",
+          "FDLU_C",
+          "FULL_NM",
+          "JOIN_DATE",
+          "SF_STF_NUMBER"
+        ]
+      },
+      "EclaimsService.v_base_eclaim_request_view-update": {
+        "title": "v_base_eclaim_request_view (for update)",
+        "type": "object",
+        "properties": {
+          "STATUS_COLOR_CODE": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "EclaimsService.v_eclaim_request_view": {
+        "title": "v_eclaim_request_view",
+        "type": "object",
+        "properties": {
+          "CLAIM_MONTH": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "CLAIM_TYPE": {
+            "type": "string",
+            "maxLength": 6
+          },
+          "CLAIM_YEAR": {
+            "type": "string",
+            "maxLength": 4
+          },
+          "CONCURRENT_STAFF_ID": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "DATE_JOINED": {
+            "type": "string",
+            "maxLength": 25
+          },
+          "DRAFT_ID": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "EMPLOYEE_GRP": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "EMP_RATE_TYPE": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "FDLU": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "REQUESTOR_GRP": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "REQUEST_ID": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "REQUEST_STATUS": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "STAFF_ID": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "STAFF_NUSNET_ID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "SUBMITTED_BY": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "SUBMITTED_BY_NID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "SUBMITTED_ON": {
+            "type": "string",
+            "format": "date",
+            "example": "2017-04-13",
+            "nullable": true
+          },
+          "ULU": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "CLAIM_TYPE_T": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "STATUS_ALIAS": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "STATUS_CODE": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "STATUS_COLOR_CODE": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "STATUS_TYPE": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "EMP_GP_C": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "EMP_GP_T": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "FDLU_C": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "FULL_NM": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "JOIN_DATE": {
+            "type": "string",
+            "format": "date",
+            "example": "2017-04-13"
+          },
+          "SF_STF_NUMBER": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "CREATED_ON": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2017-04-13T15:51:04.0000000Z"
+          },
+          "VERIFIER_NUSNET_ID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "VERIFIER_STAFF_FULL_NAME": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "VERIFIER_STAFF_ID": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "VERIFIER_USER_DESIGNATION": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "VERIFIER_REFERENCE_ID": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "ADD_APP_1_NUSNET_ID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "ADD_APP_1_REFERENCE_ID": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "ADD_APP_1_STAFF_FULL_NAME": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "ADD_APP_1_STAFF_ID": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "ADD_APP_1_USER_DESIGNATION": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "ADDITIONAL_APP_2_NUSNET_ID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "ADDITIONAL_APP_2_REFERENCE_ID": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "ADDITIONAL_APP_2_STAFF_FULL_NAME": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "ADDITIONAL_APP_2_STAFF_ID": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "ADDITIONAL_APP_2_USER_DESIGNATION": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "CLAIM_REQUEST_TYPE": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "PROCESS_CODE": {
+            "type": "string",
+            "maxLength": 6
+          },
+          "PROCESS_STATUS": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "PROCESS_INST_ID": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "IS_LOCKED": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "LOCKED_BY_USER_NID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "LOCKED_STAFF_USER_GRP": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "VERIFIER_PPNT_ID": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "ADDITIONAL_APP_2_PPNT_ID": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "ADD_APP_1_PPNT_ID": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "MODIFIED_ON": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2017-04-13T15:51:04.0000000Z",
+            "nullable": true
+          },
+          "MODIFIED_BY_NID": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "FDLU_T": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "ULU_T": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "LOCKED_USER_FULL_NM": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "WORKING_HOURS": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "STF_CLAIM_TYPE_CAT": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "PROCESS_ACTUAL_DOC": {
+            "type": "string",
+            "format": "date",
+            "example": "2017-04-13",
+            "nullable": true
+          },
+          "APPOINTMENT_TRACK": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "PROCESS_STATUS_ALIAS": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "PROCESS_STATUS_COLOR_CODE": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "count": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "description": "The number of entities in the collection. Available when using the [$count](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptioncount) query option."
+      },
+      "error": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "target": {
+                "type": "string"
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "target": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "innererror": {
+                "type": "object",
+                "description": "The structure of this object is service-specific"
+              }
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "top": {
+        "name": "$top",
+        "in": "query",
+        "description": "Show only the first n items, see [Paging - Top](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptiontop)",
+        "schema": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "example": 50
+      },
+      "skip": {
+        "name": "$skip",
+        "in": "query",
+        "description": "Skip the first n items, see [Paging - Skip](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionskip)",
+        "schema": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "count": {
+        "name": "$count",
+        "in": "query",
+        "description": "Include count of items, see [Count](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptioncount)",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "search": {
+        "name": "$search",
+        "in": "query",
+        "description": "Search items by search phrases, see [Searching](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionsearch)",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "responses": {
+      "error": {
+        "description": "Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/error"
+            }
+          }
+        }
+      }
+    }
+  }
+}
