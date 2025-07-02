@@ -1,4 +1,4 @@
-'@xsuaaHostname = https://nus-ariba-dev-px55m7l5.authentication.eu10.hana.ondemand.com
+@xsuaaHostname = https://nus-ariba-dev-px55m7l5.authentication.eu10.hana.ondemand.com
 @xsuaaClient = sb-utility!t169063
 @xsuaaSecret = 8f6e922d-4d5d-4fe6-910f-000dce2b4638$tk1PCoekKMDcX4OIh88nJSgmdU2bERyXw_RLMtfY_vA=
 @host = localhost:4004
@@ -77,7 +77,7 @@ Authorization: Bearer {{access_token}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
-GET {{unsecureProtocol}}://{{host}}/v2/eclaims/fetchUluFdlu?claimType=101&userGroup=CLAIM_ASSISTANT&period=05-2025
+GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/fetchUluFdlu?claimType=101&userGroup=CLAIM_ASSISTANT&period=05-2025
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -118,7 +118,7 @@ Authorization: Bearer {{access_token}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
-GET {{unsecureProtocol}}://{{host}}/v2/eclaims/claimantStaffInfo?username=151398
+GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/claimantStaffInfo?username=151398
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -132,13 +132,13 @@ Authorization: Bearer {{access_token}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
-GET {{unsecureProtocol}}://{{host}}/v2/eclaims/eclaimRequestViews?$top=10&$expand=MasterClaimTypeDetails
+GET {{unsecureProtocol}}://{{host}}/eclaims/eclaimRequestViews?$top=10&$expand=MasterClaimTypeDetails
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
-GET {{unsecureProtocol}}://{{host}}/v2/eclaims/eclaimRequestViews/$count
+GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/eclaimRequestViews/$count
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 

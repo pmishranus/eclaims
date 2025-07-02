@@ -1,5 +1,6 @@
 const cds = require("@sap/cds");
 // const cov2ap = require("@sap/cds-odata-v2-adapter-proxy"); // Removed deprecated adapter
+const cov2ap = require("@cap-js-community/odata-v2-adapter");
 const xsenv = require("@sap/xsenv");
 const xssec = require("@sap/xssec");
 const passport = require("passport");
@@ -12,7 +13,7 @@ const express = require("express");
 const multer = require("multer");
 
 cds.on("bootstrap", app => {
-    // app.use(cov2ap()); // Removed deprecated adapter
+    app.use(cov2ap()); // Removed deprecated adapter
     xsenv.loadEnv();
     passport.use(new JWTStrategy(xsenv.getServices({ uaa: { tag: "xsuaa" } }).uaa));
     app.use(passport.initialize());
