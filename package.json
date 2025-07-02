@@ -8,7 +8,6 @@
     "dependencies": {
         "@sap/cds": "^8",
         "@sap/cds-hana": "^2",
-        "@sap/cds-odata-v2-adapter-proxy": "1.9.21",
         "@sap/hdi": "^4.7.0",
         "@sap/hdi-deploy": "^5.4.2",
         "@sap/xsenv": "^5.5.0",
@@ -58,7 +57,7 @@
         "hanadeploy": "cds build && cds deploy --to hana:utility-db",
         "currtcp": "lsof -i tcp:4004",
         "runlib": "npm install && cd app && npm install & cd ..",
-        "deploy": "cds build && mbt build -t gen --mtar archive && cf deploy /home/user/projects/eclaims/gen/archive.mtar -f"
+        "deploy": "cds build && mbt build -t gen --mtar archive && cf deploy gen/archive.mtar -f"
     },
     "cds": {
         "requires": {
@@ -68,6 +67,9 @@
             "auth": {
                 "kind": "xsuaa"
             }
+        },
+        "odata": {
+            "version": "both"
         }
     }
 }
