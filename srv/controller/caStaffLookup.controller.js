@@ -28,8 +28,8 @@ async function fetchCaStaffLookup(request) {
         }
 
         const { claimType, ulu, fdlu, period, searchValue } = request.data;
-        const user = request.user.id;
-
+        // let user = request.user.id;
+        let user = 'PTT_CA9'
         // Get user info with caching
         const userInfoDetails = await getUserInfoWithCache(user);
         if (!userInfoDetails) {

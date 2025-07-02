@@ -21,7 +21,7 @@ async function fetchUluFdluDetails(staffId, userGroup) {
  * @param claimType
  */
 async function fetchCAUluFdluDetails(staffID, userGroup, claimType) {
-    const currentDate = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+    const today = new Date().toISOString().split('T')[0];
     // Ensure DB indexes on: PROCESS_CODE, STAFF_USER_GRP, VALID_FROM, VALID_TO, IS_DELETED, STAFF_NUSNET_ID, STAFF_ID
     let query = SELECT.distinct
         .from("NUSEXT_UTILITY_CHRS_APPROVER_MATRIX")
@@ -32,10 +32,10 @@ async function fetchCAUluFdluDetails(staffID, userGroup, claimType) {
             "am.PROCESS_CODE": claimType,
             "am.STAFF_USER_GRP": userGroup,
             "am.VALID_FROM": {
-                "<=" : currentDate,
+                "<=" : today,
             },
             "am.VALID_TO": {
-                ">=" : currentDate,
+                ">=" : today,
             },
             "am.IS_DELETED": "N",
             and: {

@@ -1,4 +1,4 @@
-@xsuaaHostname = https://nus-ariba-dev-px55m7l5.authentication.eu10.hana.ondemand.com
+'@xsuaaHostname = https://nus-ariba-dev-px55m7l5.authentication.eu10.hana.ondemand.com
 @xsuaaClient = sb-utility!t169063
 @xsuaaSecret = 8f6e922d-4d5d-4fe6-910f-000dce2b4638$tk1PCoekKMDcX4OIh88nJSgmdU2bERyXw_RLMtfY_vA=
 @host = localhost:4004

@@ -149,14 +149,15 @@ module.exports = {
     },
 
     retrieveJobInfoDetails: async function (nusNetId) {
+        const today = new Date().toISOString().split('T')[0];
         // Using CDS query builder instead of string concatenation
         let retrieveJobInfoDetails = await cds.run(
             SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
                 .where({ STF_NUMBER: { "=" : { ref: ["SF_STF_NUMBER"] } } })
                 .where({ NUSNET_ID: nusNetId.toUpperCase() })
                 .or({ STF_NUMBER: nusNetId.toUpperCase() })
-                .where({ START_DATE: { "<=" : "CURRENT_DATE" } })
-                .where({ END_DATE: { ">=" : "CURRENT_DATE" } })
+                .where({ START_DATE: { "<=": today } })
+                .where({ END_DATE: { "<=": today } })
         );
         return retrieveJobInfoDetails;
     },
@@ -258,7 +259,7 @@ ORDER BY
             // Using CDS query builder for better security and performance
             let query = SELECT
                 .from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO as cj")
-                .columns([
+                .columns(
                     "cj.SF_STF_NUMBER",
                     "cj.STF_NUMBER",
                     "MIN(cj.START_DATE) as START_DATE",
@@ -273,7 +274,7 @@ ORDER BY
                     "cj.FDLU_T",
                     "cj.EMAIL",
                     "cj.JOIN_DATE"
-                ])
+                )
                 .innerJoin("NUSEXT_MASTER_DATA_CHRS_ELIG_CRITERIA as ec")
                 .on("ec.STF_NUMBER = cj.STF_NUMBER")
                 .and("ec.SF_STF_NUMBER = cj.SF_STF_NUMBER")
@@ -306,7 +307,7 @@ ORDER BY
 
             // Add grouping and ordering
             query = query
-                .groupBy([
+                .groupBy(
                     "cj.SF_STF_NUMBER",
                     "cj.STF_NUMBER",
                     "cj.FIRST_NM",
@@ -319,7 +320,7 @@ ORDER BY
                     "cj.FDLU_T",
                     "cj.EMAIL",
                     "cj.JOIN_DATE"
-                ])
+                )
                 .orderBy("cj.STF_NUMBER DESC");
 
             // Execute query with timeout
