@@ -9,6 +9,7 @@ const claimantStaffInfoCtrl = require("./controller/claimantStaffInfo.controller
 const fetchWBSCtrl = require("./controller/fetchWBS.controller");
 const validateEclaimsCtrl = require("./controller/validateEclaims.controller");
 const fetchUluFdluCtrl = require("./controller/fetchUluFdlu.controller");
+const commonUtil = require("./util/commonUtil");
 
 class EclaimsService extends cds.ApplicationService {
     init() {
@@ -62,6 +63,50 @@ class EclaimsService extends cds.ApplicationService {
 
         this.on("claimantStaffInfo", async request => {
             return await claimantStaffInfoCtrl.fetchClaimantStaffInfo(request);
+        });
+
+        this.on("singleRequest", async request => {
+            // Extract Authorization header (if present)
+            // const token = request.headers && request.headers.authorization ? request.headers.authorization : null;
+            let response = {
+                error: false,
+                message: null,
+                claimDataResponse: null,
+                ignoreError: false
+            };
+            try {
+                // Call the main business logic (postClaims or equivalent)
+                // The controller expects the request object, which contains data and user info
+                const claimDataResponse = await singleRequestCtrl.postClaims(
+                    request
+                   
+                );
+                response.claimDataResponse = claimDataResponse;
+                response.error = claimDataResponse && claimDataResponse.error ? true : false;
+                response.message = claimDataResponse && claimDataResponse.message ? claimDataResponse.message : null;
+            } catch (err) {
+                // Special handling for IGNORE_REQUEST
+                if (err && err.message && err.message === "IGNORE_REQUEST") {
+                    response.error = true;
+                    response.ignoreError = true;
+                    response.message = err.message;
+                } else {
+                    response.error = true;
+                    response.message = (err && err.message) ? err.message : "An unexpected error occurred.";
+                }
+            }
+            // Optionally set custom headers here if needed (CAP allows this via request.reply)
+            return response;
+        });
+
+        this.on("fetchCompInfoFromCPI", async request => {
+            try {
+                const { stfNumber } = request.data;
+                const result = await commonUtil.getCpiCompInfo(stfNumber);
+                return result;
+            } catch (err) {
+                return { error: true, message: err.message || "Failed to fetch CPI compensation info" };
+            }
         });
 
         return super.init();

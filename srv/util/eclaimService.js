@@ -1,25 +1,22 @@
-
+/* eslint-disable no-use-before-define */
 const CommonRepo = require("../repository/util.repo");
 const EclaimsHeaderDataRepo = require("../repository/eclaimsData.repo");
-const RequestLockDetailsRepo = require("../repository/requestLockDetails.repo");
-const ProcessParticipantsRepo = require("../repository/processParticipant.repo");
-const ElligibilityCriteriaRepo = require("../repository/eligibilityCriteria.repo");
+// const RequestLockDetailsRepo = require("../repository/requestLockDetails.repo");
+// const ProcessParticipantsRepo = require("../repository/processParticipant.repo");
+// const ElligibilityCriteriaRepo = require("../repository/eligibilityCriteria.repo");
 const DateToWeekRepo = require("../repository/dateToWeek.repo");
 const EclaimsItemDataRepo = require("../repository/eclaimsItemData.repo");
 const CommonUtils = require("../util/commonUtil");
-const ProcessDetailsRepo = require("../repository/processDetails.repo");
 const DateUtils = require("../util/dateUtil");
-const TaskDetailsRepo = require("../repository/taskDetails.repo");
 const ValidationResultsDto = require("../dto/validationResultsDto");
 const { ApplicationConstants, MessageConstants } = require("../util/constant");
 const { ApplicationException } = require("../util/customErrors");
 const RateTypeConfig = require("../enum/rateTypeConfig");
 const ChrsJobInfoRepo = require("../repository/chrsJobInfo.repo");
-const EclaimService = require("../util/eclaimService");
 /**
-/**
- *
- * @param massUploadRequest
+ * Fetches the role for the mass upload request.
+ * @param {Array} massUploadRequest - The mass upload request array.
+ * @returns {Promise<string>} The role.
  */
 async function fetchRole(massUploadRequest) {
     let rolePassed = "";
@@ -61,11 +58,12 @@ async function fetchRole(massUploadRequest) {
 }
 
 /**
- *
- * @param item
- * @param roleFlow
- * @param requestorGroup
- * @param loggedInUserDetails
+ * Validates eclaims data.
+ * @param {Object} item - The claim item.
+ * @param {string} roleFlow - The role flow.
+ * @param {string} requestorGroup - The requestor group.
+ * @param {Object} loggedInUserDetails - The user info.
+ * @returns {Promise<Array>} The validation results.
  */
 async function validateEclaimsData(item, roleFlow, requestorGroup, loggedInUserDetails) {
     let response = [];
@@ -111,8 +109,9 @@ async function validateEclaimsData(item, roleFlow, requestorGroup, loggedInUserD
 }
 
 /**
- *
- * @param item
+ * Checks if the item is empty.
+ * @param {Object} item - The claim item.
+ * @returns {boolean}
  */
 function emptyCheck(item) {
     const response = [];
@@ -178,13 +177,13 @@ function emptyCheck(item) {
     return response;
 }
 
-
 /**
- *
- * @param item
- * @param roleFlow
- * @param requestorGroup
- * @param loggedInUserDetails
+ * Validates item data for eclaims.
+ * @param {Object} item - The claim item.
+ * @param {string} roleFlow - The role flow.
+ * @param {string} requestorGroup - The requestor group.
+ * @param {Object} loggedInUserDetails - The user info.
+ * @returns {Promise<Array>} The validation results.
  */
 async function itemDataValidation(item, roleFlow, requestorGroup, loggedInUserDetails) {
 
@@ -499,16 +498,7 @@ async function itemDataValidation(item, roleFlow, requestorGroup, loggedInUserDe
                     }
                     if (CommonUtils.isNotBlank(selectedClaimDates.WBS)) {
                         //check WBS by calling a repo
-                        validationMessage = await checkWbsElement(selectedClaimDates.WBS); //pending
-                        if (CommonUtils.isNotBlank(validationMessage)) {
-                            response.push(
-                                frameItemValidationMsg(
-                                    selectedClaimDates.CLAIM_START_DATE,
-                                    ApplicationConstants.WBS,
-                                    validationMessage
-                                )
-                            );
-                        }
+                        // validationMessage = await checkWbsElement(selectedClaimDates.WBS); //pending
                     }
                 }
     
@@ -616,8 +606,9 @@ async function itemDataValidation(item, roleFlow, requestorGroup, loggedInUserDe
 
 }
 /**
- *
- * @param item
+ * Checks for overlapping claims.
+ * @param {Object} item - The claim item.
+ * @returns {Promise<Array>} The validation results.
  */
 async function checkOverLapping(item) {
     let validationResult = [];
@@ -638,8 +629,9 @@ async function checkOverLapping(item) {
     return validationResult;
 }
 /**
- *
- * @param item
+ * Checks period validation for claims.
+ * @param {Object} item - The claim item.
+ * @returns {Promise<Array>} The validation results.
  */
 async function checkPeriodValidation(item) {
     const validationResult = [];
@@ -735,9 +727,10 @@ async function checkPeriodValidation(item) {
 }
 
 /**
- *
- * @param field
- * @param message
+ * Frames a validation message.
+ * @param {string} field - The field name.
+ * @param {string} message - The message.
+ * @returns {Object}
  */
 function frameValidationMessage(field, message) {
     const validationResultsDto = new ValidationResultsDto();
@@ -748,10 +741,11 @@ function frameValidationMessage(field, message) {
 }
 
 /**
- *
- * @param claimDate
- * @param columnName
- * @param message
+ * Frames an item validation message.
+ * @param {string} claimDate - The claim date.
+ * @param {string} columnName - The column name.
+ * @param {string} message - The message.
+ * @returns {Object}
  */
 function frameItemValidationMsg(claimDate, columnName, message) {
     const validationResultsDto = new ValidationResultsDto();
@@ -765,10 +759,298 @@ function frameItemValidationMsg(claimDate, columnName, message) {
     return validationResultsDto;
 }
 
+/**
+ * Checks if a claim exists.
+ * @param {Object} selectedClaimDates - The selected claim dates.
+ * @param {Object} item - The claim item.
+ * @param {string} roleFlow - The role flow.
+ * @param {string} requestorGroup - The requestor group.
+ * @returns {Promise<string|null>} The validation message or null.
+ */
+async function checkClaimExists(selectedClaimDates, item, roleFlow, requestorGroup) {
+    let validationMessage = null;
+
+    // Assuming isValidFlowCheck is synchronous or asynchronous as needed
+    const flowValid = isValidFlowCheck(roleFlow, requestorGroup);
+
+    if (
+        flowValid &&
+        CommonUtils.isNotBlank(selectedClaimDates.CLAIM_START_DATE) &&
+        CommonUtils.isNotBlank(selectedClaimDates.CLAIM_END_DATE) &&
+        CommonUtils.isNotBlank(item.ULU) &&
+        CommonUtils.isNotBlank(item.FDLU) &&
+        CommonUtils.isNotBlank(item.STAFF_ID) &&
+        CommonUtils.isNotBlank(selectedClaimDates.RATE_TYPE)
+    ) {
+        // Make sure this repository returns a Promise (async)
+        const eclaimsItemData = await EclaimsItemDataRepo.checkForExistingReq(
+            item.STAFF_ID,
+            selectedClaimDates.CLAIM_START_DATE,
+            selectedClaimDates.CLAIM_END_DATE,
+            item.ULU,
+            item.FDLU
+        );
+        // frameClaimExistMessage should also be implemented/reused in Node
+        validationMessage = frameClaimExistMessage(eclaimsItemData, selectedClaimDates, item.CLAIM_REQUEST_TYPE);
+    }
+    return validationMessage;
+}
+
+/**
+ * Checks if the flow is valid.
+ * @param {string} roleFlow - The role flow.
+ * @param {string} requestorGroup - The requestor group.
+ * @returns {boolean}
+ */
+function isValidFlowCheck(roleFlow, requestorGroup) {
+    // Helper for case-insensitive comparison
+
+    return (
+        (CommonUtils.equalsIgnoreCase(roleFlow, ApplicationConstants.CA) &&
+            CommonUtils.equalsIgnoreCase(requestorGroup, ApplicationConstants.CLAIM_ASSISTANT)) ||
+        (CommonUtils.equalsIgnoreCase(roleFlow, ApplicationConstants.ESS) &&
+            CommonUtils.equalsIgnoreCase(requestorGroup, ApplicationConstants.NUS_CHRS_ECLAIMS_ESS))
+    );
+}
+
+
+/**
+ * Frames a claim exist message.
+ * @param {Array} eclaimsItemData - The eclaims item data.
+ * @param {Object} selectedClaimDates - The selected claim dates.
+ * @param {string} claimRequestType - The claim request type.
+ * @returns {string|null}
+ */
+function frameClaimExistMessage(eclaimsItemData, selectedClaimDates, claimRequestType) {
+    let validationMessage = null;
+
+    if (eclaimsItemData && eclaimsItemData.length > 0) {
+        for (const eclaimsItemSavedData of eclaimsItemData) {
+            if (
+                CommonUtils.isNotBlank(eclaimsItemSavedData.RATE_TYPE) &&
+                CommonUtils.isNotBlank(selectedClaimDates.RATE_TYPE) &&
+                CommonUtils.equalsIgnoreCase(eclaimsItemSavedData.RATE_TYPE, selectedClaimDates.RATE_TYPE)
+            ) {
+                // Fix for mass upload validation issue - Hourly check not required for Period
+                if (
+                    (CommonUtils.equalsIgnoreCase(
+                        eclaimsItemSavedData.RATE_TYPE,
+                        ApplicationConstants.RATE_TYPE_HOURLY
+                    ) ||
+                        CommonUtils.equalsIgnoreCase(
+                            eclaimsItemSavedData.RATE_TYPE,
+                            ApplicationConstants.RATE_TYPE_HOURLY_19
+                        )) &&
+                    !CommonUtils.equalsIgnoreCase(claimRequestType, ApplicationConstants.CLAIM_REQUEST_TYPE_PERIOD)
+                ) {
+                    // Assume DateUtils.frameLocalDateTime returns a JS Date or dayjs object
+                    const claimStartDateTime = DateUtils.frameLocalDateTime(
+                        selectedClaimDates.CLAIM_START_DATE,
+                        selectedClaimDates.START_TIME
+                    );
+                    const claimEndDateTime = DateUtils.frameLocalDateTime(
+                        selectedClaimDates.CLAIM_END_DATE,
+                        selectedClaimDates.END_TIME
+                    );
+                    const savedStartDateTime = DateUtils.frameLocalDateTime(
+                        eclaimsItemSavedData.CLAIM_START_DATE,
+                        eclaimsItemSavedData.START_TIME
+                    );
+                    const savedEndDateTime = DateUtils.frameLocalDateTime(
+                        eclaimsItemSavedData.CLAIM_END_DATE,
+                        eclaimsItemSavedData.END_TIME
+                    );
+
+                    // JavaScript Date comparison
+                    if (
+                        (savedStartDateTime.getTime() === claimStartDateTime.getTime() &&
+                            savedEndDateTime.getTime() === claimEndDateTime.getTime()) ||
+                        (claimStartDateTime < savedEndDateTime && savedStartDateTime < claimEndDateTime) ||
+                        (claimStartDateTime > savedStartDateTime && claimStartDateTime < savedEndDateTime) ||
+                        (savedEndDateTime > claimEndDateTime && savedEndDateTime < claimEndDateTime) ||
+                        (claimEndDateTime > savedStartDateTime && claimEndDateTime < savedEndDateTime)
+                    ) {
+                        validationMessage = "Claim already exists for the provided Start and End Date/Time.";
+                        break;
+                    }
+                } else {
+                    if (
+                        CommonUtils.equalsIgnoreCase(claimRequestType, ApplicationConstants.CLAIM_REQUEST_TYPE_PERIOD)
+                    ) {
+                        // Checking for Rate Amount validation also
+                        if (
+                            CommonUtils.isNotBlank(selectedClaimDates.RATE_TYPE_AMOUNT) &&
+                            Number(Number(selectedClaimDates.RATE_TYPE_AMOUNT).toFixed(2)) ===
+                                Number(Number(eclaimsItemSavedData.RATE_TYPE_AMOUNT).toFixed(2))
+                        ) {
+                            validationMessage = "Claim already exists for the provided Start and End Date.";
+                            break;
+                        }
+                    } else {
+                        validationMessage = "Claim already exists for the provided Start and End Date.";
+                        break;
+                    }
+                }
+            } else if (
+                CommonUtils.isNotBlank(eclaimsItemSavedData.RATE_TYPE) &&
+                CommonUtils.isNotBlank(selectedClaimDates.RATE_TYPE) &&
+                (CommonUtils.equalsIgnoreCase(selectedClaimDates.RATE_TYPE, ApplicationConstants.RATE_TYPE_HOURLY_20) ||
+                    CommonUtils.equalsIgnoreCase(
+                        selectedClaimDates.RATE_TYPE,
+                        ApplicationConstants.RATE_TYPE_HOURLY_21
+                    ))
+            ) {
+                // Fix for mass upload validation issue - Hourly check not required for Period
+                if (
+                    CommonUtils.equalsIgnoreCase(
+                        eclaimsItemSavedData.RATE_TYPE,
+                        ApplicationConstants.RATE_TYPE_HOURLY_20
+                    ) ||
+                    CommonUtils.equalsIgnoreCase(
+                        eclaimsItemSavedData.RATE_TYPE,
+                        ApplicationConstants.RATE_TYPE_HOURLY_21
+                    )
+                ) {
+                    validationMessage =
+                        "Rate Type T-2 courses Learning Per Sem and T->2 courses Learning Per Sem cannot be selected for same day.";
+                    break;
+                }
+            }
+        }
+    }
+    return validationMessage;
+}
+/**
+ * Checks if the rate type is hourly or monthly.
+ * @param {string} rateType - The rate type.
+ * @param {string} innerRateType - The inner rate type.
+ * @returns {boolean}
+ */
+function isHourlyMonthlyRateType(rateType, innerRateType) {
+    const rateTypeObj = RateTypeConfig.fromValue(rateType);
+    const innerRateTypeObj = RateTypeConfig.fromValue(innerRateType);
+
+    const unknownValue = RateTypeConfig.UNKNOWN.getValue();
+    const hourlyValue = RateTypeConfig.HOURLY.getValue();
+    const monthlyValue = RateTypeConfig.MONTHLY.getValue();
+
+    if (
+        CommonUtils.equalsIgnoreCase(rateTypeObj.getValue(), unknownValue) &&
+        CommonUtils.equalsIgnoreCase(innerRateTypeObj.getValue(), unknownValue)
+    ) {
+        if (
+            (CommonUtils.equalsIgnoreCase(rateTypeObj.getValue(), hourlyValue) &&
+                CommonUtils.equalsIgnoreCase(innerRateTypeObj.getValue(), monthlyValue)) ||
+            (CommonUtils.equalsIgnoreCase(rateTypeObj.getValue(), monthlyValue) &&
+                CommonUtils.equalsIgnoreCase(innerRateTypeObj.getValue(), hourlyValue))
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+/**
+ * Checks daily validation for claim items.
+ * @param {Object} item - The claim item.
+ * @returns {Promise<Array>} The validation results.
+ */
+async function checkDailyValidation(item) {
+    const validationResult = [];
+    // Clone and sort inputItems by CLAIM_START_DATE
+    const inputItems = [...item.selectedClaimDates].sort((a, b) => {
+        const dateA = DateUtils.frameLocalDateTime(a.CLAIM_START_DATE, a.START_TIME);
+        const dateB = DateUtils.frameLocalDateTime(b.CLAIM_START_DATE, b.START_TIME);
+        return dateA - dateB;
+    });
+
+    for (let itemCount = 0; itemCount < inputItems.length; itemCount++) {
+        const selectedClaimDates = inputItems[itemCount];
+
+        const claimStartDateTime = DateUtils.frameLocalDateTime(
+            selectedClaimDates.CLAIM_START_DATE,
+            selectedClaimDates.START_TIME
+        );
+        const claimEndDateTime = DateUtils.frameLocalDateTime(
+            selectedClaimDates.CLAIM_END_DATE,
+            selectedClaimDates.END_TIME
+        );
+
+        const rateType = selectedClaimDates.RATE_TYPE || "";
+
+        for (let innerItemCount = 0; innerItemCount < inputItems.length; innerItemCount++) {
+            const innerItemClaimDates = inputItems[innerItemCount];
+            const innerRateType = innerItemClaimDates.RATE_TYPE || "";
+
+            if (
+                !innerItemClaimDates.CLAIM_START_DATE ||
+                !innerItemClaimDates.CLAIM_END_DATE ||
+                innerItemClaimDates.CLAIM_START_DATE.trim() === "" ||
+                innerItemClaimDates.CLAIM_END_DATE.trim() === ""
+            ) {
+                const validationResultsDto = frameItemValidationMsg(
+                    "",
+                    ApplicationConstants.CLAIM_START_DATE,
+                    "Claim Start/End Date is not provided."
+                );
+                validationResult.push(validationResultsDto);
+            }
+
+            if (itemCount !== innerItemCount) {
+                const rateTypeMatch =
+                    selectedClaimDates.RATE_TYPE &&
+                    innerItemClaimDates.RATE_TYPE &&
+                    selectedClaimDates.RATE_TYPE.toUpperCase() === innerItemClaimDates.RATE_TYPE.toUpperCase();
+
+                if (
+                    (rateTypeMatch && selectedClaimDates.RATE_TYPE.trim() !== "") ||
+                    isHourlyMonthlyRateType(rateType, innerRateType)
+                ) {
+                    const innerClaimStartDateTime = DateUtils.frameLocalDateTime(
+                        innerItemClaimDates.CLAIM_START_DATE,
+                        innerItemClaimDates.START_TIME
+                    );
+                    const innerClaimEndDateTime = DateUtils.frameLocalDateTime(
+                        innerItemClaimDates.CLAIM_END_DATE,
+                        innerItemClaimDates.END_TIME
+                    );
+
+                    // Overlap check logic using date comparisons
+                    if (
+                        (innerClaimStartDateTime.getTime() === claimStartDateTime.getTime() &&
+                            innerClaimEndDateTime.getTime() === claimEndDateTime.getTime()) ||
+                        (innerClaimStartDateTime > claimStartDateTime && innerClaimStartDateTime < claimEndDateTime) ||
+                        (claimStartDateTime > innerClaimStartDateTime && claimStartDateTime < innerClaimEndDateTime) ||
+                        (innerClaimEndDateTime > claimEndDateTime && innerClaimEndDateTime < claimEndDateTime) ||
+                        (claimEndDateTime > innerClaimStartDateTime && claimEndDateTime < innerClaimEndDateTime)
+                    ) {
+                        const validationResultsDto = frameItemValidationMsg(
+                            selectedClaimDates.CLAIM_START_DATE,
+                            ApplicationConstants.CLAIM_OVERLAP,
+                            "Please check claim date(s), start time, end time provided."
+                        );
+                        validationResult.push(validationResultsDto);
+                    }
+                }
+            }
+        }
+    }
+    return validationResult;
+}
 
 module.exports = {
     fetchRole,
     validateEclaimsData,
     frameValidationMessage,
-    frameItemValidationMsg
-}
+    frameItemValidationMsg,
+    emptyCheck,
+    itemDataValidation,
+    checkOverLapping,
+    checkPeriodValidation,
+    checkClaimExists,
+    isValidFlowCheck,
+    frameClaimExistMessage,
+    checkDailyValidation,
+    isHourlyMonthlyRateType
+};

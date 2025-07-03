@@ -3,8 +3,9 @@ const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
 const ApplicationConstants = require("../util/constant");
 
 /**
- *
- * @param draftId
+ * Checks if a request is locked for a given draftId.
+ * @param {string} draftId - The draft ID.
+ * @returns {Promise<Object|null>} The lock details or null.
  */
 async function checkIsRequestLocked(draftId) {
     const result = await cds.run(

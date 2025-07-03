@@ -3,9 +3,10 @@ const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
 const { ApplicationConstants } = require("../util/constant");
 const DateUtils = require("../util/dateUtil");
 /**
- *
- * @param staffId
- * @param statusCode
+ * Fetches claim status count by staff ID and status code.
+ * @param {string} staffId
+ * @param {string} statusCode
+ * @returns {Promise<number>}
  */
 async function fetchClaimStatusCountById(staffId, statusCode) {
     let fetchClaimStatusCountById = await cds.run(
@@ -22,9 +23,10 @@ async function fetchClaimStatusCountById(staffId, statusCode) {
     return fetchClaimStatusCountById;
 }
 /**
- *
- * @param staffId
- * @param statusCode
+ * Fetches claim status count by staff ID and status code.
+ * @param {string} staffId
+ * @param {string} statusCode
+ * @returns {Promise<number>}
  */
 async function fetchClaimStatusCount(staffId, statusCode) {
     let fetchClaimStatusCountById = await cds.run(
@@ -41,9 +43,10 @@ async function fetchClaimStatusCount(staffId, statusCode) {
     return fetchClaimStatusCountById;
 }
 /**
- *
- * @param staffId
- * @param status
+ * Fetches pending CA status count by staff ID and status.
+ * @param {string} staffId
+ * @param {string} status
+ * @returns {Promise<number>}
  */
 async function fetchPendingCAStatusCount(staffId, status) {
     const query = `
@@ -76,9 +79,10 @@ async function fetchPendingCAStatusCount(staffId, status) {
     return fetchPendingCAStatusCount;
 }
 /**
- *
- * @param staffId
- * @param status
+ * Fetches CA status count for draft by staff ID and status.
+ * @param {string} staffId
+ * @param {string} status
+ * @returns {Promise<number>}
  */
 async function fetchCAStatusCountForDraft(staffId, status) {
     const query = `
@@ -110,9 +114,10 @@ async function fetchCAStatusCountForDraft(staffId, status) {
     return fetchCAStatusCountForDraft;
 }
 /**
- *
- * @param staffId
- * @param status
+ * Fetches CA status count by staff ID and status.
+ * @param {string} staffId
+ * @param {string} status
+ * @returns {Promise<number>}
  */
 async function fetchCAStatusCount(staffId, status) {
     const query = `
@@ -144,9 +149,10 @@ async function fetchCAStatusCount(staffId, status) {
     return fetchCAStatusCountForDraft;
 }
 /**
- *
- * @param staffId
- * @param statusCode
+ * Fetches TB claim status count by staff ID and status code.
+ * @param {string} staffId
+ * @param {string} statusCode
+ * @returns {Promise<number>}
  */
 async function fetchTbClaimStatusCountById(staffId, statusCode) {
     const query = `SELECT DISTINCT DRAFT_ID FROM NUSEXT_ECLAIMS_HEADER_DATA WHERE REQUEST_STATUS IN (?) AND STAFF_ID = ? AND CLAIM_TYPE = '105'`;
@@ -155,9 +161,10 @@ async function fetchTbClaimStatusCountById(staffId, statusCode) {
     return fetchTbClaimStatusCountById;
 }
 /**
- *
- * @param staffId
- * @param statusCode
+ * Fetches TB claim status count by staff ID and status code.
+ * @param {string} staffId
+ * @param {string} statusCode
+ * @returns {Promise<number>}
  */
 async function fetchTbClaimStatusCount(staffId, statusCode) {
     const query = `SELECT DISTINCT DRAFT_ID FROM NUSEXT_ECLAIMS_HEADER_DATA WHERE SUBMITTED_BY = ? AND REQUEST_STATUS IN (?) AND STAFF_ID = ? AND CLAIM_TYPE = '105'`;
@@ -166,8 +173,9 @@ async function fetchTbClaimStatusCount(staffId, statusCode) {
     return fetchTbClaimStatusCount;
 }
 /**
- *
- * @param draftId
+ * Fetches claim data by draft ID.
+ * @param {string} draftId
+ * @returns {Promise<Object>}
  */
 async function fetchByDraftId(draftId) {
     // Using parameterized query to prevent SQL injection
@@ -177,8 +185,9 @@ async function fetchByDraftId(draftId) {
     return fetchByDraftId;
 }
 /**
- *
- * @param draftId
+ * Fetches request ID by draft ID.
+ * @param {string} draftId
+ * @returns {Promise<string>}
  */
 async function fetchRequestId(draftId) {
     const query = `SELECT REQUEST_ID FROM NUSEXT_ECLAIMS_HEADER_DATA WHERE DRAFT_ID = ?`;
@@ -187,11 +196,12 @@ async function fetchRequestId(draftId) {
     return fetchRequestId;
 }
 /**
- *
- * @param month
- * @param year
- * @param staffId
- * @param claimType
+ * Fetches monthly claims.
+ * @param {string} month
+ * @param {string} year
+ * @param {string} staffId
+ * @param {string} claimType
+ * @returns {Promise<Array>}
  */
 async function fetchMonthlyClaims(month, year, staffId, claimType) {
     // Fixed double WHERE clause and using parameterized query
@@ -201,13 +211,14 @@ async function fetchMonthlyClaims(month, year, staffId, claimType) {
     return fetchMonthlyClaims;
 }
 /**
- *
- * @param month
- * @param year
- * @param staffId
- * @param claimType
- * @param startDate
- * @param endDate
+ * Fetches monthly claims on submitted on.
+ * @param {string} month
+ * @param {string} year
+ * @param {string} staffId
+ * @param {string} claimType
+ * @param {string} startDate
+ * @param {string} endDate
+ * @returns {Promise<Array>}
  */
 async function fetchMonthlyClaimsOnSubmittedOn(month, year, staffId, claimType, startDate, endDate) {
     // Fixed double WHERE clause and using parameterized query
@@ -217,14 +228,15 @@ async function fetchMonthlyClaimsOnSubmittedOn(month, year, staffId, claimType, 
     return fetchMonthlyClaimsOnSubmittedOn;
 }
 /**
- *
- * @param ULU
- * @param FDLU
- * @param CLAIM_TYPE
- * @param CLAIM_MONTH
- * @param CLAIM_YEAR
- * @param STAFF_ID
- * @param NUSNET_ID
+ * Fetches draft status eclaims data.
+ * @param {string} ULU
+ * @param {string} FDLU
+ * @param {string} CLAIM_TYPE
+ * @param {string} CLAIM_MONTH
+ * @param {string} CLAIM_YEAR
+ * @param {string} STAFF_ID
+ * @param {string} NUSNET_ID
+ * @returns {Promise<Array>}
  */
 async function fetchDraftStatusEclaimsData(ULU, FDLU, CLAIM_TYPE, CLAIM_MONTH, CLAIM_YEAR, STAFF_ID, NUSNET_ID) {
     let query = SELECT.distinct
@@ -245,6 +257,12 @@ async function fetchDraftStatusEclaimsData(ULU, FDLU, CLAIM_TYPE, CLAIM_MONTH, C
     let fetchDraftStatusEclaimsData = await cds.run(query);
     return fetchDraftStatusEclaimsData || [];
 }
+/**
+ * Fetches past three months WBS.
+ * @param {string} stfNumber
+ * @param {string} requestClaimDate
+ * @returns {Promise<Array>}
+ */
 async function fetchPastThreeMonthsWbs(stfNumber, requestClaimDate) {
     const pastThreeMonthsDate = new Date(requestClaimDate);
     pastThreeMonthsDate.setDate(pastThreeMonthsDate.getDate() - 90);

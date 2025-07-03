@@ -3,12 +3,13 @@ const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
 const { ApplicationConstants } = require("../util/constant");
 
 /**
- *
- * @param staffNusNetId
- * @param claimCode
- * @param month
- * @param year
- * @param date
+ * Queries day, month, and year requests.
+ * @param {string} staffNusNetId
+ * @param {string} claimCode
+ * @param {string} month
+ * @param {string} year
+ * @param {string} date
+ * @returns {Promise<Array>}
  */
 async function queryDayMonthAndYearRequests(staffNusNetId, claimCode, month, year, date) {
     const STATUS_LIST = [
@@ -39,10 +40,11 @@ async function queryDayMonthAndYearRequests(staffNusNetId, claimCode, month, yea
     return queryDayMonthAndYearRequests;
 }
 /**
- *
- * @param staffNusNetId
- * @param claimCode
- * @param weekNo
+ * Queries month and year requests.
+ * @param {string} staffNusNetId
+ * @param {string} claimCode
+ * @param {string} weekNo
+ * @returns {Promise<Array>}
  */
 async function queryMonthAndYearRequests(staffNusNetId, claimCode, weekNo) {
     const STATUS_LIST = [
@@ -76,12 +78,13 @@ async function queryMonthAndYearRequests(staffNusNetId, claimCode, weekNo) {
 }
 
 /**
- *
- * @param staffNusNetId
- * @param claimStartDate
- * @param claimEndDate
- * @param ulu
- * @param fdlu
+ * Checks for existing requests.
+ * @param {string} staffNusNetId
+ * @param {string} claimStartDate
+ * @param {string} claimEndDate
+ * @param {string} ulu
+ * @param {string} fdlu
+ * @returns {Promise<Array>}
  */
 async function checkForExistingReq(staffNusNetId, claimStartDate, claimEndDate, ulu, fdlu) {
     const STATUS_LIST = [
@@ -133,8 +136,9 @@ async function checkForExistingReq(staffNusNetId, claimStartDate, claimEndDate, 
 }
 
 /**
- *
- * @param draftId
+ * Fetches item count by draft ID.
+ * @param {string} draftId
+ * @returns {Promise<Array>}
  */
 async function fetchItemCount(draftId) {
     const query = `SELECT * FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = ?`;
@@ -144,8 +148,9 @@ async function fetchItemCount(draftId) {
 }
 
 /**
- *
- * @param draftId
+ * Fetches items by draft ID.
+ * @param {string} draftId
+ * @returns {Promise<Array>}
  */
 async function fetchByDraftId(draftId) {
     const query = `SELECT * FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = ?`;
@@ -155,8 +160,9 @@ async function fetchByDraftId(draftId) {
 }
 
 /**
- *
- * @param draftId
+ * Fetches item IDs by draft ID.
+ * @param {string} draftId
+ * @returns {Promise<Array>}
  */
 async function fetchItemIds(draftId) {
     const query = `SELECT ITEM_ID FROM NUSEXT_ECLAIMS_ITEMS_DATA WHERE DRAFT_ID = ?`;
@@ -166,11 +172,12 @@ async function fetchItemIds(draftId) {
 }
 
 /**
- *
- * @param tx
- * @param itemIds
- * @param nusNetId
- * @param date
+ * Soft deletes items by item IDs.
+ * @param {Object} tx
+ * @param {Array} itemIds
+ * @param {string} nusNetId
+ * @param {Date} date
+ * @returns {Promise<Object>}
  */
 async function softDeleteByItemId(tx, itemIds, nusNetId, date) {
     const query = `UPDATE NUSEXT_ECLAIMS_ITEMS_DATA SET IS_DELETED = 'Y', UPDATED_BY = ?, UPDATED_ON = ? WHERE ITEM_ID IN (?)`;
@@ -182,11 +189,12 @@ async function softDeleteByItemId(tx, itemIds, nusNetId, date) {
 }
 
 /**
- *
- * @param tx
- * @param draftId
- * @param nusNetId
- * @param date
+ * Soft deletes items by draft ID.
+ * @param {Object} tx
+ * @param {string} draftId
+ * @param {string} nusNetId
+ * @param {Date} date
+ * @returns {Promise<Object>}
  */
 async function softDeleteByDraftId(tx, draftId, nusNetId, date) {
     const query = `

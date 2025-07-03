@@ -1,10 +1,12 @@
 const _ = require("lodash");
 const { MESSAGE } = require("./constant");
+const axios = require('axios');
 /**
- *
- * @param sourceObj
- * @param errorCode
- * @param message
+ * Frames a response object.
+ * @param {Object} sourceObj
+ * @param {string} errorCode
+ * @param {string} message
+ * @returns {Object}
  */
 function frameResponse(sourceObj, errorCode, message) {
     sourceObj.STATUS_CODE = errorCode;
@@ -26,9 +28,10 @@ function equalsIgnoreCase(str1, str2) {
 }
 
 /**
- *
- * @param str1
- * @param str2
+ * Checks if two strings are not equal ignoring case.
+ * @param {string} str1
+ * @param {string} str2
+ * @returns {boolean}
  */
 function notEqualsIgnoreCase(str1, str2) {
     if (typeof str1 === "string" && typeof str2 === "string") {
@@ -37,61 +40,65 @@ function notEqualsIgnoreCase(str1, str2) {
     return false;
 }
 
-// Example utility function to get a value or a default if it's empty
 /**
- *
- * @param value
- * @param defaultValue
+ * Gets a value or a default if it's empty.
+ * @param {*} value
+ * @param {*} defaultValue
+ * @returns {*}
  */
 function getOrDefault(value, defaultValue) {
     return _.isEmpty(value) ? defaultValue : value;
 }
 
 /**
- *
- * @param value
+ * Checks if a value is empty.
+ * @param {*} value
+ * @returns {boolean}
  */
 function isEmpty(value) {
     return _.isEmpty(value);
 }
 
 /**
- *
- * @param value
+ * Checks if a value is not blank.
+ * @param {*} value
+ * @returns {boolean}
  */
 function isNotBlank(value) {
     return !_.isEmpty(value);
 }
 
 /**
- *
- * @param value
+ * Checks if a value is blank.
+ * @param {*} value
+ * @returns {boolean}
  */
 function isBlank(value) {
     return _.isEmpty(value);
 }
 
 /**
- * Checks if a string is null, undefined, or empty.
- * @param {string} str - The string to check.
- * @returns {boolean} - True if the string is null, undefined, or empty, false otherwise.
+ * Checks if a string is null or empty.
+ * @param {string} str
+ * @returns {boolean}
  */
 function isNullOrEmpty(str) {
     return str === null || str === undefined || str.trim().length === 0;
 }
 
 /**
- *
- * @param str
+ * Checks if a string is not null or empty.
+ * @param {string} str
+ * @returns {boolean}
  */
 function isNotNullOrEmpty(str) {
     return !(str === null || str === undefined || str.trim().length === 0);
 }
 
 /**
- * Capitalizes the first letter of each word in a string.
- * @param {string} str - The string to capitalize.
- * @returns {string} - The capitalized string.
+ * Capitalizes words in a string.
+ * @param {string} str
+ * @returns {string}
  */
 function capitalizeWords(str) {
     if (typeof str !== "string") {return "";}
@@ -99,18 +106,18 @@ function capitalizeWords(str) {
 }
 
 /**
- * Deep clones an object or array.
- * @param {object | Array} obj - The object or array to clone.
- * @returns {object | Array} - A deep clone of the input.
+ * Deep clones an object.
+ * @param {Object} obj
+ * @returns {Object}
  */
 function deepClone(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
 
 /**
- * Formats a date object into a string (YYYY-MM-DD).
- * @param {Date} date - The date to format.
- * @returns {string} - The formatted date string.
+ * Formats a date.
+ * @param {Date} date
+ * @returns {string}
  */
 function formatDate(date) {
     if (!(date instanceof Date)) {return "";}
@@ -121,30 +128,30 @@ function formatDate(date) {
 }
 
 /**
- * Generates a random integer between two values (inclusive).
- * @param {number} min - The minimum value.
- * @param {number} max - The maximum value.
- * @returns {number} - A random integer between min and max.
+ * Gets a random integer between min and max.
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
  */
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 /**
- * Checks if an object is empty (has no enumerable properties).
- * @param {object} obj - The object to check.
- * @returns {boolean} - True if the object is empty, false otherwise.
+ * Checks if an object is empty.
+ * @param {Object} obj
+ * @returns {boolean}
  */
 function isEmptyObject(obj) {
     return obj === null || obj === undefined || Object.keys(obj).length === 0;
 }
+
 /**
- * Copies properties from the source object to the target object,
- * skipping any properties specified in the skipProps array.
- * @param {object} source - The source object to copy properties from.
- * @param {object} target - The target object to copy properties to.
- * @param {Array<string>} [skipProps] - Optional array of properties to skip.
- * @returns {object} The modified target object with copied properties.
+ * Copies properties from source to target, skipping specified properties.
+ * @param {Object} source
+ * @param {Object} target
+ * @param {Array} skipProps
+ * @returns {Object}
  */
 function copyObjectProperties(source, target, skipProps = []) {
     const skipSet = new Set(skipProps);
@@ -164,8 +171,9 @@ const checkIsNumericMandatory = /^\d+$/;
 const checkIsStringMandatory = /^[a-zA-Z]+$/;
 
 /**
- *
- * @param number
+ * Converts a number to text.
+ * @param {number} number
+ * @returns {string}
  */
 function numberToText(number) {
     if (number === null || number === undefined) {
@@ -174,11 +182,11 @@ function numberToText(number) {
     return number.toString();
 }
 
-// Helper function to group by a specified key
 /**
- *
- * @param array
- * @param key
+ * Groups an array by a specified key.
+ * @param {Array} array
+ * @param {string} key
+ * @returns {Object}
  */
 function groupBy(array, key) {
     return array.reduce((result, item) => {
@@ -191,11 +199,11 @@ function groupBy(array, key) {
     }, {});
 }
 
-// Validation utility function
 /**
- *
- * @param type
- * @param message
+ * Frames a validation message.
+ * @param {string} type
+ * @param {string} message
+ * @returns {Object}
  */
 function frameValidationMessage(type, message) {
     return {
@@ -203,11 +211,12 @@ function frameValidationMessage(type, message) {
         message: message,
     };
 }
-//extractUniqueValuesAsString
+
 /**
- *
- * @param arr
- * @param key
+ * Converts a list to a string by key.
+ * @param {Array} arr
+ * @param {string} key
+ * @returns {string}
  */
 function convertListToString(arr, key) {
     if (!Array.isArray(arr) || typeof key !== "string") {return "";}
@@ -217,6 +226,39 @@ function convertListToString(arr, key) {
     ];
 
     return uniqueValues.map(v => `'${v}'`).join(",");
+}
+
+/**
+ * Fetches a Bearer token from the CPI OAuth endpoint.
+ * @returns {Promise<string>} The Bearer token.
+ */
+async function fetchCpiBearerToken() {
+    const tokenUrl = 'https://oauthasservices-c10247e87.ap1.hana.ondemand.com/oauth2/api/v1/token?grant_type=client_credentials';
+    const username = 'apicfconnectivity';
+    const password = 'Sap@12345678';
+    const basicAuth = Buffer.from(`${username}:${password}`).toString('base64');
+    const headers = {
+        'Authorization': `Basic ${basicAuth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    const response = await axios.post(tokenUrl, null, { headers });
+    return response.data.access_token;
+}
+
+/**
+ * Fetches compensation info from CPI for a given staff number.
+ * @param {string} stfNumber - The staff number.
+ * @returns {Promise<object>} The CPI API response.
+ */
+async function getCpiCompInfo(stfNumber) {
+    const token = await fetchCpiBearerToken();
+    const apiUrl = 'https://e200226-iflmap.hcisbt.ap1.hana.ondemand.com/http/EC_To_BTP_Comp_Info_AdRun_StaffID_QA';
+    const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    };
+    const response = await axios.post(apiUrl, { stfNumber }, { headers });
+    return response.data;
 }
 
 module.exports = {
@@ -243,4 +285,5 @@ module.exports = {
     frameValidationMessage,
     convertListToString,
     isBlank,
+    getCpiCompInfo
 };

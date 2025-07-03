@@ -21,13 +21,12 @@ service EclaimsService @(path: '/eclaims') {
 
 
   /********************************************************************* Functions ***************************************************************************************************/
-  
+
   /**
    * @description Dummy function for testing purposes
    * @returns Empty object
    */
   function dummy()                                                                                               returns {};
-
   /**
    * @description Retrieves claim types based on staff ID and user group
    * @param staffId Staff identifier
@@ -35,7 +34,6 @@ service EclaimsService @(path: '/eclaims') {
    * @returns Array of claim type objects
    */
   function fetchClaimTypes(staffId : String, userGroup : String)                                                 returns array of {};
-
   /**
    * @description Retrieves ULU and FDLU information for a given claim type, user group, and period
    * @param claimType Type of claim
@@ -44,7 +42,6 @@ service EclaimsService @(path: '/eclaims') {
    * @returns ULU and FDLU information object
    */
   function fetchUluFdlu(claimType : String, userGroup : String, period : String)                                 returns {};
-
   /**
    * @description Enhanced CA Staff Lookup function with improved performance and error handling
    * @param ulu Unit Level Unit code
@@ -77,7 +74,6 @@ service EclaimsService @(path: '/eclaims') {
    * @returns Claimant staff information object
    */
   function claimantStaffInfo(username : String)                                                                  returns {};
-
   /**
    * @description Retrieves WBS (Work Breakdown Structure) information for a staff ID and claim date
    * @param staffId Staff identifier
@@ -85,6 +81,12 @@ service EclaimsService @(path: '/eclaims') {
    * @returns WBS information object
    */
   function fetchWBS(staffId : String, claimDate : String)                                                        returns {};
+  /**
+   * @description Fetches staff compensation info from CPI using stfNumber
+   * @param stfNumber Staff number to query
+   * @returns Compensation info object from CPI
+   */
+  function fetchCompInfoFromCPI(stfNumber : String)                                                              returns object;
 
   /********************************************************************* Actions ***************************************************************************************************/
 
@@ -94,14 +96,12 @@ service EclaimsService @(path: '/eclaims') {
    * @returns Dashboard data as string
    */
   action   eclaimsOverviewDashboard(data : object)                                                               returns String;
-
   /**
    * @description Retrieves rate types information
    * @param data Rate type configuration data
    * @returns Rate types object
    */
   action   rateTypes(data : object)                                                                              returns object;
-
   /**
    * @description Validates eclaims data
    * @param data Eclaims data to validate
@@ -125,13 +125,10 @@ service EclaimsService @(path: '/eclaims') {
   entity eclaimRequestViews         as
     projection on PRJ_ECLAIM_REQUEST_VIEW {
       *,
-      ![MasterClaimTypeDetails] : Association to many PRJ_MASTER_CLAIM_TYPE
-                                    on ![MasterClaimTypeDetails].CLAIM_TYPE_C = CLAIM_TYPE,
-      ![EclaimsItemDataDetails] : Association to many PRJ_ECLAIMS_ITEMS_DATA
-                                    on ![EclaimsItemDataDetails].DRAFT_ID = DRAFT_ID,
-      ![StatusConfigDetails]    : Association to many PRJ_UTILITY_STATUS_CONFIG
-                                    on ![StatusConfigDetails].STATUS_CODE = REQUEST_STATUS
-                                  }
+      ![MasterClaimTypeDetails] : Association to many PRJ_MASTER_CLAIM_TYPE on ![MasterClaimTypeDetails].CLAIM_TYPE_C = CLAIM_TYPE,
+      ![EclaimsItemDataDetails] : Association to many PRJ_ECLAIMS_ITEMS_DATA on ![EclaimsItemDataDetails].DRAFT_ID = DRAFT_ID,
+      ![StatusConfigDetails]    : Association to many PRJ_UTILITY_STATUS_CONFIG on ![StatusConfigDetails].STATUS_CODE = REQUEST_STATUS
+    }
 
   // @readonly
   // entity v_eclaim_item_view         as projection on ECLAIMS_ITEM_VIEW;
