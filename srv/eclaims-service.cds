@@ -3,7 +3,8 @@ using {nusext as db} from '../db/datamodel';
 using {
   PRJ_BASE_ECLAIM_REQUEST_VIEW,
   PRJ_ECLAIM_REQUEST_VIEW,
-  PRJ_TASK_ACTION_CONFIG
+  PRJ_TASK_ACTION_CONFIG,
+  PRJ_AGG_HOURS_DAY_TYPE
 } from '../db/redefinemodel';
 
 /**
@@ -116,6 +117,7 @@ service EclaimsService @(path: '/eclaims') {
   // @readonly
   entity v_base_eclaim_request_view as projection on PRJ_BASE_ECLAIM_REQUEST_VIEW;
   entity v_task_action_config_view  as projection on PRJ_TASK_ACTION_CONFIG;
+  entity v_agg_hours_day_type       as projection on PRJ_AGG_HOURS_DAY_TYPE;
   entity PRJ_MASTER_CLAIM_TYPE      as projection on db.MASTER_DATA.MASTER_CLAIM_TYPE;
   entity PRJ_ECLAIMS_ITEMS_DATA     as projection on db.ECLAIMS.ITEMS_DATA;
   entity PRJ_UTILITY_STATUS_CONFIG  as projection on db.UTILITY.STATUS_CONFIG;
@@ -143,7 +145,9 @@ service EclaimsService @(path: '/eclaims') {
       ![AttachmentsDataDetails]    : Association to many PRJ_ATTACHMENT_DATA
                                        on ![AttachmentsDataDetails].REFERENCE_ID = DRAFT_ID,
       ![RequestLockDetailsDetails] : Association to many PRJ_REQUEST_LOCK_DETAILS
-                                       on ![RequestLockDetailsDetails].REFERENCE_ID = DRAFT_ID
+                                       on ![RequestLockDetailsDetails].REFERENCE_ID = DRAFT_ID,
+      ![AggHoursDayTypeViewDetails] : Association to many v_agg_hours_day_type
+                                       on ![AggHoursDayTypeViewDetails].DRAFT_ID = DRAFT_ID
     }
 
   // @readonly

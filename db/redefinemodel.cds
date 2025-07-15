@@ -745,3 +745,10 @@ entity PRJ_TASK_ACTION_CONFIG {
         ACTION_CODE     : String(40) @title: 'ACTION_CODE: ACTION_CODE';
         TACTION_ID      : String(15) @title: 'TACTION_ID: TACTION_ID';
 }
+
+@cds.persistence.exists 
+Entity PRJ_AGG_HOURS_DAY_TYPE {
+key     DRAFT_ID: String(15)  @title: 'DRAFT_ID: DRAFT_ID' ; 
+        HOURS_UNIT: Decimal(5)  @title: 'HOURS_UNIT: HOURS_UNIT' ; 
+     CLAIM_DAY_TYPE: String(20)  @title: 'CLAIM_DAY_TYPE: CLAIM_DAY_TYPE' ; 
+}
