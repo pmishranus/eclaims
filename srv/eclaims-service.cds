@@ -2,7 +2,8 @@ using {nusext as db} from '../db/datamodel';
 
 using {
   PRJ_BASE_ECLAIM_REQUEST_VIEW,
-  PRJ_ECLAIM_REQUEST_VIEW
+  PRJ_ECLAIM_REQUEST_VIEW,
+  PRJ_TASK_ACTION_CONFIG
 } from '../db/redefinemodel';
 
 /**
@@ -114,9 +115,13 @@ service EclaimsService @(path: '/eclaims') {
 
   // @readonly
   entity v_base_eclaim_request_view as projection on PRJ_BASE_ECLAIM_REQUEST_VIEW;
+  entity v_task_action_config_view  as projection on PRJ_TASK_ACTION_CONFIG;
   entity PRJ_MASTER_CLAIM_TYPE      as projection on db.MASTER_DATA.MASTER_CLAIM_TYPE;
   entity PRJ_ECLAIMS_ITEMS_DATA     as projection on db.ECLAIMS.ITEMS_DATA;
   entity PRJ_UTILITY_STATUS_CONFIG  as projection on db.UTILITY.STATUS_CONFIG;
+  entity PRJ_REMARKS_DETAILS        as projection on db.UTILITY.REMARKS_DATA;
+  entity PRJ_ATTACHMENT_DATA        as projection on db.UTILITY.ATTACHMENTS_DATA;
+  entity PRJ_REQUEST_LOCK_DETAILS   as projection on db.UTILITY.REQUEST_LOCK_DETAILS;
 
   /**
    * @description Eclaim request views with associated master data
@@ -125,9 +130,20 @@ service EclaimsService @(path: '/eclaims') {
   entity eclaimRequestViews         as
     projection on PRJ_ECLAIM_REQUEST_VIEW {
       *,
-      ![MasterClaimTypeDetails] : Association to many PRJ_MASTER_CLAIM_TYPE on ![MasterClaimTypeDetails].CLAIM_TYPE_C = CLAIM_TYPE,
-      ![EclaimsItemDataDetails] : Association to many PRJ_ECLAIMS_ITEMS_DATA on ![EclaimsItemDataDetails].DRAFT_ID = DRAFT_ID,
-      ![StatusConfigDetails]    : Association to many PRJ_UTILITY_STATUS_CONFIG on ![StatusConfigDetails].STATUS_CODE = REQUEST_STATUS
+      ![MasterClaimTypeDetails]    : Association to many PRJ_MASTER_CLAIM_TYPE
+                                       on ![MasterClaimTypeDetails].CLAIM_TYPE_C = CLAIM_TYPE,
+      ![EclaimsItemDataDetails]    : Association to many PRJ_ECLAIMS_ITEMS_DATA
+                                       on ![EclaimsItemDataDetails].DRAFT_ID = DRAFT_ID,
+      ![StatusConfigDetails]       : Association to many PRJ_UTILITY_STATUS_CONFIG
+                                       on ![StatusConfigDetails].STATUS_CODE = REQUEST_STATUS,
+      ![TaskActionConfigViewDetails] : Association to many v_task_action_config_view
+                                       on ![TaskActionConfigViewDetails].PROCESS_INST_ID = PROCESS_INST_ID,
+      ![RemarksDataDetails]        : Association to many PRJ_REMARKS_DETAILS
+                                       on ![RemarksDataDetails].REFERENCE_ID = DRAFT_ID,
+      ![AttachmentsDataDetails]    : Association to many PRJ_ATTACHMENT_DATA
+                                       on ![AttachmentsDataDetails].REFERENCE_ID = DRAFT_ID,
+      ![RequestLockDetailsDetails] : Association to many PRJ_REQUEST_LOCK_DETAILS
+                                       on ![RequestLockDetailsDetails].REFERENCE_ID = DRAFT_ID
     }
 
   // @readonly

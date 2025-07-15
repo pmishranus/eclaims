@@ -59,7 +59,7 @@ Authorization: Bearer {{access_token}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
-GET {{unsecureProtocol}}://{{host}}/v2/eclaims/$metadata
+GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/$metadata
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -111,7 +111,7 @@ Authorization: Bearer {{access_token}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
-GET {{unsecureProtocol}}://{{host}}/v2/eclaims/draftEclaimData?ulu=0210010100&fdlu=0001010001&claimType=102&period=04-2025&staffId=151515
+GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/draftEclaimData?ulu=0210010100&fdlu=0001010001&claimType=102&period=04-2025&staffId=151515
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -132,7 +132,7 @@ Authorization: Bearer {{access_token}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
-GET {{unsecureProtocol}}://{{host}}/eclaims/eclaimRequestViews?$top=10&$expand=MasterClaimTypeDetails
+GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/eclaimRequestViews('DT2504000002')?$top=10&$expand=MasterClaimTypeDetails,RemarksDataDetails,TaskActionConfigViewDetails,RequestLockDetailsDetails,AttachmentsDataDetails
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 

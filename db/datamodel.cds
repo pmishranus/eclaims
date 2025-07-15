@@ -279,6 +279,30 @@ context UTILITY {
             NUSNET_ID         : VAR_TEXT_100;
             IS_EDITABLE       : VAR_INT; //Flag to allow for edit of remarks on the screen
     };
+    
+    
+    /********************************************* Attachments Data Entity ***************************/
+    @cds.persistence.exists
+    entity ATTACHMENTS_DATA {
+        key ATTCHMNT_ID      : VAR_TEXT_20; //Pattern ATYYMM<4digit seq no>
+            REFERENCE_ID     : VAR_TEXT_50;
+            HIERARCHY        : VAR_INT;
+            SOURCE_TYPE      : VAR_TEXT_20;
+            OPNTXT_ID        : VAR_TEXT_15;
+            ATTACHMENT_TYPE  : VAR_TEXT_50;
+            ATTACHMENT_NAME  : VAR_TEXT_100;
+            ATTACHMENT_URL   : VAR_TEXT_250;
+            MEDIA_TYPE       : VAR_TEXT_250;
+            EXPIRY_DATE      : VAR_TEXT_20;
+            UPLOADED_BY      : VAR_TEXT_20;
+            UPDATED_BY_NID   : VAR_TEXT_100;
+            UPLOADED_ON      : VAR_TEXT_40;
+            IS_DELETED       : VAR_TEXT_2; // Column added for soft deleting data
+            MODIFIED_BY      : VAR_TEXT_20;
+            MODIFIED_BY_NID  : VAR_TEXT_100;
+            MODIFIED_ON      : VAR_TIMESTAMP;
+            IS_ZIP_PROCESSED : VAR_TEXT_2;
+    };
 
     /********************************************* Task Details Config Entity ***************************/
     @cds.persistence.exists
