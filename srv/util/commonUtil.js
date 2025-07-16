@@ -1,6 +1,7 @@
 const _ = require("lodash");
-const { MESSAGE } = require("./constant");
+// const { MESSAGE } = require("./constant");
 const axios = require('axios');
+const credStore = require('./credStore/credStore');
 /**
  * Frames a response object.
  * @param {Object} sourceObj
@@ -233,16 +234,106 @@ function convertListToString(arr, key) {
  * @returns {Promise<string>} The Bearer token.
  */
 async function fetchCpiBearerToken() {
-    const tokenUrl = 'https://oauthasservices-c10247e87.ap1.hana.ondemand.com/oauth2/api/v1/token?grant_type=client_credentials';
-    const username = 'apicfconnectivity';
-    const password = 'Sap@12345678';
+    // const tokenUrl = 'https://oauthasservices-c10247e87.ap1.hana.ondemand.com/oauth2/api/v1/token?grant_type=client_credentials';
+    // const username = 'apicfconnectivity';
+    // const password = 'Sap@12345678';
+    // const basicAuth = Buffer.from(`${username}:${password}`).toString('base64');
+    // const headers = {
+    //     'Authorization': `Basic ${basicAuth}`,
+    //     'Content-Type': 'application/x-www-form-urlencoded',
+    // };
+
+    //credential store beginning
+
+    let credStoreBinding = JSON.parse(process.env.VCAP_SERVICES).credstore[0].credentials;
+
+    let credPassword = {
+      name: "hana_login_password"
+    };
+
+    let oRetCredential = await credStore.readCredential(credStoreBinding, "hana_db", "password", credPassword.name);
+
+
+
+
+    //end of credential store
+
+    //setting the api config
+    if (!oRetCredential || !oRetCredential.metadata || !oRetCredential.username || !oRetCredential.value) {
+      const error = new Error("Client Credentials Not Available");
+      error.code = 400;
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const tokenUrl = oRetCredential.metadata;
+    const username = oRetCredential.username;
+    const password = oRetCredential.value;
     const basicAuth = Buffer.from(`${username}:${password}`).toString('base64');
     const headers = {
         'Authorization': `Basic ${basicAuth}`,
         'Content-Type': 'application/x-www-form-urlencoded',
     };
+
     const response = await axios.post(tokenUrl, null, { headers });
     return response.data.access_token;
+}
+
+/**
+ * Generic function to call CPI APIs with authentication and error handling.
+ * @param {string} apiUrl - The CPI API endpoint URL
+ * @param {any} requestData - The data to send in the request body
+ * @param {string} method - HTTP method (default: 'POST')
+ * @param {Object} additionalHeaders - Additional headers to include (optional)
+ * @param {Function} callback - Callback function to process the response (optional)
+ * @returns {Promise<any>} The CPI API response or callback result
+ */
+async function callCpiApi(apiUrl, requestData, method = 'POST', additionalHeaders = {}, callback = null) {
+    try {
+        // Fetch Bearer token
+        const token = await fetchCpiBearerToken();
+        
+        // Prepare headers
+        const headers = {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            ...additionalHeaders
+        };
+
+        // Make the API call
+        const config = {
+            method: method.toUpperCase(),
+            url: apiUrl,
+            headers: headers,
+            data: requestData,
+            timeout: 300000 // 300 seconds timeout
+        };
+
+        const response = await axios.request(config);
+        
+        // If callback is provided, process the response through it
+        if (callback && typeof callback === 'function') {
+            return await callback(response.data, response.status, response.headers);
+        }
+        
+        // Return the raw response data
+        return response.data;
+        
+    } catch (err) {
+        // Enhanced error handling
+        const errorMessage = err.response 
+            ? `CPI API Error: ${err.response.status} - ${err.response.statusText}`
+            : `CPI API Error: ${err.message}`;
+            
+        console.error('CPI API call failed:', {
+            url: apiUrl,
+            method: method,
+            error: errorMessage,
+            response: err.response?.data
+        });
+        
+        throw new Error(errorMessage);
+    }
 }
 
 /**
@@ -251,14 +342,10 @@ async function fetchCpiBearerToken() {
  * @returns {Promise<object>} The CPI API response.
  */
 async function getCpiCompInfo(stfNumber) {
-    const token = await fetchCpiBearerToken();
     const apiUrl = 'https://e200226-iflmap.hcisbt.ap1.hana.ondemand.com/http/EC_To_BTP_Comp_Info_AdRun_StaffID_QA';
-    const headers = {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-    };
-    const response = await axios.post(apiUrl, { stfNumber }, { headers });
-    return response.data;
+    
+    // Use the generic CPI calling function
+    return await callCpiApi(apiUrl, stfNumber, 'POST');
 }
 
 module.exports = {
@@ -285,5 +372,7 @@ module.exports = {
     frameValidationMessage,
     convertListToString,
     isBlank,
+    fetchCpiBearerToken,
+    callCpiApi,
     getCpiCompInfo
 };
