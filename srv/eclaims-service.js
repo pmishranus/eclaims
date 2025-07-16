@@ -9,7 +9,7 @@ const claimantStaffInfoCtrl = require("./controller/claimantStaffInfo.controller
 const fetchWBSCtrl = require("./controller/fetchWBS.controller");
 const validateEclaimsCtrl = require("./controller/validateEclaims.controller");
 const fetchUluFdluCtrl = require("./controller/fetchUluFdlu.controller");
-const commonUtil = require("./util/commonUtil");
+const ecpWbsValidateCtrl = require("./controller/ecpWbsValidateCtrl.controller");
 
 class EclaimsService extends cds.ApplicationService {
     init() {
@@ -34,7 +34,7 @@ class EclaimsService extends cds.ApplicationService {
         });
 
         this.on("fetchClaimTypes", async request => {
-            return await fetchClaimTypesCtrl.fetchClaimTypes(request);
+            return fetchClaimTypesCtrl.fetchClaimTypes(request);
         });
 
         this.on("fetchUluFdlu", async request => {
@@ -99,13 +99,11 @@ class EclaimsService extends cds.ApplicationService {
             return response;
         });
 
-        this.on("fetchCompInfoFromCPI", async request => {
+        this.on("ecpWbsValidate", async request => {
             try {
-                const { stfNumber } = request.data;
-                const result = await commonUtil.getCpiCompInfo(stfNumber);
-                return result;
+                return await ecpWbsValidateCtrl.ecpWbsValidate(request);
             } catch (err) {
-                return { error: true, message: err.message || "Failed to fetch CPI compensation info" };
+                return { error: true, message: err.message || "Failed to fetch WBS info" };
             }
         });
 

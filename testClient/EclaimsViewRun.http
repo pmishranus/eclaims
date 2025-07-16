@@ -145,6 +145,13 @@ Authorization: Bearer {{access_token}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
+GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/fetchCompInfoFromCPI?stfNumber=151398
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+### Request-2 Get eclaims header data
+#==================================================================#
 POST {{unsecureProtocol}}://{{host}}/eclaims/validateEclaims
 Content-Type: application/json
 Authorization: Bearer {{access_token}}

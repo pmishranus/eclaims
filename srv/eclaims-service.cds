@@ -111,6 +111,8 @@ service EclaimsService @(path: '/eclaims') {
    */
   action   validateEclaims(data : object)                                                                        returns object;
 
+  action ecpWbsValidate(data: object) returns object;
+
 
   /******************************************************************** Calculation Views Exposed *********************************************************************************/
 
