@@ -30,13 +30,14 @@ async function ecpWbsValidate(request) {
         );
         
         // Return the validation result
-        return {
-            success: true,
-            message: "WBS validation completed successfully",
-            data: validationResult,
-            validatedBy: user,
-            timestamp: new Date().toISOString()
-        };
+        return validationResult;
+        // return {
+        //     success: true,
+        //     message: "WBS validation completed successfully",
+        //     data: validationResult
+        //     validatedBy: user,
+        //     timestamp: new Date().toISOString()
+        // };
         
     } catch (err) {
         console.error("ECP WBS Validation failed:", {

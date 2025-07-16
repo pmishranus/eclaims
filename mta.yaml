@@ -27,7 +27,7 @@ modules:
       requires:
           - name: utility-db
           - name: utility-uaa
-
+          - name: cred-store-dev
     - name: eclaims-db-deployer
       type: hdb
       path: gen/db
@@ -63,3 +63,7 @@ resources:
       type: org.cloudfoundry.existing-service
       parameters:
           service-name: utility-uaa
+    - name: cred-store-dev
+      type: org.cloudfoundry.existing-service
+      parameters:
+          service-name: cred-store-dev

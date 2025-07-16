@@ -1,20 +1,46 @@
-### ECP WBS Validation Test
-### This test validates WBS codes using the ECP system
+@xsuaaHostname = https://nus-ariba-dev-px55m7l5.authentication.eu10.hana.ondemand.com
+@xsuaaClient = sb-utility!t169063
+@xsuaaSecret = 8f6e922d-4d5d-4fe6-910f-000dce2b4638$tk1PCoekKMDcX4OIh88nJSgmdU2bERyXw_RLMtfY_vA=
+@host = localhost:4004
+@protocol = https
+@unsecureProtocol = http
 
-POST {{baseUrl}}/eclaims/ecpWbsValidate
+### Request-1 Get xsuaa token
+#==================================================================#
+# @name getXsuaaToken
+
+POST {{xsuaaHostname}}/oauth/token
+Accept: application/json
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic {{xsuaaClient}}:{{xsuaaSecret}}
+
+client_id={{xsuaaClient}}
+&client_secret={{xsuaaSecret}}
+&grant_type=client_credentials
+
+### Store access token 
+@access_token = {{getXsuaaToken.response.body.$.access_token}}
+
+### Request-1 ECP WBS Validation - Single WBS Code
+#==================================================================#
+POST {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/ecpWbsValidate
 Content-Type: application/json
+Authorization: Bearer {{access_token}}
 
 {
   "data": {
     "WBSRequest": {
-      "WBS": ["A-0003975"]
+      "WBS": [
+        "A-0003975"
+      ]
     }
   }
 }
-
-### Test with multiple WBS codes
-POST {{baseUrl}}/eclaims/ecpWbsValidate
+### Request-2 ECP WBS Validation - Multiple WBS Codes
+#==================================================================#
+POST {{unsecureProtocol}}://{{host}}/eclaims/ecpWbsValidate
 Content-Type: application/json
+Authorization: Bearer {{access_token}}
 
 {
   "data": {
@@ -24,9 +50,11 @@ Content-Type: application/json
   }
 }
 
-### Test with empty WBS array (should fail)
-POST {{baseUrl}}/eclaims/ecpWbsValidate
+### Request-3 ECP WBS Validation - Empty WBS Array (Should Fail)
+#==================================================================#
+POST {{unsecureProtocol}}://{{host}}/eclaims/ecpWbsValidate
 Content-Type: application/json
+Authorization: Bearer {{access_token}}
 
 {
   "data": {
@@ -36,12 +64,61 @@ Content-Type: application/json
   }
 }
 
-### Test with invalid payload format (should fail)
-POST {{baseUrl}}/eclaims/ecpWbsValidate
+### Request-4 ECP WBS Validation - Invalid Payload Format (Should Fail)
+#==================================================================#
+POST {{unsecureProtocol}}://{{host}}/eclaims/ecpWbsValidate
 Content-Type: application/json
+Authorization: Bearer {{access_token}}
 
 {
   "data": {
     "invalidFormat": "test"
+  }
+}
+
+### Request-5 ECP WBS Validation - Missing WBSRequest (Should Fail)
+#==================================================================#
+POST {{unsecureProtocol}}://{{host}}/eclaims/ecpWbsValidate
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "data": {
+    "someOtherData": "value"
+  }
+}
+
+### Request-6 ECP WBS Validation - Large WBS Array
+#==================================================================#
+POST {{unsecureProtocol}}://{{host}}/eclaims/ecpWbsValidate
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "data": {
+    "WBSRequest": {
+      "WBS": [
+        "A-0003975",
+        "B-0001234", 
+        "C-0005678",
+        "D-0009012",
+        "E-0003456",
+        "F-0007890"
+      ]
+    }
+  }
+}
+
+### Request-7 ECP WBS Validation - Special Characters in WBS Codes
+#==================================================================#
+POST {{unsecureProtocol}}://{{host}}/eclaims/ecpWbsValidate
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "data": {
+    "WBSRequest": {
+      "WBS": ["A-0003975", "B-123_456", "C-789-012"]
+    }
   }
 } 

@@ -249,6 +249,24 @@ async function fetchCpiBearerToken() {
         throw error;
     }
 
+    // Parse metadata if it's a string
+    let metadata;
+    if (typeof oRetCredential.metadata === 'string') {
+        try {
+            // Replace single quotes with double quotes and parse
+            const cleanMetadata = oRetCredential.metadata
+                .replace(/'/g, '"')  // Replace single quotes with double quotes
+                .replace(/\\n/g, ''); // Remove escaped newlines
+            metadata = JSON.parse(cleanMetadata);
+        } catch (parseError) {
+            throw new Error(`Failed to parse metadata: ${parseError.message}`);
+        }
+    } else {
+        metadata = oRetCredential.metadata;
+    }
+
+    oRetCredential.metadata = metadata;
+
     const tokenUrl = oRetCredential.metadata.oAuth;
     const username = oRetCredential.username;
     const password = oRetCredential.value;
@@ -260,7 +278,8 @@ async function fetchCpiBearerToken() {
     const response = await axios.post(tokenUrl, null, { headers });
     return {
         "access_token" : response.data.access_token,
-        "credential" : oRetCredential
+        ...oRetCredential
+    }
 }
 
 /**
@@ -322,17 +341,7 @@ async function callCpiApi(apiUrl, requestData, method = 'POST', additionalHeader
 
 
 
-/**
- * Fetches compensation info from CPI for a given staff number.
- * @param {string} stfNumber - The staff number.
- * @returns {Promise<object>} The CPI API response.
- */
-async function getCpiCompInfo(stfNumber) {
-    const apiUrl = 'https://e200226-iflmap.hcisbt.ap1.hana.ondemand.com/http/EC_To_BTP_Comp_Info_AdRun_StaffID_QA';
-    
-    // Use the generic CPI calling function
-    return await callCpiApi(apiUrl, stfNumber, 'POST');
-}
+
 
 module.exports = {
     frameResponse,
@@ -359,6 +368,5 @@ module.exports = {
     convertListToString,
     isBlank,
     fetchCpiBearerToken,
-    callCpiApi,
-    getCpiCompInfo
-};
+    callCpiApi
+}
