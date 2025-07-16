@@ -234,39 +234,22 @@ function convertListToString(arr, key) {
  * @returns {Promise<string>} The Bearer token.
  */
 async function fetchCpiBearerToken() {
-    // const tokenUrl = 'https://oauthasservices-c10247e87.ap1.hana.ondemand.com/oauth2/api/v1/token?grant_type=client_credentials';
-    // const username = 'apicfconnectivity';
-    // const password = 'Sap@12345678';
-    // const basicAuth = Buffer.from(`${username}:${password}`).toString('base64');
-    // const headers = {
-    //     'Authorization': `Basic ${basicAuth}`,
-    //     'Content-Type': 'application/x-www-form-urlencoded',
-    // };
-
-    //credential store beginning
-
     let credStoreBinding = JSON.parse(process.env.VCAP_SERVICES).credstore[0].credentials;
 
     let credPassword = {
-      name: "hana_login_password"
+        name: "cpi_oauth_connectivity"
     };
 
     let oRetCredential = await credStore.readCredential(credStoreBinding, "hana_db", "password", credPassword.name);
 
-
-
-
-    //end of credential store
-
-    //setting the api config
     if (!oRetCredential || !oRetCredential.metadata || !oRetCredential.username || !oRetCredential.value) {
-      const error = new Error("Client Credentials Not Available");
-      error.code = 400;
-      error.statusCode = 400;
-      throw error;
+        const error = new Error("Client Credentials Not Available");
+        error.code = 400;
+        error.statusCode = 400;
+        throw error;
     }
 
-    const tokenUrl = oRetCredential.metadata;
+    const tokenUrl = oRetCredential.metadata.oAuth;
     const username = oRetCredential.username;
     const password = oRetCredential.value;
     const basicAuth = Buffer.from(`${username}:${password}`).toString('base64');
@@ -274,9 +257,10 @@ async function fetchCpiBearerToken() {
         'Authorization': `Basic ${basicAuth}`,
         'Content-Type': 'application/x-www-form-urlencoded',
     };
-
     const response = await axios.post(tokenUrl, null, { headers });
-    return response.data.access_token;
+    return {
+        "access_token" : response.data.access_token,
+        "credential" : oRetCredential
 }
 
 /**
@@ -290,9 +274,9 @@ async function fetchCpiBearerToken() {
  */
 async function callCpiApi(apiUrl, requestData, method = 'POST', additionalHeaders = {}, callback = null) {
     try {
-        // Fetch Bearer token
-        const token = await fetchCpiBearerToken();
-        
+        // Get Bearer token
+        const oRetCredentialToken = await fetchCpiBearerToken();
+        const token = oRetCredentialToken.access_token;
         // Prepare headers
         const headers = {
             'Authorization': `Bearer ${token}`,
@@ -303,7 +287,7 @@ async function callCpiApi(apiUrl, requestData, method = 'POST', additionalHeader
         // Make the API call
         const config = {
             method: method.toUpperCase(),
-            url: apiUrl,
+            url: oRetCredentialToken.metadata.hostName + apiUrl,
             headers: headers,
             data: requestData,
             timeout: 300000 // 300 seconds timeout
@@ -335,6 +319,8 @@ async function callCpiApi(apiUrl, requestData, method = 'POST', additionalHeader
         throw new Error(errorMessage);
     }
 }
+
+
 
 /**
  * Fetches compensation info from CPI for a given staff number.

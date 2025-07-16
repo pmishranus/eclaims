@@ -110,8 +110,12 @@ service EclaimsService @(path: '/eclaims') {
    * @returns Validation results object
    */
   action   validateEclaims(data : object)                                                                        returns object;
-
-  action ecpWbsValidate(data: object) returns object;
+  /**
+   * @description Validates WBS (Work Breakdown Structure) codes using ECP system
+   * @param data Object containing WBSRequest with array of WBS codes
+   * @returns Validation results object from ECP system
+   */
+  action   ecpWbsValidate(data : object)                                                                         returns object;
 
 
   /******************************************************************** Calculation Views Exposed *********************************************************************************/
@@ -134,22 +138,14 @@ service EclaimsService @(path: '/eclaims') {
   entity eclaimRequestViews         as
     projection on PRJ_ECLAIM_REQUEST_VIEW {
       *,
-      ![MasterClaimTypeDetails]    : Association to many PRJ_MASTER_CLAIM_TYPE
-                                       on ![MasterClaimTypeDetails].CLAIM_TYPE_C = CLAIM_TYPE,
-      ![EclaimsItemDataDetails]    : Association to many PRJ_ECLAIMS_ITEMS_DATA
-                                       on ![EclaimsItemDataDetails].DRAFT_ID = DRAFT_ID,
-      ![StatusConfigDetails]       : Association to many PRJ_UTILITY_STATUS_CONFIG
-                                       on ![StatusConfigDetails].STATUS_CODE = REQUEST_STATUS,
-      ![TaskActionConfigViewDetails] : Association to many v_task_action_config_view
-                                       on ![TaskActionConfigViewDetails].PROCESS_INST_ID = PROCESS_INST_ID,
-      ![RemarksDataDetails]        : Association to many PRJ_REMARKS_DETAILS
-                                       on ![RemarksDataDetails].REFERENCE_ID = DRAFT_ID,
-      ![AttachmentsDataDetails]    : Association to many PRJ_ATTACHMENT_DATA
-                                       on ![AttachmentsDataDetails].REFERENCE_ID = DRAFT_ID,
-      ![RequestLockDetailsDetails] : Association to many PRJ_REQUEST_LOCK_DETAILS
-                                       on ![RequestLockDetailsDetails].REFERENCE_ID = DRAFT_ID,
-      ![AggHoursDayTypeViewDetails] : Association to many v_agg_hours_day_type
-                                       on ![AggHoursDayTypeViewDetails].DRAFT_ID = DRAFT_ID
+      ![MasterClaimTypeDetails]      : Association to many PRJ_MASTER_CLAIM_TYPE on ![MasterClaimTypeDetails].CLAIM_TYPE_C = CLAIM_TYPE,
+      ![EclaimsItemDataDetails]      : Association to many PRJ_ECLAIMS_ITEMS_DATA on ![EclaimsItemDataDetails].DRAFT_ID = DRAFT_ID,
+      ![StatusConfigDetails]         : Association to many PRJ_UTILITY_STATUS_CONFIG on ![StatusConfigDetails].STATUS_CODE = REQUEST_STATUS,
+      ![TaskActionConfigViewDetails] : Association to many v_task_action_config_view on ![TaskActionConfigViewDetails].PROCESS_INST_ID = PROCESS_INST_ID,
+      ![RemarksDataDetails]          : Association to many PRJ_REMARKS_DETAILS on ![RemarksDataDetails].REFERENCE_ID = DRAFT_ID,
+      ![AttachmentsDataDetails]      : Association to many PRJ_ATTACHMENT_DATA on ![AttachmentsDataDetails].REFERENCE_ID = DRAFT_ID,
+      ![RequestLockDetailsDetails]   : Association to many PRJ_REQUEST_LOCK_DETAILS on ![RequestLockDetailsDetails].REFERENCE_ID = DRAFT_ID,
+      ![AggHoursDayTypeViewDetails]  : Association to many v_agg_hours_day_type on ![AggHoursDayTypeViewDetails].DRAFT_ID = DRAFT_ID
     }
 
   // @readonly

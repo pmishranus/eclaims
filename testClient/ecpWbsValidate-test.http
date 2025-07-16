@@ -1,0 +1,47 @@
+### ECP WBS Validation Test
+### This test validates WBS codes using the ECP system
+
+POST {{baseUrl}}/eclaims/ecpWbsValidate
+Content-Type: application/json
+
+{
+  "data": {
+    "WBSRequest": {
+      "WBS": ["A-0003975"]
+    }
+  }
+}
+
+### Test with multiple WBS codes
+POST {{baseUrl}}/eclaims/ecpWbsValidate
+Content-Type: application/json
+
+{
+  "data": {
+    "WBSRequest": {
+      "WBS": ["A-0003975", "B-0001234", "C-0005678"]
+    }
+  }
+}
+
+### Test with empty WBS array (should fail)
+POST {{baseUrl}}/eclaims/ecpWbsValidate
+Content-Type: application/json
+
+{
+  "data": {
+    "WBSRequest": {
+      "WBS": []
+    }
+  }
+}
+
+### Test with invalid payload format (should fail)
+POST {{baseUrl}}/eclaims/ecpWbsValidate
+Content-Type: application/json
+
+{
+  "data": {
+    "invalidFormat": "test"
+  }
+} 
