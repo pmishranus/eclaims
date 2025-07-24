@@ -70,7 +70,7 @@ module.exports = {
         const query = ` 
             SELECT cj.*
             FROM NUSEXT_MASTER_DATA_CHRS_JOB_INFO cj
-            JOIN NUSEXT_MASTER_DATA_ELIGIBILITY_CRITERIA ec
+            JOIN NUSEXT_MASTER_DATA_CHRS_ELIG_CRITERIA ec
                 ON ec.STF_NUMBER = cj.STF_NUMBER
             AND ec.SF_STF_NUMBER = cj.SF_STF_NUMBER
             WHERE cj.START_DATE <= ?
@@ -127,7 +127,7 @@ module.exports = {
         // Using parameterized query to prevent SQL injection
         const query = `
             SELECT cj.*
-            FROM NUSEXT_MASTER_DATA_CHRS_JOB_INFO cj, NUSEXT_MASTER_DATA_ELIGIBILITY_CRITERIA ec
+            FROM NUSEXT_MASTER_DATA_CHRS_JOB_INFO cj, NUSEXT_MASTER_DATA_CHRS_ELIG_CRITERIA ec
             WHERE
                 cj.START_DATE <= ?
                 AND cj.END_DATE >= ?

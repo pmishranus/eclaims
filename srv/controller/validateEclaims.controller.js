@@ -3,21 +3,20 @@ const EclaimService = require("../util/eclaimService");
 const CommonUtils = require("../util/commonUtil");
 const { ApplicationConstants, MessageConstants } = require("../util/constant");
 const EclaimsHeaderDataRepo = require("../repository/eclaimsData.repo");
+const { ApplicationException, HttpClientErrorException } = require("../util/customErrors");
 /**
  *
  * @param request
  */
 async function fetchValidateEclaims(request) {
-     // Response object
-     let uploadResponseDto = {
-        claimDataResponse : {
-        }
-     };
+    // Response object
+    let uploadResponseDto = {
+        claimDataResponse: {},
+    };
     try {
-        const tx = cds.tx(request);
         const user = request.user.id;
         // const userName = user.split('@')[0];
-        const userName = "CW_CA3";
+        const userName = "PTT_CA9";
         const upperNusNetId = userName.toUpperCase();
         let loggedInUserDetails = await CommonRepo.fetchLoggedInUser(upperNusNetId);
         if (!userName) {
@@ -25,38 +24,37 @@ async function fetchValidateEclaims(request) {
         }
         let massUploadRequest = request.data.data;
 
-        
-         let responseHeaders = {}; // CAP automatically handles headers, but you can set via req.res.setHeader
+        let responseHeaders = {}; // CAP automatically handles headers, but you can set via req.res.setHeader
 
-         let responseDto = await validateEclaims(massUploadRequest,loggedInUserDetails)
+        let responseDto = await validateEclaims(massUploadRequest, loggedInUserDetails);
 
-         uploadResponseDto.error = responseDto.error;
-         uploadResponseDto.message = responseDto.message;
-         uploadResponseDto.claimDataResponse = responseDto.eclaimsData;
+        uploadResponseDto.error = responseDto.error;
+        uploadResponseDto.message = responseDto.message;
+        uploadResponseDto.claimDataResponse = responseDto.eclaimsData;
 
-         return uploadResponseDto;
-        
+        return uploadResponseDto;
     } catch (error) {
         uploadResponseDto.isError = true;
+        console.error(error.getErrorInfo());
         if (error instanceof HttpClientErrorException) {
             uploadResponseDto.message = error.statusText;
-            // In CAP, you can set HTTP status via req.reject()
-            req.reject(error.statusCode, uploadResponseDto.message);
+            // In CAP, you can set HTTP status via request.reject()
+            request.reject(error.statusCode, uploadResponseDto.message);
         } else if (error instanceof ApplicationException) {
-            console.error("Exception Occurred for massUploadRequest:", massUploadRequest, "Exception:", error.message);
-            uploadResponseDto.message = ApplicationConstants.GENERIC_EXCEPTION
-            req.reject(400, uploadResponseDto.message);
+            console.error("Exception Occurred in validateEclaims:", error.message);
+            uploadResponseDto.message = ApplicationConstants.GENERIC_EXCEPTION;
+            
+            request.reject(400, uploadResponseDto.message);
         } else {
             // Fallback for unhandled errors
             uploadResponseDto.message = "Internal server error";
-            req.reject(500, uploadResponseDto.message);
+            request.reject(500, uploadResponseDto.message);
         }
         // return;
     }
 }
 
-async function validateEclaims(massUploadRequest,userInfoDetails) {
-
+async function validateEclaims(massUploadRequest, userInfoDetails) {
     try {
         let massUploadResponseDto = { eclaimsData: [], error: false, message: "" };
         let eclaimsDataResDtoList = [];
@@ -78,13 +76,19 @@ async function validateEclaims(massUploadRequest,userInfoDetails) {
                 }
 
                 if (CommonUtils.isBlank(requestorGroup)) {
-                    if (CommonUtils.equalsIgnoreCase(roleFlow,ApplicationConstants.ESS))
+                    if (CommonUtils.equalsIgnoreCase(roleFlow, ApplicationConstants.ESS)) {
                         requestorGroup = ApplicationConstants.NUS_CHRS_ECLAIMS_ESS;
-                    else
+                    } else {
                         requestorGroup = ApplicationConstants.CLAIM_ASSISTANT;
+                    }
                 }
 
-                validationResults = await EclaimService.validateEclaimsData(item, roleFlow, requestorGroup,userInfoDetails);
+                validationResults = await EclaimService.validateEclaimsData(
+                    item,
+                    roleFlow,
+                    requestorGroup,
+                    userInfoDetails
+                );
                 if (validationResults && validationResults.length > 0) {
                     eclaimsDataResDto.validationResults = validationResults;
                     eclaimsDataResDto.ERROR_STATE = true;
@@ -98,7 +102,6 @@ async function validateEclaims(massUploadRequest,userInfoDetails) {
         }
         massUploadResponseDto.eclaimsData = eclaimsDataResDtoList;
         return massUploadResponseDto;
-
     } catch (error) {
         if (error instanceof ApplicationException) {
             throw error;
@@ -106,9 +109,8 @@ async function validateEclaims(massUploadRequest,userInfoDetails) {
             throw new ApplicationException(error.message);
         }
     }
-    
 }
 
 module.exports = {
-    fetchValidateEclaims
-}
+    fetchValidateEclaims,
+};

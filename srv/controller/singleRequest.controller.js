@@ -28,18 +28,18 @@ async function postClaims(request) {
         const tx = cds.tx(request);
         const user = request.user.id;
         // const userName = user.split('@')[0];
-        const userName = "PTT_CA1";
+        const userName = "PTT_CA9";
         const upperNusNetId = userName.toUpperCase();
         let loggedInUserDetails = await CommonRepo.fetchLoggedInUser(upperNusNetId);
         if (!userName) {
             throw new Error("User not found..!!");
-        }
+        } 
         let massUploadRequest = request.data.data;
         // const token = request.token || (request.headers && (request.headers.Authorization || request.headers.authorization));
 
         let roleFlow = await EclaimService.fetchRole(massUploadRequest);
 
-        massUploadRequest = await populateStartTimeEndTime(massUploadRequest, loggedInUserDetails);
+        massUploadRequest = populateStartTimeEndTime(massUploadRequest, loggedInUserDetails);
 
         switch (roleFlow) {
             case ApplicationConstants.ESS:
@@ -69,7 +69,7 @@ async function postClaims(request) {
  * @param {Array} massUploadRequest - The mass upload request array.
  * @returns {Array} The updated request array.
  */
-async function populateStartTimeEndTime(massUploadRequest) {
+function populateStartTimeEndTime(massUploadRequest) {
     if (Array.isArray(massUploadRequest) && massUploadRequest.length > 0) {
         for (const uploadRequest of massUploadRequest) {
             if (
@@ -363,8 +363,8 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     const now = new Date();
     const reqMonth = String(now.getMonth() + 1).padStart(2, "0");
     const reqYear = String(now.getFullYear()).slice(-2);
-    const draftIdPatternVal = ApplicationConstants.SEQUENCE_DRAFT_ID_PATTERN + reqYear + reqMonth;
-    const requestIdPatternVal = ApplicationConstants.SEQUENCE_REQUEST_ID_PATTERN + reqYear + reqMonth;
+    const draftIdPatternVal = ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_DRAFT_ID_PATTERN + reqYear + reqMonth;
+    const requestIdPatternVal = ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_REQUEST_ID_PATTERN + reqYear + reqMonth;
     let draftNumber = "";
 
     // Already submitted check
@@ -421,13 +421,13 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
             eclaimsData.CREATED_ON = new Date().toISOString();
         }
     } else {
-        draftNumber = await CommonRepo.fetchSequenceNumber(draftIdPatternVal, ApplicationConstants.SEQUENCE_DRAFT_ID_DIGITS);
+        draftNumber = await CommonRepo.fetchSequenceNumber(draftIdPatternVal, ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_DRAFT_ID_DIGITS);
         eclaimsData.DRAFT_ID = draftNumber;
         eclaimsData.CREATED_ON = new Date().toISOString();
     }
 
     // MODIFIED fields
-    if (userInfoDetails) {eclaimsData.MODIFIED_BY = userInfoDetails.STAFF_ID;}
+    if (userInfoDetails) {eclaimsData.MODIFIED_BY = userInfoDetails.STF_NUMBER;}
     eclaimsData.MODIFIED_BY_NID = userInfoDetails.NUSNET_ID;
     eclaimsData.MODIFIED_ON = new Date().toISOString();
 
@@ -484,7 +484,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     } else {
         if (userInfoDetails) {
             eclaimsData.SUBMITTED_BY_NID = userInfoDetails.NUSNET_ID;
-            eclaimsData.SUBMITTED_BY = userInfoDetails.STAFF_ID;
+            eclaimsData.SUBMITTED_BY = userInfoDetails.STF_NUMBER;
         }
         eclaimsData.SUBMITTED_ON = new Date().toISOString();
     }
@@ -516,7 +516,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
             const savedItemIds = (await EclaimsItemDataRepo.fetchItemIds(draftNumber)).map(row => row.ITEM_ID);
             const itemIdsToSoftDelete = savedItemIds.filter(id => !itemIdList.includes(id));
             if (itemIdsToSoftDelete.length > 0) {
-                await EclaimsItemDataRepo.softDeleteByItemId(tx, itemIdsToSoftDelete, userInfoDetails.STAFF_ID, new Date());
+                await EclaimsItemDataRepo.softDeleteByItemId(tx, itemIdsToSoftDelete, userInfoDetails.STAFF_ID,DateUtils.formatDateAsString(new Date(),'yyyy-MM-dd'));
             }
         }
         for (const selectedClaimDates of item.selectedClaimDates) {
@@ -528,7 +528,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
             }
         }
     } else if (draftNumber) {
-        await EclaimsItemDataRepo.softDeleteByDraftId(tx, draftNumber, userInfoDetails.STAFF_ID, new Date());
+        await EclaimsItemDataRepo.softDeleteByDraftId(tx, draftNumber, userInfoDetails.STAFF_ID, DateUtils.formatDateAsString(new Date(),'yyyy-MM-dd'));
     }
 
     if (isCASave) {
@@ -821,7 +821,7 @@ async function persistEclaimsItemData(tx, draftNumber, itemCount, selectedClaimD
             ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
         );
         const weekOfYear = await DateToWeekRepo.fetchWeekOfTheDay(claimDate);
-        eclaimsItemData.CLAIM_WEEK_NO = weekOfYear;
+        eclaimsItemData.CLAIM_WEEK_NO = weekOfYear && weekOfYear.length > 0 ? weekOfYear[0].WEEK : null;
     }
 
     // Save to database (adjust for your DB or CAP model)
@@ -841,11 +841,11 @@ async function persistEclaimsItemData(tx, draftNumber, itemCount, selectedClaimD
  */
 function persistChrsJobInfoData(eclaimsData, chrsJobInfo) {
     if (chrsJobInfo) {
-        // Defensive: chrsJobInfoId may be undefined/null
-        const jobInfoId = chrsJobInfo.chrsJobInfoId || {};
+        // // Defensive: chrsJobInfoId may be undefined/null
+        // const jobInfoId = chrsJobInfo.chrsJobInfoId || {};
 
-        eclaimsData.CONCURRENT_STAFF_ID = jobInfoId.SF_STF_NUMBER;
-        eclaimsData.STAFF_ID = jobInfoId.STF_NUMBER;
+        eclaimsData.CONCURRENT_STAFF_ID = chrsJobInfo.SF_STF_NUMBER;
+        eclaimsData.STAFF_ID = chrsJobInfo.STF_NUMBER;
         eclaimsData.STAFF_NUSNET_ID = chrsJobInfo.NUSNET_ID;
         eclaimsData.ULU = chrsJobInfo.ULU_C;
         eclaimsData.FDLU = chrsJobInfo.FDLU_C;

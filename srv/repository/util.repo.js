@@ -8,26 +8,24 @@ module.exports = {
      * @param {number} counter - The counter.
      * @returns {Promise<Object>} The sequence number result.
      */
-    fetchSequenceNumber: function (pattern, counter) {
-        let fetchSequenceNumber = cds.run(
+    fetchSequenceNumber: async function (pattern, counter) {
+        let fetchSequenceNumber = await cds.run(
             `CALL SEQ_NUMBER_GENERATION(PATTERN => ?, COUNTER => ?, RUNNINGNORESULT => ?)`,
             [pattern, counter]
         );
-        return fetchSequenceNumber;
+        return fetchSequenceNumber.RUNNINGNORESULT;
     },
     /**
      * Fetches logged in user details by NUSNET ID.
      * @param {string} upperNusNetId - The NUSNET ID.
      * @returns {Promise<Object>} The user details.
      */
-    fetchLoggedInUser: function (upperNusNetId) {
-        let fetchStaffInfo = cds.run(
-            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO").where({
-                or: [
-                    { NUSNET_ID: upperNusNetId },
-                    { STF_NUMBER: upperNusNetId }
-                ]
-            }).orderBy("END_DATE desc")
+    fetchLoggedInUser: async function (upperNusNetId) {
+        let fetchStaffInfo = await cds.run(
+            SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
+            .where({ NUSNET_ID: upperNusNetId })
+            .or({ STF_NUMBER: upperNusNetId })
+            .orderBy("END_DATE desc")
         );
         return fetchStaffInfo;
     },

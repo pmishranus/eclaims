@@ -291,11 +291,10 @@ async function itemDataValidation(item, roleFlow, requestorGroup, loggedInUserDe
         for (let selectedClaimDates of item.selectedClaimDates || []) {
             if (selectedClaimDates) {
                 // Set WEEK_NO (simulate repository call)
-                selectedClaimDates.WEEK_NO = await DateToWeekRepo.fetchWeekOfTheDay(
-                   
-                        selectedClaimDates.CLAIM_START_DATE
-                       
-                )[0].WEEK;
+                const weekResult = await DateToWeekRepo.fetchWeekOfTheDay(
+                    selectedClaimDates.CLAIM_START_DATE
+                );
+                selectedClaimDates.WEEK_NO = weekResult && weekResult.length > 0 ? weekResult[0].WEEK : null;
     
                 if (CommonUtils.isBlank(selectedClaimDates.CLAIM_START_DATE)) {
                     response.push(
@@ -498,12 +497,21 @@ async function itemDataValidation(item, roleFlow, requestorGroup, loggedInUserDe
                     }
                     if (CommonUtils.isNotBlank(selectedClaimDates.WBS)) {
                         //check WBS by calling a repo
-                        // validationMessage = await checkWbsElement(selectedClaimDates.WBS); //pending
+                        validationMessage = await checkWbsElement(selectedClaimDates.WBS); //pending
+                        if (CommonUtils.isNotBlank(validationMessage)) {
+                            response.push(
+                                frameItemValidationMsg(
+                                    selectedClaimDates.CLAIM_START_DATE,
+                                    ApplicationConstants.WBS,
+                                    validationMessage
+                                )
+                            );
+                        }
                     }
                 }
     
                 // Section 7: Check for duplicate/overlapping claim
-                const claimExistsMessage = checkClaimExists(selectedClaimDates, item, roleFlow, requestorGroup);
+                const claimExistsMessage = await checkClaimExists(selectedClaimDates, item, roleFlow, requestorGroup);
                 if (CommonUtils.isNotBlank(claimExistsMessage)) {
                     response.push(
                         frameItemValidationMsg(
@@ -551,14 +559,8 @@ async function itemDataValidation(item, roleFlow, requestorGroup, loggedInUserDe
                     // Non-monthly
                     const activeValidData = await ChrsJobInfoRepo.checkStaffIsActiveAndValid(
                         item.STAFF_ID,
-                        DateUtils.convertStringToDate(
-                            itemData.CLAIM_START_DATE,
-                            ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
-                        ),
-                        DateUtils.convertStringToDate(
-                            itemData.CLAIM_START_DATE,
-                            ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
-                        ),
+                        itemData.CLAIM_START_DATE,
+                        itemData.CLAIM_END_DATE,
                         item.ULU,
                         item.FDLU,
                         item.CLAIM_TYPE
@@ -576,14 +578,8 @@ async function itemDataValidation(item, roleFlow, requestorGroup, loggedInUserDe
                     // Monthly
                     const activeValidData = await ChrsJobInfoRepo.checkStaffIsActiveAndValidForMonthly(
                         item.STAFF_ID,
-                        DateUtils.convertStringToDate(
-                            itemData.CLAIM_START_DATE,
-                            ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
-                        ),
-                        DateUtils.convertStringToDate(
-                            itemData.CLAIM_START_DATE,
-                            ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
-                        ),
+                        itemData.CLAIM_START_DATE,
+                        itemData.CLAIM_END_DATE,
                         item.CLAIM_TYPE
                     );
                     if (!activeValidData || activeValidData.length === 0) {
@@ -605,6 +601,131 @@ async function itemDataValidation(item, roleFlow, requestorGroup, loggedInUserDe
     
 
 }
+
+/**
+ * Checks if a WBS element is valid by calling the ECP WBS validation API
+ * @param {string} wbsElement - The WBS element to validate
+ * @returns {Promise<string|null>} Validation message or null if valid
+ */
+async function checkWbsElement(wbsElement) {
+    try {
+        if (CommonUtils.isBlank(wbsElement)) {
+            return "No WBS Element provided.";
+        }
+
+        // Prepare the request payload similar to ecpWbsValidate
+        const wbsPayload = {
+            WBSRequest: {
+                WBS: [wbsElement]
+            }
+        };
+
+        // Call the ECP CPI API for WBS validation
+        const apiUrl ='/ecpwbsvalidate_qa';
+        const validationResult = await CommonUtils.callCpiApi(
+            apiUrl,
+            wbsPayload,
+            'POST'
+        );
+
+        // Process the response according to the Java logic
+        if (!validationResult) {
+            return ApplicationConstants.WBS_VALIDATION_MSG;
+        }
+
+        // Check if response has EVSTATUS at root level
+        if (validationResult[ApplicationConstants.EVSTATUS]) {
+            const evStatus = validationResult[ApplicationConstants.EVSTATUS];
+            if (CommonUtils.isNotBlank(evStatus) && 
+                CommonUtils.equalsIgnoreCase(evStatus, ApplicationConstants.STATUS_E)) {
+                return ApplicationConstants.WBS_VALIDATION_MSG;
+            }
+        } 
+        // Check if response is an array
+        else if (Array.isArray(validationResult)) {
+            if (validationResult.length > 0) {
+                const itemNode = validationResult[0];
+                if (Array.isArray(itemNode)) {
+                    // Handle array of arrays
+                    for (const wbsNode of itemNode) {
+                        if (wbsNode && wbsNode[ApplicationConstants.EVSTATUS]) {
+                            const evStatus = wbsNode[ApplicationConstants.EVSTATUS];
+                            if (CommonUtils.isNotBlank(evStatus) && 
+                                !CommonUtils.equalsIgnoreCase(evStatus, ApplicationConstants.STATUS_E)) {
+                                return ApplicationConstants.WBS_VALIDATION_MSG;
+                            }
+                        }
+                    }
+                } else {
+                    // Handle single object in array
+                    if (itemNode && itemNode[ApplicationConstants.EVSTATUS]) {
+                        const evStatus = itemNode[ApplicationConstants.EVSTATUS];
+                        if (CommonUtils.isNotBlank(evStatus) && 
+                            !CommonUtils.equalsIgnoreCase(evStatus, ApplicationConstants.STATUS_E)) {
+                            return ApplicationConstants.WBS_VALIDATION_MSG;
+                        }
+                    }
+                }
+            }
+        } 
+        // Check if response has ETOUTPUT structure
+        else if (validationResult[ApplicationConstants.ETOUTPUT]) {
+            const evResponse = validationResult[ApplicationConstants.ETOUTPUT];
+            if (evResponse[ApplicationConstants.ITEM]) {
+                const itemResponse = evResponse[ApplicationConstants.ITEM];
+                
+                // Check direct EVSTATUS
+                if (itemResponse[ApplicationConstants.EVSTATUS]) {
+                    const evStatus = itemResponse[ApplicationConstants.EVSTATUS];
+                    if (CommonUtils.isNotBlank(evStatus) && 
+                        CommonUtils.equalsIgnoreCase(evStatus, ApplicationConstants.STATUS_E)) {
+                        return ApplicationConstants.WBS_VALIDATION_MSG;
+                    }
+                }
+                
+                // Check if ITEM is an array
+                if (Array.isArray(itemResponse) && itemResponse.length > 0) {
+                    const itemNode = itemResponse[0];
+                    if (Array.isArray(itemNode)) {
+                        // Handle array of arrays
+                        for (const wbsNode of itemNode) {
+                            if (wbsNode && wbsNode[ApplicationConstants.EVSTATUS]) {
+                                const evStatus = wbsNode[ApplicationConstants.EVSTATUS];
+                                if (CommonUtils.isNotBlank(evStatus) && 
+                                    !CommonUtils.equalsIgnoreCase(evStatus, ApplicationConstants.STATUS_E)) {
+                                    return ApplicationConstants.WBS_VALIDATION_MSG;
+                                }
+                            }
+                        }
+                    } else {
+                        // Handle single object in array
+                        if (itemNode && itemNode[ApplicationConstants.EVSTATUS]) {
+                            const evStatus = itemNode[ApplicationConstants.EVSTATUS];
+                            if (CommonUtils.isNotBlank(evStatus) && 
+                                !CommonUtils.equalsIgnoreCase(evStatus, ApplicationConstants.STATUS_E)) {
+                                return ApplicationConstants.WBS_VALIDATION_MSG;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // If we reach here, the WBS element is valid
+        return null;
+
+    } catch (error) {
+        console.error("WBS Element validation failed:", {
+            wbsElement: wbsElement,
+            error: error.message,
+            stack: error.stack
+        });
+        
+        // Return validation error message on any exception
+        return ApplicationConstants.WBS_VALIDATION_MSG;
+    }
+}
+
 /**
  * Checks for overlapping claims.
  * @param {Object} item - The claim item.
@@ -1052,5 +1173,6 @@ module.exports = {
     isValidFlowCheck,
     frameClaimExistMessage,
     checkDailyValidation,
-    isHourlyMonthlyRateType
+    isHourlyMonthlyRateType,
+    checkWbsElement
 };

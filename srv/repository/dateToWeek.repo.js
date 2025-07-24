@@ -8,9 +8,17 @@ const ApplicationConstants = require("../util/constant");
  */
 async function fetchWeekOfTheDay(claimStartDate) {
     // Using parameterized query to prevent SQL injection
-    const query = `SELECT dtw.WEEK FROM DateToWeek dtw WHERE (?) BETWEEN dtw.START_DATE AND dtw.END_DATE`;
-    const values = [claimStartDate];
-    let fetchWeek = await cds.run(query, values);
+    // const query = `SELECT dtw.WEEK FROM "NUSEXT_UTILITY_DATE_TO_WEEK" dtw WHERE (?) BETWEEN dtw.START_DATE AND dtw.END_DATE`;
+    // const values = [claimStartDate];
+    // let fetchWeek = await cds.run(query, values);
+    let fetchWeek = await cds.run(
+        SELECT.from("NUSEXT_UTILITY_DATE_TO_WEEK")
+            .columns("WEEK")
+            .where({
+                "START_DATE": { "<=": claimStartDate },
+                "END_DATE": { ">=": claimStartDate }
+            })
+    );
     return fetchWeek;
 }
 
