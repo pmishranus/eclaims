@@ -16,7 +16,7 @@ async function fetchClaimStatusCountById(staffId, statusCode) {
                 in: statusCode,
             },
             CLAIM_TYPE: {
-                "!=" : "105",
+                "!=": "105",
             },
         })
     );
@@ -36,7 +36,7 @@ async function fetchClaimStatusCount(staffId, statusCode) {
                 in: statusCode,
             },
             CLAIM_TYPE: {
-                "!=" : "105",
+                "!=": "105",
             },
         })
     );
@@ -177,12 +177,12 @@ async function fetchTbClaimStatusCount(staffId, statusCode) {
  * @param {string} draftId
  * @returns {Promise<Object>}
  */
-async function fetchByDraftId(draftId) {
+async function fetchByDraftId(draftId, tx = null) {
     // Using parameterized query to prevent SQL injection
     const query = `SELECT * FROM NUSEXT_ECLAIMS_HEADER_DATA WHERE DRAFT_ID = ?`;
     const values = [draftId];
-    let fetchByDraftId = await cds.run(query, values);
-    return fetchByDraftId;
+    const result = tx ? await tx.run(query, values) : await cds.run(query, values);
+    return result;
 }
 /**
  * Fetches request ID by draft ID.
@@ -289,7 +289,7 @@ async function fetchPastThreeMonthsWbs(stfNumber, requestClaimDate) {
 async function upsertEclaimsData(eclaimsData) {
     const result = await cds.run(
         UPSERT.into("NUSEXT_ECLAIMS_HEADER_DATA")
-        .entries(eclaimsData)
+            .entries(eclaimsData)
     );
     return result;
 }

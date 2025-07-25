@@ -17,6 +17,7 @@ const StatusConfigRepo = require("../repository/statusConfig.repo");
 const RemarksDataRepo = require("../repository/remarksData.repo");
 const ProcessDetailsRepo = require("../repository/processDetails.repo");
 const TaskDetailsRepo = require("../repository/taskDetails.repo");
+const RequestLockService = require("../util/requestLockService");
 const EclaimService = require("../util/eclaimService");
 
 /**
@@ -41,8 +42,8 @@ async function convertedSingleRequest(request) {
     try {
         // Extract user information
         const user = request.user.id;
-         // const userName = user.split('@')[0];
-         const userName = "PTT_CA9";
+        // const userName = user.split('@')[0];
+        const userName = "PTT_CA9";
         const upperNusNetId = userName.toUpperCase();
 
         // Fetch logged in user details
@@ -995,7 +996,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
             if (savedItemIds && savedItemIds.length > 0) {
                 const itemIdsToSoftDelete = savedItemIds.filter(itemId => !itemIdList.includes(itemId));
                 if (itemIdsToSoftDelete.length > 0) {
-                    await EclaimsItemDataRepo.softDeleteByItemId(tx, itemIdsToSoftDelete, loggedInUserDetails.STAFF_ID, DateUtils.formatDateAsString(new Date(),'yyyy-MM-dd'));
+                    await EclaimsItemDataRepo.softDeleteByItemId(tx, itemIdsToSoftDelete, loggedInUserDetails.STAFF_ID, DateUtils.formatDateAsString(new Date(), 'yyyy-MM-dd'));
                 }
             }
         }
@@ -1012,7 +1013,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
         }
     } else if (draftNumber) {
         // User deleted all items in the claim request
-        await EclaimsItemDataRepo.softDeleteByDraftId(tx, draftNumber, loggedInUserDetails.STAFF_ID,DateUtils.formatDateAsString(new Date(),'yyyy-MM-dd'));
+        await EclaimsItemDataRepo.softDeleteByDraftId(tx, draftNumber, loggedInUserDetails.STAFF_ID, DateUtils.formatDateAsString(new Date(), 'yyyy-MM-dd'));
     }
 
     // Handle CA save operations
@@ -1286,7 +1287,7 @@ async function persistProcessParticipantDetails(tx, claimInnerRequestDto, item, 
 }
 
 /**
- * Initiates lock process details using transaction
+ * Initiates lock process details using RequestLockService (matches Java implementation)
  * @param {Object} tx - The CDS transaction object
  * @param {string} draftId - The draft ID
  * @param {string} staffNusNetId - The staff NUSNET ID
@@ -1309,29 +1310,18 @@ async function initiateLockProcessDetails(tx, draftId, staffNusNetId, requestorG
             staffId = (chrsJobInfo && chrsJobInfo.STF_NUMBER) ? chrsJobInfo.STF_NUMBER : staffNusNetId;
         }
 
-        // Generate LOCK_INST_ID
-        const now = new Date();
-        const requestMonth = String(now.getMonth() + 1).padStart(2, "0");
-        const requestYear = String(now.getFullYear() % 100).padStart(2, "0");
-        const lockIdPattern = ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_REQUEST_LOCK_ID_PATTERN + requestYear + requestMonth;
-
-        const lockInstId = await CommonRepo.fetchSequenceNumber(lockIdPattern, ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_REQUEST_LOCK_ID_DIGITS);
-
-        // Prepare lock details for upsert
-        const lockDetails = {
-            LOCK_INST_ID: lockInstId,
-            REFERENCE_ID: draftId,
+        // Create RequestDto object (matches Java implementation)
+        const requestDto = {
+            DRAFT_ID: draftId,
+            NUSNET_ID: staffId,
+            REQUESTOR_GRP: requestorGrp,
             PROCESS_CODE: claimType,
-            IS_LOCKED: ApplicationConstants.X,
-            LOCKED_BY_USER_NID: staffId,
-            STAFF_USER_GRP: requestorGrp,
             REQUEST_STATUS: ApplicationConstants.UNLOCK,
-            LOCKED_ON: new Date()
-
+            requestorFormFlow: true  // This triggers deleteByDraftId in Java implementation
         };
 
-        // Use transaction to upsert lock details
-        await CommonRepo.upsertOperationChained(tx, "NUSEXT_UTILITY_REQUEST_LOCK_DETAILS", lockDetails);
+        // Use RequestLockService.requestLock() (matches Java eclaimsRequestLockService.requestLock)
+        await RequestLockService.requestLock(requestDto, tx);
 
     } catch (error) {
         console.error("Error in initiateLockProcessDetails:", {

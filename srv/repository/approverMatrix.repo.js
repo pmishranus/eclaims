@@ -218,7 +218,7 @@ module.exports = {
         return fetchAuthDetails;
     },
 
-    fetchInboxApproverMatrix: async function(staffId) {
+    fetchInboxApproverMatrix: async function (staffId) {
         const query = `
             SELECT eam.STAFF_USER_GRP, eam.PROCESS_CODE, eam.STAFF_ID, eam.ULU, eam.FDLU, eam.VALID_FROM, eam.VALID_TO
             FROM NUSEXT_UTILITY_CHRS_APPROVER_MATRIX as eam
@@ -230,5 +230,55 @@ module.exports = {
         const values = [staffId, staffId];
         let fetchInboxApproverMatrix = await cds.run(query, values);
         return fetchInboxApproverMatrix;
+    },
+
+    /**
+     * fetchApprovalMatrixDtls - Fetches approval matrix details (matches Java fetchApprovalMatrixDtls)
+     * @param {string} staffUserGroup - The staff user group
+     * @param {string} ulu - The ULU
+     * @param {string} fdlu - The FDLU
+     * @param {string} processCode - The process code
+     * @param {Object} tx - Optional transaction object
+     * @returns {Promise<Array>} Array of approver matrix details
+     */
+    fetchApprovalMatrixDtls: async function (staffUserGroup, ulu, fdlu, processCode, tx = null) {
+        const query = `
+            SELECT * FROM NUSEXT_UTILITY_CHRS_APPROVER_MATRIX as eam 
+            WHERE eam.STAFF_USER_GRP = ? 
+            AND eam.ULU = ? 
+            AND eam.FDLU = CASE WHEN eam.FDLU = 'ALL' THEN eam.FDLU ELSE ? END 
+            AND eam.PROCESS_CODE = ? 
+            AND eam.VALID_FROM <= CURRENT_DATE 
+            AND eam.VALID_TO >= CURRENT_DATE 
+            AND eam.IS_DELETED = 'N'
+        `;
+        const values = [staffUserGroup, ulu, fdlu, processCode];
+        const result = tx ? await tx.run(query, values) : await cds.run(query, values);
+        return result || [];
+    },
+
+    /**
+     * fetchApprovalMatrixDtlsForAllUlunFdlu - Fetches approval matrix details for all ULU/FDLU (matches Java fetchApprovalMatrixDtlsForAllUlunFdlu)
+     * @param {string} staffUserGroup - The staff user group
+     * @param {string} ulu - The ULU
+     * @param {string} fdlu - The FDLU
+     * @param {string} processCode - The process code
+     * @param {Object} tx - Optional transaction object
+     * @returns {Promise<Array>} Array of approver matrix details
+     */
+    fetchApprovalMatrixDtlsForAllUlunFdlu: async function (staffUserGroup, ulu, fdlu, processCode, tx = null) {
+        const query = `
+            SELECT * FROM NUSEXT_UTILITY_CHRS_APPROVER_MATRIX as eam 
+            WHERE eam.STAFF_USER_GRP = ? 
+            AND eam.ULU = CASE WHEN eam.ULU = 'ALL' THEN eam.ULU ELSE ? END 
+            AND eam.FDLU = CASE WHEN eam.FDLU = 'ALL' THEN eam.FDLU ELSE ? END 
+            AND eam.PROCESS_CODE = ? 
+            AND eam.VALID_FROM <= CURRENT_DATE 
+            AND eam.VALID_TO >= CURRENT_DATE 
+            AND eam.IS_DELETED = 'N'
+        `;
+        const values = [staffUserGroup, ulu, fdlu, processCode];
+        const result = tx ? await tx.run(query, values) : await cds.run(query, values);
+        return result || [];
     },
 };

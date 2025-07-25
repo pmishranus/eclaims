@@ -1,0 +1,119 @@
+### RequestLockService Integration Test
+### This test verifies that the RequestLockService.requestLock() method is properly integrated
+### and matches the Java eclaimsRequestLockService.requestLock() functionality
+
+### Test 1: Test Claim Assistant Submission Flow with RequestLockService
+### This should trigger the initiateLockProcessDetails method which calls RequestLockService.requestLock()
+POST {{baseUrl}}/convertedSingleRequest
+Content-Type: application/json
+
+{
+  "data": {
+    "data": [
+      {
+        "ACTION": "SAVE",
+        "STAFF_ID": "TEST001",
+        "CLAIM_TYPE": "101",
+        "REQUEST_STATUS": "01",
+        "CLAIM_REQUEST_TYPE": "PERIOD",
+        "CLAIM_MONTH": "01-2024",
+        "selectedClaimDates": [
+          {
+            "CLAIM_START_DATE": "2024-01-15",
+            "CLAIM_END_DATE": "2024-01-15",
+            "RATE_TYPE": "NORMAL",
+            "HOURS": "8.0"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+### Test 2: Test Claim Assistant Submission Flow with Submit Action
+### This should also trigger the RequestLockService.requestLock() call
+POST {{baseUrl}}/convertedSingleRequest
+Content-Type: application/json
+
+{
+  "data": {
+    "data": [
+      {
+        "ACTION": "SUBMIT",
+        "STAFF_ID": "TEST002",
+        "CLAIM_TYPE": "101",
+        "REQUEST_STATUS": "01",
+        "CLAIM_REQUEST_TYPE": "PERIOD",
+        "CLAIM_MONTH": "01-2024",
+        "selectedClaimDates": [
+          {
+            "CLAIM_START_DATE": "2024-01-16",
+            "CLAIM_END_DATE": "2024-01-16",
+            "RATE_TYPE": "NORMAL",
+            "HOURS": "8.0"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+### Test 3: Test with Existing Draft ID (should trigger lock check)
+POST {{baseUrl}}/convertedSingleRequest
+Content-Type: application/json
+
+{
+  "data": {
+    "data": [
+      {
+        "DRAFT_ID": "CR240100001",
+        "ACTION": "SAVE",
+        "STAFF_ID": "TEST003",
+        "CLAIM_TYPE": "101",
+        "REQUEST_STATUS": "01",
+        "CLAIM_REQUEST_TYPE": "PERIOD",
+        "CLAIM_MONTH": "01-2024",
+        "selectedClaimDates": [
+          {
+            "CLAIM_START_DATE": "2024-01-17",
+            "CLAIM_END_DATE": "2024-01-17",
+            "RATE_TYPE": "NORMAL",
+            "HOURS": "8.0"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+### Test 4: Test RequestLockService Direct Usage
+### This demonstrates how the service can be used directly in other parts of the application
+
+# Direct usage example (would be in controller code):
+# const RequestLockService = require('../util/requestLockService');
+# 
+# // Create request DTO (matches Java RequestDto)
+# const requestDto = {
+#     DRAFT_ID: 'CR240100001',
+#     NUSNET_ID: 'user123',
+#     REQUESTOR_GRP: 'CLAIM_ASSISTANT',
+#     PROCESS_CODE: '101',
+#     REQUEST_STATUS: 'UNLOCK'
+# };
+# 
+# // Call requestLock method (matches Java eclaimsRequestLockService.requestLock)
+# const lockDetails = await RequestLockService.requestLock(requestDto, tx);
+
+### Expected Behavior:
+### 1. The initiateLockProcessDetails method should create a RequestDto object
+### 2. It should call RequestLockService.requestLock(requestDto, tx)
+### 3. The RequestLockService should validate the request DTO
+### 4. It should check if the request is already locked by another user
+### 5. It should generate a LOCK_INST_ID and persist the lock details
+### 6. The lock should be created in the NUSEXT_UTILITY_REQUEST_LOCK_DETAILS table
+
+### Verification Steps:
+### 1. Check the application logs for RequestLockService.requestLock() calls
+### 2. Verify that lock details are created in the database
+### 3. Confirm that the flow matches the Java implementation
+### 4. Test concurrent access scenarios to ensure proper locking behavior 
