@@ -269,7 +269,7 @@ Authorization: Bearer {{access_token}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
-POST {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/convertedSingleRequest
+POST {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/singleRequest
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 

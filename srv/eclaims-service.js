@@ -10,7 +10,7 @@ const fetchWBSCtrl = require("./controller/fetchWBS.controller");
 const validateEclaimsCtrl = require("./controller/validateEclaims.controller");
 const fetchUluFdluCtrl = require("./controller/fetchUluFdlu.controller");
 const ecpWbsValidateCtrl = require("./controller/ecpWbsValidateCtrl.controller");
-const convertedSingleRequestCtrl = require("./controller/convertedSingleRequest.controller");
+// const singleRequestCtrl = require("./controller/singleRequest.controller");
 
 class EclaimsService extends cds.ApplicationService {
     init() {
@@ -66,29 +66,29 @@ class EclaimsService extends cds.ApplicationService {
             return await claimantStaffInfoCtrl.fetchClaimantStaffInfo(request);
         });
 
-        this.on("singleRequest", async request => {
-            try {
-                // Call the main business logic (postClaims or equivalent)
-                // The controller expects the request object, which contains data and user info
-                return await singleRequestCtrl.postClaims(request);
-            } catch (err) {
-                // Special handling for IGNORE_REQUEST
-                if (err && err.message && err.message === "IGNORE_REQUEST") {
-                    return {
-                        error: true,
-                        ignoreError: true,
-                        message: err.message,
-                        eclaimsData: []
-                    };
-                } else {
-                    return {
-                        error: true,
-                        message: (err && err.message) ? err.message : "An unexpected error occurred.",
-                        eclaimsData: []
-                    };
-                }
-            }
-        });
+        // this.on("singleRequest", async request => {
+        //     try {
+        //         // Call the main business logic (postClaims or equivalent)
+        //         // The controller expects the request object, which contains data and user info
+        //         return await singleRequestCtrl.postClaims(request);
+        //     } catch (err) {
+        //         // Special handling for IGNORE_REQUEST
+        //         if (err && err.message && err.message === "IGNORE_REQUEST") {
+        //             return {
+        //                 error: true,
+        //                 ignoreError: true,
+        //                 message: err.message,
+        //                 eclaimsData: []
+        //             };
+        //         } else {
+        //             return {
+        //                 error: true,
+        //                 message: (err && err.message) ? err.message : "An unexpected error occurred.",
+        //                 eclaimsData: []
+        //             };
+        //         }
+        //     }
+        // });
 
         this.on("ecpWbsValidate", async request => {
             try {
@@ -98,9 +98,10 @@ class EclaimsService extends cds.ApplicationService {
             }
         });
 
-        this.on("convertedSingleRequest", async request => {
+        this.on("singleRequest", async request => {
             try {
-                return await convertedSingleRequestCtrl.convertedSingleRequest(request);
+                 let oRet = await singleRequestCtrl.singleRequest(request);
+                 return oRet;
             } catch (err) {
                 // Special handling for IGNORE_REQUEST
                 if (err && err.message && err.message === "IGNORE_REQUEST") {
