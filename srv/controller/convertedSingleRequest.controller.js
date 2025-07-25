@@ -41,7 +41,8 @@ async function convertedSingleRequest(request) {
     try {
         // Extract user information
         const user = request.user.id;
-        const userName = user.split('@')[0] || "PTT_CA9"; // Fallback for testing
+         // const userName = user.split('@')[0];
+         const userName = "PTT_CA9";
         const upperNusNetId = userName.toUpperCase();
 
         // Fetch logged in user details
@@ -850,8 +851,8 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     const now = new Date();
     const requestMonth = String(now.getMonth() + 1).padStart(2, "0");
     const requestYear = String(now.getFullYear() % 100);
-    const draftIdPatternVal = ApplicationConstants.SEQUENCE_PATTERN_DRAFT_ID + requestYear + requestMonth;
-    const requestIdPatternVal = ApplicationConstants.SEQUENCE_PATTERN_REQUEST_ID + requestYear + requestMonth;
+    const draftIdPatternVal = ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_DRAFT_ID_PATTERN + requestYear + requestMonth;
+    const requestIdPatternVal = ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_REQUEST_ID_PATTERN + requestYear + requestMonth;
     let draftNumber = "";
 
     // Check if claim is already submitted
@@ -867,10 +868,10 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
             draftNumber = item.DRAFT_ID;
             // Use existing data
         } else {
-            draftNumber = await CommonRepo.fetchSequenceNumber(draftIdPatternVal, ApplicationConstants.SEQUENCE_DRAFT_ID_DIGITS);
+            draftNumber = await CommonRepo.fetchSequenceNumber(draftIdPatternVal, ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_DRAFT_ID_DIGITS);
         }
     } else {
-        draftNumber = await CommonRepo.fetchSequenceNumber(draftIdPatternVal, ApplicationConstants.SEQUENCE_DRAFT_ID_DIGITS);
+        draftNumber = await CommonRepo.fetchSequenceNumber(draftIdPatternVal, ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_DRAFT_ID_DIGITS);
     }
 
     // Build eclaims data object
@@ -892,7 +893,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     if (item.ACTION === ApplicationConstants.ACTION_SUBMIT) {
         if (!item.REQUEST_ID) {
             if (!eclaimsData.REQUEST_ID) {
-                const requestNumber = await CommonRepo.fetchSequenceNumber(requestIdPatternVal, ApplicationConstants.SEQUENCE_REQUEST_ID_DIGITS);
+                const requestNumber = await CommonRepo.fetchSequenceNumber(requestIdPatternVal, ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_REQUEST_ID_DIGITS);
                 eclaimsData.REQUEST_ID = requestNumber;
             }
         } else {
@@ -974,7 +975,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     }
 
     // Save eclaims data using transaction
-    const savedMasterData = await CommonRepo.upsertOperationChained(
+    await CommonRepo.upsertOperationChained(
         tx,
         "NUSEXT_ECLAIMS_HEADER_DATA",
         eclaimsData
@@ -994,7 +995,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
             if (savedItemIds && savedItemIds.length > 0) {
                 const itemIdsToSoftDelete = savedItemIds.filter(itemId => !itemIdList.includes(itemId));
                 if (itemIdsToSoftDelete.length > 0) {
-                    await EclaimsItemDataRepo.softDeleteByItemId(tx, itemIdsToSoftDelete, loggedInUserDetails.STAFF_ID, new Date());
+                    await EclaimsItemDataRepo.softDeleteByItemId(tx, itemIdsToSoftDelete, loggedInUserDetails.STAFF_ID, DateUtils.formatDateAsString(new Date(),'yyyy-MM-dd'));
                 }
             }
         }
@@ -1011,7 +1012,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
         }
     } else if (draftNumber) {
         // User deleted all items in the claim request
-        await EclaimsItemDataRepo.softDeleteByDraftId(tx, draftNumber, loggedInUserDetails.STAFF_ID, new Date());
+        await EclaimsItemDataRepo.softDeleteByDraftId(tx, draftNumber, loggedInUserDetails.STAFF_ID,DateUtils.formatDateAsString(new Date(),'yyyy-MM-dd'));
     }
 
     // Handle CA save operations
@@ -1079,7 +1080,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     }
 
     // Build response
-    Object.assign(eclaimsDataResDto, savedMasterData);
+    Object.assign(eclaimsDataResDto, eclaimsData);
     eclaimsDataResDto.eclaimsItemDataDetails = eclaimsItemsRes;
 
     console.log("ConvertedSingleRequestController claimantCASaveSubmit end()");
@@ -1325,10 +1326,8 @@ async function initiateLockProcessDetails(tx, draftId, staffNusNetId, requestorG
             LOCKED_BY_USER_NID: staffId,
             STAFF_USER_GRP: requestorGrp,
             REQUEST_STATUS: ApplicationConstants.UNLOCK,
-            LOCKED_ON: new Date(),
-            UPDATED_ON: new Date(),
-            UPDATED_BY: staffId,
-            UPDATED_BY_NID: staffNusNetId
+            LOCKED_ON: new Date()
+
         };
 
         // Use transaction to upsert lock details
