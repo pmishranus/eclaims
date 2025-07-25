@@ -1,5 +1,5 @@
 const cds = require("@sap/cds");
-const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
+const { SELECT, UPSERT } = require("@sap/cds/lib/ql/cds-ql");
 
 /**
  *
@@ -72,5 +72,30 @@ module.exports = {
         const values = [ppntIds];
         let softDeleteProcessParticipant = await cds.run(query, values);
         return softDeleteProcessParticipant;
+    },
+    /**
+     * Upserts process participant data
+     * @param {Object} processParticipantData - The process participant data object
+     * @returns {Promise<Object>} The upsert result
+     */
+    upsertProcessParticipant: async function (processParticipantData) {
+        const result = await cds.run(
+            UPSERT.into("NUSEXT_UTILITY_PROCESS_PARTICIPANTS")
+            .entries(processParticipantData)
+        );
+        return result;
+    },
+    /**
+     * Upserts process participant data with transaction (chained operation)
+     * @param {Object} tx - The transaction object
+     * @param {Object} processParticipantData - The process participant data object
+     * @returns {Promise<Object>} The upsert result
+     */
+    upsertProcessParticipantChained: async function (tx, processParticipantData) {
+        const result = await tx.run(
+            UPSERT.into("NUSEXT_UTILITY_PROCESS_PARTICIPANTS")
+            .entries(processParticipantData)
+        );
+        return result;
     },
 };

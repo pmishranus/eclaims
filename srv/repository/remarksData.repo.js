@@ -1,4 +1,5 @@
 const cds = require("@sap/cds");
+const { INSERT, UPSERT } = require("@sap/cds/lib/ql/cds-ql");
 
 /**
  * Deletes all remarks for a given draftId.
@@ -19,7 +20,7 @@ async function deleteRemarksByDraftId(draftId) {
  */
 async function upsertRemark(tx, remarkData) {
     // remarkData should be an object with the correct fields
-    return await tx.run(INSERT.into("NUSEXT_UTILITY_REMARKS_DATA").entries(remarkData));
+    return await tx.run(UPSERT.into("NUSEXT_UTILITY_REMARKS_DATA").entries(remarkData));
 }
 
 /**

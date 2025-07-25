@@ -14,8 +14,9 @@ const DateUtils = require("../util/dateUtil");
 // const ValidationResultsDto = require("../dto/validationResultsDto");
 const { ApplicationConstants, MessageConstants } = require("../util/constant");
 const { ApplicationException } = require("../util/customErrors");
-const RateTypeConfig = require("../enum/rateTypeConfig");
+const StatusConfigType = require("../enum/statusConfigType");
 const ChrsJobInfoRepo = require("../repository/chrsJobInfo.repo");
+const StatusConfigRepo = require("../repository/statusConfig.repo");
 const EclaimService = require("../util/eclaimService");
 
 /**
@@ -60,7 +61,12 @@ async function postClaims(request) {
         }
     } catch (error) {
         // Logger.debug("route can not bef found for host:", tenantHost);
-        return;
+        console.error("Error in postClaims:", error);
+        return {
+            error: true,
+            message: error.message || "An unexpected error occurred",
+            eclaimsData: []
+        };
     }
 }
 
@@ -115,9 +121,11 @@ async function withdrawClaimSubmission(item, userInfoDetails) {
 
         // Fetch claim data
         const eclaimsData = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
-        // Fetch status alias (stubbed)
-        // const statusAlias = await StatusConfigRepo.fetchEclaimStatus(item.DRAFT_ID);
-        // if (statusAlias && statusAlias.startsWith("With")) throw new ApplicationException("Requested Claim is already in Withdrawn State");
+        // Fetch status alias using StatusConfigRepository
+        const statusAlias = await StatusConfigRepo.fetchEclaimStatus(item.DRAFT_ID);
+        if (statusAlias && statusAlias.startsWith("With")) {
+            throw new ApplicationException("Requested Claim is already in Withdrawn State");
+        }
         if (eclaimsData.REQUEST_STATUS === ApplicationConstants.STATUS_ECLAIMS_APPROVED) {
             throw new ApplicationException("Withdraw is not possible. Claim already in Approved status.");
         }
@@ -161,8 +169,16 @@ async function retractClaimSubmission(item, roleFlow, userInfoDetails) {
         await checkIsLocked(userInfoDetails, fetchRequestLockedByUser);
         // Fetch claim data
         const eclaimsData = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
-        // Fetch status config (stubbed)
-        // const statusConfig = await StatusConfigRepo.fetchEclaimStatusByDraftId(item.DRAFT_ID);
+        // Fetch status config using StatusConfigRepository
+        const statusConfig = await StatusConfigRepo.fetchEclaimStatusByDraftId(item.DRAFT_ID);
+        if (statusConfig) {
+            if (statusConfig.STATUS_CODE === ApplicationConstants.CLAIMANT_RETRACT_STATUS) {
+                throw new ApplicationException("Requested Claim is already Retracted by Claimant.");
+            }
+            if (statusConfig.STATUS_CODE === ApplicationConstants.CLAIM_ASSISTANT_RETRACT_STATUS) {
+                throw new ApplicationException("Requested Claim is already Retracted by Claim Assistant.");
+            }
+        }
         if (eclaimsData.REQUEST_STATUS === ApplicationConstants.STATUS_ECLAIMS_APPROVED) {
             throw new ApplicationException("Retract is not possible. Claim already in Approved status.");
         }
@@ -935,8 +951,11 @@ async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, use
                         eclaimsDataResDto.REQUEST_STATUS &&
                         eclaimsDataResDto.REQUEST_STATUS.toUpperCase() !== ApplicationConstants.STATUS_ECLAIMS_DRAFT
                     ) {
-                        // TODO: Map StatusConfigType.fromValue logic if needed
-                        lockRequestorGrp = eclaimsDataResDto.REQUEST_STATUS;
+                                            // Map StatusConfigType.fromValue logic
+                    const requestorGrp = StatusConfigType.fromValue(eclaimsDataResDto.REQUEST_STATUS);
+                    if (!requestorGrp.isUnknown()) {
+                        lockRequestorGrp = requestorGrp.getValue();
+                    }
                     }
                     // TODO: Implement initiateLockProcessDetails
                     // await initiateLockProcessDetails(eclaimsDataResDto.DRAFT_ID, eclaimsJWTTokenUtil.fetchNusNetIdFromToken(token), lockRequestorGrp, eclaimsDataResDto.CLAIM_TYPE);
@@ -1051,7 +1070,13 @@ async function verifierSubmissionFlow(tx, massUploadRequest, roleFlow, userInfoD
             const eclaimsDataResDto = { ...updated };
             // eclaimsDataResDto.eclaimsItemDataDetails = await EclaimsItemDataRepo.fetchByDraftId(item.DRAFT_ID) || [];
             eclaimsDataResDtoList.push(eclaimsDataResDto);
-            // TODO: Implement lock details and requestor group logic
+            // Implement lock details and requestor group logic using StatusConfigType
+            let lockRequestorGrp = ApplicationConstants.CLAIM_ASSISTANT;
+            const requestorGrp = StatusConfigType.fromValue(eclaimsDataResDto.REQUEST_STATUS);
+            if (!requestorGrp.isUnknown()) {
+                lockRequestorGrp = requestorGrp.getValue();
+            }
+            await initiateLockProcessDetails(tx, eclaimsDataResDto.DRAFT_ID, lockRequestorGrp, eclaimsDataResDto.CLAIM_TYPE, userInfoDetails);
         }
     } catch (err) {
         throw new ApplicationException(err.message || err);

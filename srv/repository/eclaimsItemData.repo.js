@@ -1,5 +1,5 @@
 const cds = require("@sap/cds");
-const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
+const { SELECT, UPSERT } = require("@sap/cds/lib/ql/cds-ql");
 const { ApplicationConstants } = require("../util/constant");
 
 /**
@@ -208,6 +208,18 @@ async function softDeleteByDraftId(tx, draftId, nusNetId, date) {
     return result;
 }
 
+/**
+ * Upserts eclaims item data
+ * @param {Object} eclaimsItemData - The eclaims item data object
+ * @returns {Promise<Object>} The upsert result
+ */
+async function upsertEclaimsItemData(eclaimsItemData) {
+    const result = await cds.run(
+        UPSERT.into("NUSEXT_ECLAIMS_ITEMS_DATA")
+        .entries(eclaimsItemData)
+    );
+    return result;
+}
 
 module.exports = {
     queryDayMonthAndYearRequests,
@@ -218,4 +230,5 @@ module.exports = {
     fetchItemIds,
     softDeleteByItemId,
     softDeleteByDraftId,
+    upsertEclaimsItemData,
 };

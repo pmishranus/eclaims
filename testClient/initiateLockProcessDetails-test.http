@@ -1,0 +1,58 @@
+### Test initiateLockProcessDetails function
+### This is a test file to verify the initiateLockProcessDetails implementation
+
+### Note: This function is typically called internally by other functions
+### and not exposed as a direct API endpoint. The test below shows how it would be used.
+
+### Example usage in code:
+### 
+### const { initiateLockProcessDetails } = require('./srv/util/eclaimService');
+### 
+### // Option 1: With loggedInUserDetails (optimized - no additional DB call)
+### try {
+###     await initiateLockProcessDetails(
+###         'DT2401001',           // draftId
+###         'user123',             // staffNusNetId  
+###         'CLAIM_ASSISTANT',     // requestorGrp
+###         '101',                 // claimType
+###         loggedInUserDetails    // user details from API
+###     );
+###     console.log('Lock process details initiated successfully');
+### } catch (error) {
+###     console.error('Error:', error.message);
+### }
+### 
+### // Option 2: Without loggedInUserDetails (fallback - makes DB call)
+### try {
+###     await initiateLockProcessDetails(
+###         'DT2401001',           // draftId
+###         'user123',             // staffNusNetId  
+###         'CLAIM_ASSISTANT',     // requestorGrp
+###         '101'                  // claimType
+###     );
+###     console.log('Lock process details initiated successfully');
+### } catch (error) {
+###     console.error('Error:', error.message);
+### }
+
+### Function Parameters:
+### - draftId: The draft ID of the claim request
+### - staffNusNetId: The NUSNET ID of the staff member
+### - requestorGrp: The requestor group (e.g., 'CLAIM_ASSISTANT', 'NUS_CHRS_ECLAIMS_ESS')
+### - claimType: The claim type (e.g., '101', '102')
+### - loggedInUserDetails: (optional) User details from API to avoid additional DB call
+
+### Expected Behavior:
+### 1. Uses provided loggedInUserDetails if available (optimized) OR fetches staff info from CHRS job info using staffNusNetId (fallback)
+### 2. Generates a unique LOCK_INST_ID using sequence pattern
+### 3. Creates lock details record with IS_LOCKED = 'X'
+### 4. Upserts the lock details into NUSEXT_UTILITY_REQUEST_LOCK_DETAILS table
+
+### Database Operations:
+### - SELECT from NUSEXT_MASTER_DATA_CHRS_JOB_INFO (via CommonRepo.fetchLoggedInUser)
+### - CALL SEQ_NUMBER_GENERATION (via CommonRepo.fetchSequenceNumber)
+### - UPSERT into NUSEXT_UTILITY_REQUEST_LOCK_DETAILS (via RequestLockDetailsRepo.upsertLockDetails)
+
+### Error Handling:
+### - Throws ApplicationException if any step fails
+### - Logs detailed error information for debugging 

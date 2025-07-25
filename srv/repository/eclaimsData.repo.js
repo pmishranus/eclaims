@@ -1,5 +1,5 @@
 const cds = require("@sap/cds");
-const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
+const { SELECT, UPSERT } = require("@sap/cds/lib/ql/cds-ql");
 const { ApplicationConstants } = require("../util/constant");
 const DateUtils = require("../util/dateUtil");
 /**
@@ -281,6 +281,19 @@ async function fetchPastThreeMonthsWbs(stfNumber, requestClaimDate) {
     return results || [];
 }
 
+/**
+ * Upserts eclaims data
+ * @param {Object} eclaimsData - The eclaims data object
+ * @returns {Promise<Object>} The upsert result
+ */
+async function upsertEclaimsData(eclaimsData) {
+    const result = await cds.run(
+        UPSERT.into("NUSEXT_ECLAIMS_HEADER_DATA")
+        .entries(eclaimsData)
+    );
+    return result;
+}
+
 module.exports = {
     fetchByDraftId,
     fetchTbClaimStatusCount,
@@ -294,5 +307,6 @@ module.exports = {
     fetchMonthlyClaimsOnSubmittedOn,
     fetchRequestId,
     fetchDraftStatusEclaimsData,
-    fetchPastThreeMonthsWbs
+    fetchPastThreeMonthsWbs,
+    upsertEclaimsData
 };

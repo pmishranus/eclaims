@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 const CommonRepo = require("../repository/util.repo");
 const EclaimsHeaderDataRepo = require("../repository/eclaimsData.repo");
-// const RequestLockDetailsRepo = require("../repository/requestLockDetails.repo");
+const RequestLockDetailsRepo = require("../repository/requestLockDetails.repo");
 // const ProcessParticipantsRepo = require("../repository/processParticipant.repo");
 // const ElligibilityCriteriaRepo = require("../repository/eligibilityCriteria.repo");
 const DateToWeekRepo = require("../repository/dateToWeek.repo");
@@ -1160,6 +1160,68 @@ async function checkDailyValidation(item) {
     return validationResult;
 }
 
+/**
+ * Initiates lock process details for a draft request.
+ * @param {string} draftId - The draft ID.
+ * @param {string} staffNusNetId - The staff NUSNET ID.
+ * @param {string} requestorGrp - The requestor group.
+ * @param {string} claimType - The claim type.
+ * @param {Object} loggedInUserDetails - The logged in user details (optional, for optimization).
+ * @returns {Promise<void>}
+ */
+async function initiateLockProcessDetails(draftId, staffNusNetId, requestorGrp, claimType, loggedInUserDetails = null) {
+    try {
+        // Use provided loggedInUserDetails or fetch if not provided
+        let staffId = staffNusNetId;
+        if (loggedInUserDetails && loggedInUserDetails.STAFF_ID) {
+            staffId = loggedInUserDetails.STAFF_ID;
+        } else if (loggedInUserDetails && loggedInUserDetails.STF_NUMBER) {
+            staffId = loggedInUserDetails.STF_NUMBER;
+        } else {
+            // Fallback: Fetch staff info from CHRS job info only if not provided
+            const chrsJobInfo = await CommonRepo.fetchLoggedInUser(staffNusNetId);
+            staffId = (chrsJobInfo && chrsJobInfo.STF_NUMBER) ? chrsJobInfo.STF_NUMBER : staffNusNetId;
+        }
+
+        // Generate LOCK_INST_ID
+        const now = new Date();
+        const requestMonth = String(now.getMonth() + 1).padStart(2, "0");
+        const requestYear = String(now.getFullYear() % 100).padStart(2, "0");
+        const lockIdPattern = ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_REQUEST_LOCK_ID_PATTERN + requestYear + requestMonth;
+        
+        const lockInstId = await CommonRepo.fetchSequenceNumber(lockIdPattern, ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_REQUEST_LOCK_ID_DIGITS);
+
+        // Prepare lock details for upsert
+        const lockDetails = {
+            LOCK_INST_ID: lockInstId,
+            REFERENCE_ID: draftId,
+            PROCESS_CODE: claimType,
+            IS_LOCKED: ApplicationConstants.X,
+            LOCKED_BY_USER_NID: staffId,
+            STAFF_USER_GRP: requestorGrp,
+            REQUEST_STATUS: ApplicationConstants.UNLOCK,
+            LOCKED_ON: new Date(),
+            UPDATED_ON: new Date(),
+            UPDATED_BY: staffId,
+            UPDATED_BY_NID: staffNusNetId
+        };
+
+        // Use repository method to upsert lock details
+        await RequestLockDetailsRepo.upsertLockDetails(lockDetails);
+
+    } catch (error) {
+        console.error("Error in initiateLockProcessDetails:", {
+            draftId: draftId,
+            staffNusNetId: staffNusNetId,
+            requestorGrp: requestorGrp,
+            claimType: claimType,
+            error: error.message,
+            stack: error.stack
+        });
+        throw new ApplicationException(`Failed to initiate lock process details: ${error.message}`);
+    }
+}
+
 module.exports = {
     fetchRole,
     validateEclaimsData,
@@ -1174,5 +1236,6 @@ module.exports = {
     frameClaimExistMessage,
     checkDailyValidation,
     isHourlyMonthlyRateType,
-    checkWbsElement
+    checkWbsElement,
+    initiateLockProcessDetails
 };
