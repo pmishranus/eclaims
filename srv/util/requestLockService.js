@@ -33,7 +33,9 @@ class RequestLockService {
 
             // Cleaning up the lock details table - Start
             if (requestDto.requestorFormFlow) {
+                console.log("RequestLockService: Deleting existing lock details for draft ID:", requestDto.DRAFT_ID);
                 await RequestLockDetailsRepo.deleteByDraftId(requestDto.DRAFT_ID, tx);
+                console.log("RequestLockService: Successfully deleted existing lock details");
             }
             // Cleaning up the lock details table - End
 
@@ -75,7 +77,9 @@ class RequestLockService {
 
             } else {
                 // creation flow - First time creation
+                console.log("RequestLockService: Creating new lock details for draft ID:", requestDto.DRAFT_ID);
                 await this.persistLockInputDetails(requestDto.DRAFT_ID, requestDto.NUSNET_ID, requestDto.REQUESTOR_GRP, requestDto.PROCESS_CODE, tx);
+                console.log("RequestLockService: Successfully created new lock details");
             }
             console.log("RequestLockService requestLock end()");
         } catch (error) {
@@ -251,7 +255,7 @@ class RequestLockService {
                         caApproverLockDetails = await this.frameGroupParticipantLockDtls(draftId, eclaims.CLAIM_TYPE, eclaims.ULU, eclaims.FDLU, eclaims.REQUEST_STATUS, staffNusNetId, requestorGrp, tx);
                     } else {
                         // Claimant, verifier, APP1, APP2
-                        requestLockDetails = this.frameRequestLockDetails(draftId, eclaims.CLAIM_TYPE, eclaims.ULU, eclaims.FDLU, requestorGrp, eclaims.STAFF_ID, eclaims.REQUEST_STATUS, staffNusNetId);
+                        requestLockDetails = await this.frameRequestLockDetails(draftId, eclaims.CLAIM_TYPE, eclaims.ULU, eclaims.FDLU, requestorGrp, eclaims.STAFF_ID, eclaims.REQUEST_STATUS, staffNusNetId);
                     }
 
                     if (requestLockDetails) {
@@ -292,7 +296,7 @@ class RequestLockService {
                         caApproverLockDetails = await this.frameGroupParticipantLockDtls(draftId, cwsData.PROCESS_CODE, cwsData.ULU, cwsData.FDLU, cwsData.REQUEST_STATUS, staffNusNetId, requestorGrp, tx);
                     } else {
                         // Reporting Manager or RM's Manager
-                        requestLockDetails = this.frameRequestLockDetails(draftId, cwsData.PROCESS_CODE, cwsData.ULU, cwsData.FDLU, requestorGrp, staffNusNetId, cwsData.REQUEST_STATUS, staffNusNetId);
+                        requestLockDetails = await this.frameRequestLockDetails(draftId, cwsData.PROCESS_CODE, cwsData.ULU, cwsData.FDLU, requestorGrp, staffNusNetId, cwsData.REQUEST_STATUS, staffNusNetId);
                         // Check against the logged in user and list user and mark the IS_LOCKED as "X"
                         if (staffNusNetId.toLowerCase() === requestLockDetails.LOCKED_BY_USER_NID.toLowerCase()) {
                             requestLockDetails.IS_LOCKED = ApplicationConstants.X;
@@ -343,7 +347,7 @@ class RequestLockService {
      * @param {string} staffNusNetId - The staff NUSNET ID
      * @param {string} requestStatus - The request status
      * @param {string} lockedByUserID - The locked by user ID
-     * @returns {Object} The request lock details
+     * @returns {Promise<Object>} The request lock details
      */
     static async frameRequestLockDetails(draftId, processCode, ulu, fdlu, userGroup, staffNusNetId, requestStatus, lockedByUserID) {
         const now = new Date();
@@ -390,7 +394,7 @@ class RequestLockService {
 
         if (grpParticipantDetails && grpParticipantDetails.length > 0) {
             for (const caDetail of grpParticipantDetails) {
-                const requestLockDetails = this.frameRequestLockDetails(draftId, processCode, ulu, fdlu, requestorGrp, caDetail.STAFF_ID, reqStatus, staffNusNetId);
+                const requestLockDetails = await this.frameRequestLockDetails(draftId, processCode, ulu, fdlu, requestorGrp, caDetail.STAFF_ID, reqStatus, staffNusNetId);
                 requestLockDetailsList.push(requestLockDetails);
             }
         }

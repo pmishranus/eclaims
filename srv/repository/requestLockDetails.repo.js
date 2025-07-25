@@ -133,10 +133,12 @@ async function updateLockValue(draftId, nusNetId, lockValue, tx = null) {
  * @returns {Promise<Object>} The save result.
  */
 async function saveAll(lockDetailsList, tx = null) {
+    console.log("RequestLockDetailsRepo.saveAll: Starting save operation with", lockDetailsList.length, "items");
     const query = INSERT.into("NUSEXT_UTILITY_REQUEST_LOCK_DETAILS")
         .entries(lockDetailsList);
 
     const result = tx ? await tx.run(query) : await cds.run(query);
+    console.log("RequestLockDetailsRepo.saveAll: Successfully saved lock details");
     return result;
 }
 

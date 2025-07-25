@@ -96,13 +96,30 @@ async function convertedSingleRequest(request) {
         uploadResponseDto.message = responseDto.message || "Successfully Uploaded.";
 
         // COMMIT TRANSACTION ON SUCCESS
-        await tx.commit();
+        console.log("About to commit transaction...");
+        try {
+            await tx.commit();
+            console.log("Transaction committed successfully");
+        } catch (commitError) {
+            console.error("Error during transaction commit:", commitError);
+            // If commit fails, try to rollback
+            try {
+                await tx.rollback();
+            } catch (rollbackError) {
+                console.error("Error during transaction rollback after commit failure:", rollbackError);
+            }
+            throw commitError;
+        }
 
     } catch (error) {
         console.error("Exception in convertedSingleRequest:", error);
 
         // ROLLBACK TRANSACTION ON ERROR
-        await tx.rollback();
+        try {
+            await tx.rollback();
+        } catch (rollbackError) {
+            console.error("Error during transaction rollback:", rollbackError);
+        }
 
         // Handle specific error types
         if (error.message === "IGNORE_REQUEST") {
@@ -312,6 +329,7 @@ async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, log
                         }
                     }
 
+                    // Ensure all lock operations are complete before proceeding
                     await initiateLockProcessDetails(
                         tx,
                         eclaimsDataResDto.DRAFT_ID,
