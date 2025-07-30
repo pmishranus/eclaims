@@ -4,6 +4,7 @@
 @host = localhost:4004
 @protocol = https
 @unsecureProtocol = http
+@userId = PTT_CA9
 
 ### Request-1 Get xsuaa token
 #==================================================================#
@@ -26,19 +27,21 @@ client_id={{xsuaaClient}}
 GET {{unsecureProtocol}}://{{host}}/eclaims/dummy()
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
-
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/util/getUserDetails(userId='PTT_CA9')
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
 
 ### Request-1 Get eclaims overview dashboard config
 #==================================================================#
 POST {{unsecureProtocol}}://{{host}}/eclaims/eclaimsOverviewDashboard
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
 
 {
 	"data": {
@@ -48,113 +51,114 @@ Authorization: Bearer {{access_token}}
 	}
 }
 
-
-
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/approvermatrix/staff_based_usergroup_ulu_fdlu(staffId='81535',userGroup='CW_DEPARTMENT_ADMIN')
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
-
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/$metadata
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/eclaims/fetchClaimTypes(staffId='21830',userGroup='CA_MONTH')
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/eclaims/fetchUluFdlu(userGroup='CLAIM_ASSISTANT',claimType='103',period='undefined')
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/fetchUluFdlu?claimType=101&userGroup=CLAIM_ASSISTANT&period=05-2025
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
-
-
-
-
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 POST {{unsecureProtocol}}://{{host}}/eclaims/rateTypes
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
 
 {
 	"data" : {"PROCESS_CODE":"104","CLAIM_MONTH":"05-2025","STAFF_ID":"151401","ULU":"0231054600","FDLU":"0005690002"}
 }
-
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/v2/eclaims/caStaffLookup?ulu=0301060200&fdlu=0006020001&claimType=101&period=05-2025
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/eclaims/draftEclaimData(ulu='0231054600',fdlu='0005690002',claimType='103',period='04-2025',staffId='151398')
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
-
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/draftEclaimData?ulu=0210010100&fdlu=0001010001&claimType=102&period=04-2025&staffId=151515
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
-
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/claimantStaffInfo?username=151398
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
-
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/v2/eclaims/fetchWBS?staffId=151390&claimDate=2025-04-01
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
-
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/eclaimRequestViews('DT2504000002')?$top=10&$expand=MasterClaimTypeDetails,RemarksDataDetails,TaskActionConfigViewDetails,RequestLockDetailsDetails,AttachmentsDataDetails
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/eclaimAddtionalApproverViews
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
-
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 GET {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/fetchCompInfoFromCPI?stfNumber=151398
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
-
+X-User-Id: {{userId}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#
 POST {{unsecureProtocol}}://{{host}}/eclaims/validateEclaims
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
 
 {
   "data": [
@@ -256,12 +260,12 @@ Authorization: Bearer {{access_token}}
   ]
 }
 
-
 ### Request-2 Get eclaims header data
 #==================================================================#
 POST {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/rest/ecpWbsValidate
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
 
 {
 	"data" : {"WBSRequest":{"WBS":["A-0000009-00-00","A-0000019-04-00","A-0000021-01-00"]}}
@@ -272,6 +276,7 @@ Authorization: Bearer {{access_token}}
 POST {{unsecureProtocol}}://{{host}}/odata/v2/eclaims/singleRequest
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
 
 {
 	"data" : [
