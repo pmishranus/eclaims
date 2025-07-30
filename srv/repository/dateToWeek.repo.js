@@ -12,14 +12,14 @@ async function fetchWeekOfTheDay(claimStartDate) {
     // const values = [claimStartDate];
     // let fetchWeek = await cds.run(query, values);
     let fetchWeek = await cds.run(
-        SELECT.from("NUSEXT_UTILITY_DATE_TO_WEEK")
+        SELECT.one.from("NUSEXT_UTILITY_DATE_TO_WEEK")
             .columns("WEEK")
             .where({
                 "START_DATE": { "<=": claimStartDate },
                 "END_DATE": { ">=": claimStartDate }
             })
     );
-    return fetchWeek;
+    return fetchWeek ? fetchWeek.WEEK : "";
 }
 
 module.exports = {

@@ -291,10 +291,10 @@ async function itemDataValidation(item, roleFlow, requestorGroup, loggedInUserDe
         for (let selectedClaimDates of item.selectedClaimDates || []) {
             if (selectedClaimDates) {
                 // Set WEEK_NO (simulate repository call)
-                const weekResult = await DateToWeekRepo.fetchWeekOfTheDay(
+                selectedClaimDates.WEEK_NO = await DateToWeekRepo.fetchWeekOfTheDay(
                     selectedClaimDates.CLAIM_START_DATE
                 );
-                selectedClaimDates.WEEK_NO = weekResult && weekResult.length > 0 ? weekResult[0].WEEK : null;
+                // selectedClaimDates.WEEK_NO = weekResult && weekResult.length > 0 ? weekResult[0].WEEK : null;
     
                 if (CommonUtils.isBlank(selectedClaimDates.CLAIM_START_DATE)) {
                     response.push(

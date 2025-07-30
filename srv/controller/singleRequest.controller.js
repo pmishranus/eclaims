@@ -526,7 +526,7 @@ async function fetchRequestLockedUser(draftId) {
  * @throws {Error} If request is locked by another user
  */
 async function checkIsLocked(loggedInUserDetails, fetchRequestLockedByUser) {
-    const staffId = loggedInUserDetails.STAFF_ID || loggedInUserDetails.NUSNET_ID;
+    const staffId = loggedInUserDetails.STF_NUMBER || loggedInUserDetails.NUSNET_ID;
 
     if (fetchRequestLockedByUser &&
         fetchRequestLockedByUser.trim() !== "" &&
@@ -897,7 +897,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
         DRAFT_ID: draftNumber,
         CREATED_ON: savedData ? savedData.CREATED_ON : new Date(),
         REQUEST_ID: savedData ? savedData.REQUEST_ID : null,
-        MODIFIED_BY: loggedInUserDetails.STAFF_ID,
+        MODIFIED_BY: loggedInUserDetails.STF_NUMBER,
         MODIFIED_BY_NID: loggedInUserDetails.NUSNET_ID,
         MODIFIED_ON: new Date(),
         REQUEST_STATUS: item.REQUEST_STATUS,
@@ -965,7 +965,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
         eclaimsData.SUBMITTED_ON = savedData.SUBMITTED_ON;
     } else {
         eclaimsData.SUBMITTED_BY_NID = loggedInUserDetails.NUSNET_ID;
-        eclaimsData.SUBMITTED_BY = loggedInUserDetails.STAFF_ID;
+        eclaimsData.SUBMITTED_BY = loggedInUserDetails.STF_NUMBER;
         eclaimsData.SUBMITTED_ON = new Date();
     }
 
@@ -1013,7 +1013,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
             if (savedItemIds && savedItemIds.length > 0) {
                 const itemIdsToSoftDelete = savedItemIds.filter(itemId => !itemIdList.includes(itemId));
                 if (itemIdsToSoftDelete.length > 0) {
-                    await EclaimsItemDataRepo.softDeleteByItemId(tx, itemIdsToSoftDelete, loggedInUserDetails.STAFF_ID, DateUtils.formatDateAsString(new Date(), 'yyyy-MM-dd'));
+                    await EclaimsItemDataRepo.softDeleteByItemId(tx, itemIdsToSoftDelete, loggedInUserDetails.STF_NUMBER, DateUtils.formatDateAsString(new Date(), 'yyyy-MM-dd'));
                 }
             }
         }
@@ -1030,7 +1030,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
         }
     } else if (draftNumber) {
         // User deleted all items in the claim request
-        await EclaimsItemDataRepo.softDeleteByDraftId(tx, draftNumber, loggedInUserDetails.STAFF_ID, DateUtils.formatDateAsString(new Date(), 'yyyy-MM-dd'));
+        await EclaimsItemDataRepo.softDeleteByDraftId(tx, draftNumber, loggedInUserDetails.STF_NUMBER, DateUtils.formatDateAsString(new Date(), 'yyyy-MM-dd'));
     }
 
     // Handle CA save operations
@@ -1176,26 +1176,26 @@ async function persistEclaimsItemData(tx, draftNumber, itemCount, selectedClaimD
         WAGE_CODE: selectedClaimDates.WAGE_CODE,
         IS_DISCREPENCY: selectedClaimDates.IS_DISCREPENCY,
         WBS: selectedClaimDates.WBS,
-        UPDATED_BY: loggedInUserDetails.STAFF_ID,
+        UPDATED_BY: loggedInUserDetails.STF_NUMBER,
         UPDATED_ON: new Date(),
         IS_DELETED: ApplicationConstants.N,
     };
 
     // Handle claim week number
     if (selectedClaimDates.CLAIM_START_DATE) {
-        const weekOfYear = await DateToWeekRepo.fetchWeekOfTheDay(new Date(selectedClaimDates.CLAIM_START_DATE));
+        const weekOfYear = await DateToWeekRepo.fetchWeekOfTheDay(selectedClaimDates.CLAIM_START_DATE);
         eclaimsItemData.CLAIM_WEEK_NO = weekOfYear;
     }
 
     // Save item data using transaction
-    const savedData = await CommonRepo.upsertOperationChained(
+    await CommonRepo.upsertOperationChained(
         tx,
         "NUSEXT_ECLAIMS_ITEMS_DATA",
         eclaimsItemData
     );
 
     console.log("ConvertedSingleRequestController persistEclaimsItemData end()");
-    return savedData;
+    return eclaimsItemData;
 }
 
 /**
@@ -1291,16 +1291,16 @@ async function persistProcessParticipantDetails(tx, claimInnerRequestDto, item, 
     processParticipantData.STAFF_FULL_NAME = claimInnerRequestDto.STAFF_FULL_NAME;
     processParticipantData.IS_DELETED = ApplicationConstants.N;
     processParticipantData.UPDATED_BY_NID = loggedInUserDetails.NUSNET_ID;
-    processParticipantData.UPDATED_BY = loggedInUserDetails.STAFF_ID;
+    processParticipantData.UPDATED_BY = loggedInUserDetails.STF_NUMBER;
     processParticipantData.USER_DESIGNATION = userDesignation;
 
     // Use chained operation for consistency
-    const result = await CommonRepo.upsertOperationChained(
+    await CommonRepo.upsertOperationChained(
         tx,
         "NUSEXT_UTILITY_PROCESS_PARTICIPANTS",
         processParticipantData
     );
-    return result;
+    return processParticipantData;
 }
 
 /**
@@ -1317,8 +1317,8 @@ async function initiateLockProcessDetails(tx, draftId, staffNusNetId, requestorG
     try {
         // Use provided loggedInUserDetails or fetch if not provided
         let staffId = staffNusNetId;
-        if (loggedInUserDetails && loggedInUserDetails.STAFF_ID) {
-            staffId = loggedInUserDetails.STAFF_ID;
+        if (loggedInUserDetails && loggedInUserDetails.STF_NUMBER) {
+            staffId = loggedInUserDetails.STF_NUMBER;
         } else if (loggedInUserDetails && loggedInUserDetails.STF_NUMBER) {
             staffId = loggedInUserDetails.STF_NUMBER;
         } else {

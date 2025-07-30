@@ -1,5 +1,5 @@
 const cds = require("@sap/cds");
-const { SELECT, UPSERT } = require("@sap/cds/lib/ql/cds-ql");
+const { SELECT, UPSERT, UPDATE } = require("@sap/cds/lib/ql/cds-ql");
 const { ApplicationConstants } = require("../util/constant");
 
 /**
@@ -179,14 +179,37 @@ async function fetchItemIds(draftId) {
  * @param {Date} date
  * @returns {Promise<Object>}
  */
-async function softDeleteByItemId(tx, itemIds, nusNetId, date) {
-    const query = `UPDATE NUSEXT_ECLAIMS_ITEMS_DATA SET IS_DELETED = 'Y', UPDATED_BY = ?, UPDATED_ON = ? WHERE ITEM_ID IN (?)`;
-    const values = [nusNetId, date, itemIds];
-    const result = await tx.run(query, values);
+async function softDeleteByItemIdOld(tx, itemIdsObj, nusNetId, date) {
+    const itemIds = itemIdsObj.map(item => item.ITEM_ID);
+    const query = await UPDATE.entity("NUSEXT_ECLAIMS_ITEMS_DATA")
+        .set({
+            IS_DELETED: "Y",
+            UPDATED_BY: nusNetId,
+            UPDATED_ON: date,
+        })
+        .where({ ITEM_ID: { in: itemIds } });
 
-    // result will be an object; affected rows may be in result.affectedRows or result.length
+    const result = await tx.run(query);
+
     return result;
 }
+
+async function softDeleteByItemId(tx, itemIdsObj, nusNetId, date) {
+    const itemIds = itemIdsObj.map(item => item.ITEM_ID);
+  
+    const result = await tx.run(
+      UPDATE('NUSEXT_ECLAIMS_ITEMS_DATA')
+        .set({
+          IS_DELETED: "Y",
+          UPDATED_BY: nusNetId,
+          UPDATED_ON: date,
+        })
+        .where({ ITEM_ID: { in: itemIds } })
+    );
+  
+    return result;
+  }
+  
 
 /**
  * Soft deletes items by draft ID.
@@ -214,10 +237,7 @@ async function softDeleteByDraftId(tx, draftId, nusNetId, date) {
  * @returns {Promise<Object>} The upsert result
  */
 async function upsertEclaimsItemData(eclaimsItemData) {
-    const result = await cds.run(
-        UPSERT.into("NUSEXT_ECLAIMS_ITEMS_DATA")
-        .entries(eclaimsItemData)
-    );
+    const result = await cds.run(UPSERT.into("NUSEXT_ECLAIMS_ITEMS_DATA").entries(eclaimsItemData));
     return result;
 }
 

@@ -178,10 +178,10 @@ async function fetchTbClaimStatusCount(staffId, statusCode) {
  * @returns {Promise<Object>}
  */
 async function fetchByDraftId(draftId, tx = null) {
-    // Using parameterized query to prevent SQL injection
-    const query = `SELECT * FROM NUSEXT_ECLAIMS_HEADER_DATA WHERE DRAFT_ID = ?`;
-    const values = [draftId];
-    const result = tx ? await tx.run(query, values) : await cds.run(query, values);
+    let query = SELECT.one.from("NUSEXT_ECLAIMS_HEADER_DATA").where({
+        DRAFT_ID: draftId,
+    });
+    const result = tx ? await tx.run(query) : await cds.run(query);
     return result;
 }
 /**
@@ -239,21 +239,19 @@ async function fetchMonthlyClaimsOnSubmittedOn(month, year, staffId, claimType, 
  * @returns {Promise<Array>}
  */
 async function fetchDraftStatusEclaimsData(ULU, FDLU, CLAIM_TYPE, CLAIM_MONTH, CLAIM_YEAR, STAFF_ID, NUSNET_ID) {
-    let query = SELECT.distinct
-        .from("NUSEXT_ECLAIMS_HEADER_DATA")
-        .where({
-            ULU,
-            FDLU,
-            CLAIM_TYPE,
-            CLAIM_MONTH,
-            CLAIM_YEAR,
-            REQUEST_STATUS: '01',
-            and: {
-                STAFF_ID: STAFF_ID.toUpperCase(),
-                or: { STAFF_NUSNET_ID: STAFF_ID.toUpperCase() }
-            },
-            SUBMITTED_BY_NID: NUSNET_ID.toUpperCase()
-        });
+    let query = SELECT.distinct.from("NUSEXT_ECLAIMS_HEADER_DATA").where({
+        ULU,
+        FDLU,
+        CLAIM_TYPE,
+        CLAIM_MONTH,
+        CLAIM_YEAR,
+        REQUEST_STATUS: "01",
+        and: {
+            STAFF_ID: STAFF_ID.toUpperCase(),
+            or: { STAFF_NUSNET_ID: STAFF_ID.toUpperCase() },
+        },
+        SUBMITTED_BY_NID: NUSNET_ID.toUpperCase(),
+    });
     let fetchDraftStatusEclaimsData = await cds.run(query);
     return fetchDraftStatusEclaimsData || [];
 }
@@ -266,17 +264,21 @@ async function fetchDraftStatusEclaimsData(ULU, FDLU, CLAIM_TYPE, CLAIM_MONTH, C
 async function fetchPastThreeMonthsWbs(stfNumber, requestClaimDate) {
     const pastThreeMonthsDate = new Date(requestClaimDate);
     pastThreeMonthsDate.setDate(pastThreeMonthsDate.getDate() - 90);
-    const pastThreeMonthsDateFormat = DateUtils.formatDateAsString(pastThreeMonthsDate, ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT);
+    const pastThreeMonthsDateFormat = DateUtils.formatDateAsString(
+        pastThreeMonthsDate,
+        ApplicationConstants.INPUT_CLAIM_REQUEST_DATE_FORMAT
+    );
     const results = await cds.run(
-        SELECT.from('NUSEXT_ECLAIMS_ITEMS_DATA as itmdata')
-            .join('NUSEXT_ECLAIMS_HEADER_DATA as hdrdata').on('hdrdata.DRAFT_ID = itmdata.DRAFT_ID')
+        SELECT.from("NUSEXT_ECLAIMS_ITEMS_DATA as itmdata")
+            .join("NUSEXT_ECLAIMS_HEADER_DATA as hdrdata")
+            .on("hdrdata.DRAFT_ID = itmdata.DRAFT_ID")
             .where({
-                'hdrdata.STAFF_ID': stfNumber,
-                'hdrdata.SUBMITTED_ON': { '>=': pastThreeMonthsDateFormat },
-                'hdrdata.REQUEST_STATUS': { '>=': ApplicationConstants.STATUS_ECLAIMS_APPROVED }
+                "hdrdata.STAFF_ID": stfNumber,
+                "hdrdata.SUBMITTED_ON": { ">=": pastThreeMonthsDateFormat },
+                "hdrdata.REQUEST_STATUS": { ">=": ApplicationConstants.STATUS_ECLAIMS_APPROVED },
             })
-            .columns('WBS', 'WBS_DESC')
-            .groupBy('WBS', 'WBS_DESC')
+            .columns("WBS", "WBS_DESC")
+            .groupBy("WBS", "WBS_DESC")
     );
     return results || [];
 }
@@ -287,10 +289,7 @@ async function fetchPastThreeMonthsWbs(stfNumber, requestClaimDate) {
  * @returns {Promise<Object>} The upsert result
  */
 async function upsertEclaimsData(eclaimsData) {
-    const result = await cds.run(
-        UPSERT.into("NUSEXT_ECLAIMS_HEADER_DATA")
-            .entries(eclaimsData)
-    );
+    const result = await cds.run(UPSERT.into("NUSEXT_ECLAIMS_HEADER_DATA").entries(eclaimsData));
     return result;
 }
 
@@ -308,5 +307,5 @@ module.exports = {
     fetchRequestId,
     fetchDraftStatusEclaimsData,
     fetchPastThreeMonthsWbs,
-    upsertEclaimsData
+    upsertEclaimsData,
 };
