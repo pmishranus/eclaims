@@ -6,6 +6,7 @@ const CommonUtils = require("../util/commonUtil");
 const ElligibleCriteriaRepo = require("../repository/eligibilityCriteria.repo");
 const { ApplicationException } = require("../util/customErrors");
 const ChrsJobInfoRepo = require("../repository/chrsJobInfo.repo");
+const UserUtil = require("../util/userUtil");
 /**
  *
  * @param request
@@ -14,9 +15,8 @@ async function fetchClaimantStaffInfo(request) {
     let oResClaimantStaffInfo = {}
     try {
         const tx = cds.tx(request);
-        const user = request.user.id;
-        const { username } = request.data;
-        // const userName = "PTT_CA1";
+        // Extract username using utility function
+        const username = UserUtil.extractUsername(request);
         const upperNusNetId = username.toUpperCase();
         let userInfoDetails = await CommonRepo.fetchUserInfo(upperNusNetId);
         if (!username) {
@@ -135,7 +135,7 @@ async function fetchClaimantAssignmentDtls(staffId) {
                         if (
                             CommonUtils.isNotBlank(chrsCostDist.COST_DIST_FLG) &&
                             CommonUtils.equalsIgnoreCase(chrsCostDist.COST_DIST_FLG, ApplicationConstants.X)
-              ) {
+                        ) {
                             eclaimsJwtResponseDto.COST_DIST_FLG = ApplicationConstants.Y;
                         }
                     }

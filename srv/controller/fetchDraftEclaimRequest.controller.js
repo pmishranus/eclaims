@@ -4,6 +4,7 @@ const EclaimsItemDataRepo = require("../repository/eclaimsItemData.repo");
 const {ApplicationException} = require("../util/customErrors");
 const CommonRepo = require("../repository/util.repo");
 const CommonUtils = require("../util/commonUtil");
+const UserUtil = require("../util/userUtil");
 /**
  *
  * @param request
@@ -13,9 +14,9 @@ async function fetchDraftEclaimRequest(request) {
     let oResponse = {};
     try {
         // const tx = cds.tx(request);
-        const user = request.user.id;
         const { claimType, ulu, fdlu, period, staffId } = request.data;
-        const userName = "CW_UID151515";
+        // Extract username using utility function
+        const userName = UserUtil.extractUsername(request);
         const upperNusNetId = userName.toUpperCase();
         let userInfoDetails = await CommonRepo.fetchUserInfo(upperNusNetId);
         if (!userName) {

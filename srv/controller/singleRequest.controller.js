@@ -19,6 +19,7 @@ const ProcessDetailsRepo = require("../repository/processDetails.repo");
 const TaskDetailsRepo = require("../repository/taskDetails.repo");
 const RequestLockService = require("../util/requestLockService");
 const EclaimService = require("../util/eclaimService");
+const UserUtil = require("../util/userUtil");
 
 /**
  * Converted Single Request method from Java implementation
@@ -40,10 +41,8 @@ async function singleRequest(request) {
     const tx = cds.tx(request);
 
     try {
-        // Extract user information
-        const user = request.user.id;
-        // const userName = user.split('@')[0];
-        const userName = "PTT_CA9";
+        // Extract user information using utility function
+        const userName = UserUtil.extractUsername(request);
         const upperNusNetId = userName.toUpperCase();
 
         // Fetch logged in user details

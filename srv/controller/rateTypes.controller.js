@@ -5,6 +5,7 @@ const ChrsJobInfoRepo = require("../repository/chrsJobInfo.repo");
 const { ApplicationConstants } = require("../util/constant");
 const CommonUtils = require("../util/commonUtil");
 const ChrsCompInfoRepo = require("../repository/chrsCompInfo.repo");
+const UserUtil = require("../util/userUtil");
 
 /**
  *
@@ -14,8 +15,8 @@ async function fetchRateTypes(request) {
     let approveTasksRes = [];
     try {
         // const tx = cds.tx(request);
-        const user = request.user.id;
-        const userName = "OT_CA9";
+        // Extract username using utility function
+        const userName = UserUtil.extractUsername(request);
         const upperNusNetId = userName.toUpperCase();
         let userInfoDetails = await CommonRepo.fetchUserInfo(upperNusNetId);
         if (!userName) {
@@ -23,14 +24,14 @@ async function fetchRateTypes(request) {
         }
 
         const inputRequest = request.data.data;
-        if (!inputRequest) {return request.reject(400, "Request is Empty / Not valid.");}
+        if (!inputRequest) { return request.reject(400, "Request is Empty / Not valid."); }
         const staffId = inputRequest.STAFF_ID;
         const claimMonth = inputRequest.CLAIM_MONTH;
         const ulu = inputRequest.ULU;
         const fdlu = inputRequest.FDLU;
         const processCode = inputRequest.PROCESS_CODE;
-        if (!staffId || !claimMonth) {return request.reject(400, "Invalid Staff id/Claim Month");}
-        if (!ulu || !fdlu) {return request.reject(400, "Pls provide ULU/FDLU");}
+        if (!staffId || !claimMonth) { return request.reject(400, "Invalid Staff id/Claim Month"); }
+        if (!ulu || !fdlu) { return request.reject(400, "Pls provide ULU/FDLU"); }
 
         const oResponse = {
             message: "Rate Types fetched successfully",

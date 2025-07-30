@@ -4,6 +4,7 @@ const ChrsJobInfoRepo = require("../repository/chrsJobInfo.repo");
 const { ApplicationConstants } = require("../util/constant");
 const CommonUtils = require("../util/commonUtil");
 const ChrsUluFdluRepo = require("../repository/chrsUluFdlu.repo");
+const UserUtil = require("../util/userUtil");
 
 /**
  *
@@ -12,7 +13,8 @@ const ChrsUluFdluRepo = require("../repository/chrsUluFdlu.repo");
 async function fetchUluFdlu(request) {
     try {
         const { claimType, userGroup, period } = request.data;
-        const userName = "OT_CA1";
+        // Extract username using utility function
+        const userName = UserUtil.extractUsername(request);
         const upperNusNetId = userName.toUpperCase();
         let userInfoDetails = await CommonRepo.fetchUserInfo(upperNusNetId);
         if (!userName) {

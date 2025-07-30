@@ -9,6 +9,7 @@ const { monitor } = require("../util/performanceMonitor");
 const { userInfoCache } = require("../util/cacheUtil");
 const { ApplicationException, DatabaseException } = require("../util/customErrors");
 const cds = require("@sap/cds");
+const UserUtil = require("../util/userUtil");
 
 /**
  * Enhanced CA Staff Lookup function with improved performance and error handling
@@ -19,7 +20,7 @@ const cds = require("@sap/cds");
  */
 async function fetchCaStaffLookup(request) {
     const timerId = monitor.start("caStaffLookup");
-    
+
     try {
         // Input validation with proper error messages
         const validationResult = await validateInput(request);
@@ -28,8 +29,8 @@ async function fetchCaStaffLookup(request) {
         }
 
         const { claimType, ulu, fdlu, period, searchValue } = request.data;
-        // let user = request.user.id;
-        let user = 'PTT_CA9'
+        // Extract username using utility function
+        let user = UserUtil.extractUsername(request);
         // Get user info with caching
         const userInfoDetails = await getUserInfoWithCache(user);
         if (!userInfoDetails) {
@@ -67,7 +68,7 @@ async function fetchCaStaffLookup(request) {
     } catch (error) {
         // Stop timer and log error
         monitor.stop(timerId);
-        
+
         // Log error details for debugging
         console.error("CA Staff Lookup failed:", {
             error: error.message,
@@ -155,22 +156,22 @@ async function validateInput(request) {
  */
 async function getUserInfoWithCache(user) {
     const cacheKey = `userInfo_${user}`;
-    
+
     // Try to get from cache first
     let userInfoDetails = userInfoCache.get(cacheKey);
-    
+
     if (!userInfoDetails) {
         // Fetch from database if not in cache
         userInfoDetails = await monitor.async("userInfoQuery", async () => {
             return await CommonRepo.fetchUserInfo(user.toUpperCase());
         });
-        
+
         // Cache the result for 10 minutes
         if (userInfoDetails) {
             userInfoCache.set(cacheKey, userInfoDetails, 600000); // 10 minutes
         }
     }
-    
+
     return userInfoDetails;
 }
 
@@ -222,7 +223,7 @@ async function processAndDeduplicateResults(staffLookup) {
 
     // Deduplicate by STF_NUMBER using Map for better performance
     const uniqueStaffMap = new Map();
-    
+
     for (const staff of staffLookup) {
         if (staff && staff.STF_NUMBER) {
             // Keep the latest occurrence (as per original logic)
@@ -232,7 +233,7 @@ async function processAndDeduplicateResults(staffLookup) {
 
     // Convert to array and sort by STF_NUMBER
     const uniqueStaffArray = Array.from(uniqueStaffMap.values());
-    
+
     uniqueStaffArray.sort((a, b) => {
         const aNumber = String(a.STF_NUMBER || '');
         const bNumber = String(b.STF_NUMBER || '');

@@ -1,4 +1,5 @@
 const CommonUtils = require("../util/commonUtil");
+const UserUtil = require("../util/userUtil");
 
 /**
  * Validates WBS (Work Breakdown Structure) codes using ECP system
@@ -7,7 +8,8 @@ const CommonUtils = require("../util/commonUtil");
  */
 async function ecpWbsValidate(request) {
     try {
-        const user = request.user.id;
+        // Extract username using utility function
+        const user = UserUtil.extractUsername(request);
         
         // Extract WBS payload from request
         const wbsPayload = request.data.data;

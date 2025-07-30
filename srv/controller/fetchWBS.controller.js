@@ -1,10 +1,11 @@
-const { ApplicationConstants,MessageConstants } = require("../util/constant");
+const { ApplicationConstants, MessageConstants } = require("../util/constant");
 const EclaimsHeaderDataRepo = require("../repository/eclaimsData.repo");
 const EclaimsItemDataRepo = require("../repository/eclaimsItemData.repo");
-const {ApplicationException} = require("../util/customErrors");
+const { ApplicationException } = require("../util/customErrors");
 const CommonRepo = require("../repository/util.repo");
 const CommonUtils = require("../util/commonUtil");
 const DateUtils = require("../util/dateUtil");
+const UserUtil = require("../util/userUtil");
 /**
  *
  * @param request
@@ -14,18 +15,18 @@ async function fetchWBS(request) {
     let oResponse = {};
     try {
         // const tx = cds.tx(request);
-        const user = request.user.id;
-        const { claimDate,staffId } = request.data;
-        const userName = "OT_CA9";
+        const { claimDate, staffId } = request.data;
+        // Extract username using utility function
+        const userName = UserUtil.extractUsername(request);
         const upperNusNetId = userName.toUpperCase();
         let userInfoDetails = await CommonRepo.fetchUserInfo(upperNusNetId);
         if (!userName) {
             throw new Error("User not found..!!");
         }
 
-        oResponse.aWBS = await fetchWBSPastThreeMonths(staffId,claimDate);
-       
-       
+        oResponse.aWBS = await fetchWBSPastThreeMonths(staffId, claimDate);
+
+
         return oResponse;
     } catch (err) {
         oResponse.error = true;
@@ -35,7 +36,7 @@ async function fetchWBS(request) {
             error: true,
             message: err.Message,
             ...oResponse,
-          });
+        });
     }
 }
 
@@ -65,4 +66,4 @@ async function fetchWBSPastThreeMonths(staffId, claimDate) {
 
 
 
-module.exports = { fetchWBS}
+module.exports = { fetchWBS }

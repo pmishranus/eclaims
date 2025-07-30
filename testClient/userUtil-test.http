@@ -1,0 +1,453 @@
+### Test Username Utility Function
+
+# Test 1: Username from request data
+POST http://localhost:4004/odata/v4/eclaims-service/validateEclaims
+Content-Type: application/json
+
+{
+  "data": {
+    "username": "testuser123",
+    "data": [
+      {
+        "DRAFT_ID": "TEST001",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+###
+
+# Test 2: Username from custom header
+POST http://localhost:4004/odata/v4/eclaims-service/validateEclaims
+Content-Type: application/json
+X-User-Id: customuser456
+
+{
+  "data": {
+    "data": [
+      {
+        "DRAFT_ID": "TEST002",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+###
+
+# Test 3: Username from XSUAA (simulated)
+POST http://localhost:4004/odata/v4/eclaims-service/validateEclaims
+Content-Type: application/json
+
+{
+  "data": {
+    "data": [
+      {
+        "DRAFT_ID": "TEST003",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+###
+
+# Test 4: Dashboard with username from request data
+POST http://localhost:4004/odata/v4/eclaims-service/eclaimsOverviewDashboard
+Content-Type: application/json
+
+{
+  "data": {
+    "username": "dashboarduser",
+    "data": {
+      "PROCESS_CODE": "ECLAIMS_OVERALL_PROCESS"
+    }
+  }
+}
+
+###
+
+# Test 5: Single Request with username from header
+POST http://localhost:4004/odata/v4/eclaims-service/singleRequest
+Content-Type: application/json
+X-Username: singlerequestuser
+
+{
+  "data": {
+    "data": [
+      {
+        "DRAFT_ID": "TEST005",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+###
+
+# Test 6: Fetch WBS with username from request data
+POST http://localhost:4004/odata/v4/eclaims-service/fetchWBS
+Content-Type: application/json
+
+{
+  "username": "wbsuser",
+  "claimDate": "2024-01-15",
+  "staffId": "12345"
+}
+
+###
+
+# Test 7: Fetch Draft Eclaim Request with username from header
+POST http://localhost:4004/odata/v4/eclaims-service/fetchDraftEclaimRequest
+Content-Type: application/json
+User-Id: draftuser789
+
+{
+  "claimType": "101",
+  "ulu": "ULU001",
+  "fdlu": "FDLU001",
+  "period": "01-2024",
+  "staffId": "12345"
+}
+
+###
+
+# Test 8: Rate Types with username from request data
+POST http://localhost:4004/odata/v4/eclaims-service/fetchRateTypes
+Content-Type: application/json
+
+{
+  "username": "ratetypesuser",
+  "data": {
+    "STAFF_ID": "12345",
+    "CLAIM_MONTH": "01-2024",
+    "ULU": "ULU001",
+    "FDLU": "FDLU001",
+    "PROCESS_CODE": "ECLAIMS"
+  }
+}
+
+###
+
+# Test 9: Fetch ULU/FDLU with username from header
+POST http://localhost:4004/odata/v4/eclaims-service/fetchUluFdlu
+Content-Type: application/json
+X-Custom-User-Id: ulufdluser
+
+{
+  "claimType": "101",
+  "userGroup": "CLAIMANT",
+  "period": "01-2024"
+}
+
+###
+
+# Test 10: CA Staff Lookup with username from request data
+POST http://localhost:4004/odata/v4/eclaims-service/fetchCaStaffLookup
+Content-Type: application/json
+
+{
+  "username": "castaffuser",
+  "claimType": "101",
+  "ulu": "ULU001",
+  "fdlu": "FDLU001",
+  "period": "01-2024",
+  "searchValue": "test"
+}
+
+###
+
+# Test 11: ECP WBS Validate with username from header
+POST http://localhost:4004/odata/v4/eclaims-service/ecpWbsValidate
+Content-Type: application/json
+X-User-Id: ecpwbsuser
+
+{
+  "data": {
+    "WBSRequest": {
+      "WBS": ["WBS001", "WBS002", "WBS003"]
+    }
+  }
+}
+
+###
+
+# Test 12: Claimant Staff Info with username from request data
+POST http://localhost:4004/odata/v4/eclaims-service/claimantStaffInfo
+Content-Type: application/json
+
+{
+  "username": "claimantuser"
+}
+
+###
+
+# Test 13: No username provided (should use centralized fallback)
+POST http://localhost:4004/odata/v4/eclaims-service/validateEclaims
+Content-Type: application/json
+
+{
+  "data": {
+    "data": [
+      {
+        "DRAFT_ID": "TEST013",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+###
+
+# Test 14: Invalid username format
+POST http://localhost:4004/odata/v4/eclaims-service/validateEclaims
+Content-Type: application/json
+
+{
+  "data": {
+    "username": "",
+    "data": [
+      {
+        "DRAFT_ID": "TEST014",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+###
+
+# Test 15: Multiple username sources (should use priority order)
+POST http://localhost:4004/odata/v4/eclaims-service/validateEclaims
+Content-Type: application/json
+X-User-Id: headeruser
+
+{
+  "data": {
+    "username": "datauser",
+    "data": [
+      {
+        "DRAFT_ID": "TEST015",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+###
+
+# Test 16: Username with special characters (should be sanitized)
+POST http://localhost:4004/odata/v4/eclaims-service/validateEclaims
+Content-Type: application/json
+
+{
+  "data": {
+    "username": "  test.user@domain.com  ",
+    "data": [
+      {
+        "DRAFT_ID": "TEST016",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+###
+
+# Test 17: Username from different parameter names
+POST http://localhost:4004/odata/v4/eclaims-service/validateEclaims
+Content-Type: application/json
+
+{
+  "data": {
+    "user": "userparam",
+    "userId": "useridparam",
+    "userName": "usernameparam",
+    "user_name": "user_nameparam",
+    "data": [
+      {
+        "DRAFT_ID": "TEST017",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+###
+
+# Test 18: Username from XSUAA user object (simulated)
+POST http://localhost:4004/odata/v4/eclaims-service/validateEclaims
+Content-Type: application/json
+
+{
+  "data": {
+    "data": [
+      {
+        "DRAFT_ID": "TEST018",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+###
+
+# Test 19: Different header variations
+POST http://localhost:4004/odata/v4/eclaims-service/validateEclaims
+Content-Type: application/json
+x-user-id: lowercaseuser
+x-username: lowercaseusername
+user-id: useridheader
+username: usernameheader
+
+{
+  "data": {
+    "data": [
+      {
+        "DRAFT_ID": "TEST019",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+###
+
+# Test 20: All controllers with centralized fallback
+# This test demonstrates that all controllers will use the same centralized fallback
+# when no username is provided in the request
+
+POST http://localhost:4004/odata/v4/eclaims-service/validateEclaims
+Content-Type: application/json
+
+{
+  "data": {
+    "data": [
+      {
+        "DRAFT_ID": "TEST020",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+###
+
+POST http://localhost:4004/odata/v4/eclaims-service/eclaimsOverviewDashboard
+Content-Type: application/json
+
+{
+  "data": {
+    "data": {
+      "PROCESS_CODE": "ECLAIMS_OVERALL_PROCESS"
+    }
+  }
+}
+
+###
+
+POST http://localhost:4004/odata/v4/eclaims-service/singleRequest
+Content-Type: application/json
+
+{
+  "data": {
+    "data": [
+      {
+        "DRAFT_ID": "TEST020",
+        "CLAIM_TYPE": "101",
+        "selectedClaimDates": [
+          {
+            "claimDate": "2024-01-15",
+            "START_TIME": "09:00",
+            "END_TIME": "17:00"
+          }
+        ]
+      }
+    ]
+  }
+} 

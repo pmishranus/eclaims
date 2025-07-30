@@ -4,6 +4,7 @@ const CommonUtils = require("../util/commonUtil");
 const { ApplicationConstants, MessageConstants } = require("../util/constant");
 const EclaimsHeaderDataRepo = require("../repository/eclaimsData.repo");
 const { ApplicationException, HttpClientErrorException } = require("../util/customErrors");
+const UserUtil = require("../util/userUtil");
 /**
  *
  * @param request
@@ -14,9 +15,8 @@ async function fetchValidateEclaims(request) {
         claimDataResponse: {},
     };
     try {
-        const user = request.user.id;
-        // const userName = user.split('@')[0];
-        const userName = "PTT_CA9";
+        // Extract username using utility function
+        const userName = UserUtil.extractUsername(request);
         const upperNusNetId = userName.toUpperCase();
         let loggedInUserDetails = await CommonRepo.fetchLoggedInUser(upperNusNetId);
         if (!userName) {

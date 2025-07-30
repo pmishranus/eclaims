@@ -15,6 +15,7 @@ const TaskDelegationDetailsRepo = require("../repository/taskDelegation.repo");
 const EclaimsHeaderDataRepo = require("../repository/eclaimsData.repo");
 const moment = require("moment-timezone");
 const { head } = require("lodash");
+const UserUtil = require("../util/userUtil");
 module.exports = {
     /**
      *
@@ -32,9 +33,8 @@ module.exports = {
         const tx = cds.tx();
         let configResponse = [];
         try {
-            const user = request.user.id;
-            // const userName = user.split('@')[0];
-            const userName = "PTT_CA1";
+            // Extract username using utility function
+            const userName = UserUtil.extractUsername(request);
             const upperNusNetId = userName.toUpperCase();
             //fetch logged in user information
 

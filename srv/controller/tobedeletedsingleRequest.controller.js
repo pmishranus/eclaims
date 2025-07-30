@@ -18,6 +18,7 @@ const StatusConfigType = require("../enum/statusConfigType");
 const ChrsJobInfoRepo = require("../repository/chrsJobInfo.repo");
 const StatusConfigRepo = require("../repository/statusConfig.repo");
 const EclaimService = require("../util/eclaimService");
+const UserUtil = require("../util/userUtil");
 
 /**
  * Handles the main entry point for single request claims.
@@ -27,14 +28,13 @@ const EclaimService = require("../util/eclaimService");
 async function postClaims(request) {
     try {
         const tx = cds.tx(request);
-        const user = request.user.id;
-        // const userName = user.split('@')[0];
-        const userName = "PTT_CA9";
+        // Extract username using utility function
+        const userName = UserUtil.extractUsername(request);
         const upperNusNetId = userName.toUpperCase();
         let loggedInUserDetails = await CommonRepo.fetchLoggedInUser(upperNusNetId);
         if (!userName) {
             throw new Error("User not found..!!");
-        } 
+        }
         let massUploadRequest = request.data.data;
         // const token = request.token || (request.headers && (request.headers.Authorization || request.headers.authorization));
 
@@ -226,7 +226,7 @@ async function claimantSubmissionFlow(tx, massUploadRequest, roleFlow, loggedInU
     }
 
     for (const item of massUploadRequest) {
-        if (!item) {continue;}
+        if (!item) { continue; }
 
         // Withdraw or Retract actions (assuming you have those handlers)
         if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_WITHDRAW) {
@@ -254,7 +254,7 @@ async function claimantSubmissionFlow(tx, massUploadRequest, roleFlow, loggedInU
             if (
                 eclaimsDataResDto.REQUEST_STATUS &&
                 eclaimsDataResDto.REQUEST_STATUS.toUpperCase() ===
-                    ApplicationConstants.STATUS_ECLAIMS_CLAIMANT_SUBMITTED
+                ApplicationConstants.STATUS_ECLAIMS_CLAIMANT_SUBMITTED
             ) {
                 lockRequestorGrp = ApplicationConstants.CLAIM_ASSISTANT;
             }
@@ -411,7 +411,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
 
     let itemCount =
         item.CLAIM_REQUEST_TYPE &&
-        item.CLAIM_REQUEST_TYPE.toUpperCase() === ApplicationConstants.CLAIM_REQUEST_TYPE_PERIOD
+            item.CLAIM_REQUEST_TYPE.toUpperCase() === ApplicationConstants.CLAIM_REQUEST_TYPE_PERIOD
             ? 0
             : 1;
     const nusNetId = userInfoDetails.NUSNET_ID;
@@ -443,7 +443,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     }
 
     // MODIFIED fields
-    if (userInfoDetails) {eclaimsData.MODIFIED_BY = userInfoDetails.STF_NUMBER;}
+    if (userInfoDetails) { eclaimsData.MODIFIED_BY = userInfoDetails.STF_NUMBER; }
     eclaimsData.MODIFIED_BY_NID = userInfoDetails.NUSNET_ID;
     eclaimsData.MODIFIED_ON = new Date().toISOString();
 
@@ -474,7 +474,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     // CLAIM_MONTH/YEAR logic
     if (item.CLAIM_MONTH && item.CLAIM_MONTH.includes(ApplicationConstants.HYPHEN)) {
         const monthData = item.CLAIM_MONTH.split(ApplicationConstants.HYPHEN);
-        if (monthData[0]) {eclaimsData.CLAIM_MONTH = monthData[0].padStart(2, "0");}
+        if (monthData[0]) { eclaimsData.CLAIM_MONTH = monthData[0].padStart(2, "0"); }
         eclaimsData.CLAIM_YEAR = monthData[1];
         // If claim type is 102, fetch working hours
         if (item.CLAIM_TYPE && item.CLAIM_TYPE === ApplicationConstants.CLAIM_TYPE_102) {
@@ -532,7 +532,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
             const savedItemIds = (await EclaimsItemDataRepo.fetchItemIds(draftNumber)).map(row => row.ITEM_ID);
             const itemIdsToSoftDelete = savedItemIds.filter(id => !itemIdList.includes(id));
             if (itemIdsToSoftDelete.length > 0) {
-                await EclaimsItemDataRepo.softDeleteByItemId(tx, itemIdsToSoftDelete, userInfoDetails.STAFF_ID,DateUtils.formatDateAsString(new Date(),'yyyy-MM-dd'));
+                await EclaimsItemDataRepo.softDeleteByItemId(tx, itemIdsToSoftDelete, userInfoDetails.STAFF_ID, DateUtils.formatDateAsString(new Date(), 'yyyy-MM-dd'));
             }
         }
         for (const selectedClaimDates of item.selectedClaimDates) {
@@ -544,7 +544,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
             }
         }
     } else if (draftNumber) {
-        await EclaimsItemDataRepo.softDeleteByDraftId(tx, draftNumber, userInfoDetails.STAFF_ID, DateUtils.formatDateAsString(new Date(),'yyyy-MM-dd'));
+        await EclaimsItemDataRepo.softDeleteByDraftId(tx, draftNumber, userInfoDetails.STAFF_ID, DateUtils.formatDateAsString(new Date(), 'yyyy-MM-dd'));
     }
 
     if (isCASave) {
@@ -951,11 +951,11 @@ async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, use
                         eclaimsDataResDto.REQUEST_STATUS &&
                         eclaimsDataResDto.REQUEST_STATUS.toUpperCase() !== ApplicationConstants.STATUS_ECLAIMS_DRAFT
                     ) {
-                                            // Map StatusConfigType.fromValue logic
-                    const requestorGrp = StatusConfigType.fromValue(eclaimsDataResDto.REQUEST_STATUS);
-                    if (!requestorGrp.isUnknown()) {
-                        lockRequestorGrp = requestorGrp.getValue();
-                    }
+                        // Map StatusConfigType.fromValue logic
+                        const requestorGrp = StatusConfigType.fromValue(eclaimsDataResDto.REQUEST_STATUS);
+                        if (!requestorGrp.isUnknown()) {
+                            lockRequestorGrp = requestorGrp.getValue();
+                        }
                     }
                     // TODO: Implement initiateLockProcessDetails
                     // await initiateLockProcessDetails(eclaimsDataResDto.DRAFT_ID, eclaimsJWTTokenUtil.fetchNusNetIdFromToken(token), lockRequestorGrp, eclaimsDataResDto.CLAIM_TYPE);
