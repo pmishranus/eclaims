@@ -1,0 +1,222 @@
+@xsuaaHostname = https://nus-ariba-dev-px55m7l5.authentication.eu10.hana.ondemand.com
+@xsuaaClient = sb-utility!t169063
+@xsuaaSecret = 8f6e922d-4d5d-4fe6-910f-000dce2b4638$tk1PCoekKMDcX4OIh88nJSgmdU2bERyXw_RLMtfY_vA=
+@host = localhost:4004
+@protocol = https
+@unsecureProtocol = http
+@userId = OT_CA9
+
+### Request-1 Get xsuaa token
+#==================================================================#
+# @name getXsuaaToken
+
+POST {{xsuaaHostname}}/oauth/token
+Accept: application/json
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic {{xsuaaClient}}:{{xsuaaSecret}}
+
+client_id={{xsuaaClient}}
+&client_secret={{xsuaaSecret}}
+&grant_type=client_credentials
+
+### Store access token 
+@access_token = {{getXsuaaToken.response.body.$.access_token}}
+
+### Test Case: Verify ITEM_ID duplication fix
+#==================================================================#
+# This test verifies that new items get unique ITEM_ID values
+# and don't duplicate existing ITEM_ID values
+
+POST {{unsecureProtocol}}://{{host}}/eclaims/singleRequest
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
+
+{
+	"data": [
+		{
+			"CLAIM_TYPE": "103",
+			"STAFF_ID": "151398",
+			"CLAIM_REQUEST_TYPE": "Daily",
+			"CLAIM_MONTH": "05-2025",
+			"TOTAL_AMOUNT": " ",
+			"WBS": " ",
+			"ULU": "0231054600",
+			"FDLU": "0005690002",
+			"DRAFT_ID": "DT2507000018",
+			"VERIFIER": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ADDTIONAL_APPROVER_1": [
+				{
+					"PPNT_ID": "PPNT25070003",
+					"STAFF_ID": "26226",
+					"NUSNET_ID": "OT_AAP9_2",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": "Jaslyn Sutton"
+				}
+			],
+			"ADDTIONAL_APPROVER_2": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ATTACHMENTS": [],
+			"REMARKS": [
+				{
+					"ID": "RMK250700001",
+					"REFERENCE_ID": "DT2507000018",
+					"REMARKS": "Test Remarks",
+					"STAFF_ID": "1625",
+					"STAFF_NAME": "Aliviah Hasset",
+					"STAFF_USER_TYPE": "CA",
+					"REMARKS_UPDATE_ON": "2025-07-30 15:53:29",
+					"REMARKS_TYPE": null,
+					"NUSNET_ID": null,
+					"IS_EDITABLE": 0,
+					"__metadata": {
+						"type": "EclaimsService.PRJ_REMARKS_DETAILS",
+						"uri": "https://port8080-workspaces-ws-8qmdt.eu10.applicationstudio.cloud.sap,nusbtpeclaim.dest:443/destinations/nusbtpeclaim/odata/v2/eclaims/PRJ_REMARKS_DETAILS('RMK250700001')"
+					}
+				}
+			],
+			"REQUEST_STATUS": "01",
+			"isMassUpload": "N",
+			"isSave": "Y",
+			"ACTION": "SAVE",
+			"ROLE": "CA",
+			"REQUEST_ID": "",
+			"selectedClaimDates": [
+				{
+					"ITEM_ID": "DT2507000018002",
+					"CLAIM_START_DATE": "2025-05-06",
+					"CLAIM_END_DATE": "2025-05-06",
+					"START_TIME": "13:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "06 May, 2025",
+					"CLAIM_DAY": "Tuesday",
+					"HOURS_UNIT": "4.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 0
+				},
+				{
+					"ITEM_ID": "DT2507000018003",
+					"CLAIM_START_DATE": "2025-05-07",
+					"CLAIM_END_DATE": "2025-05-07",
+					"START_TIME": "13:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "07 May, 2025",
+					"CLAIM_DAY": "Wednesday",
+					"HOURS_UNIT": "4.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 0
+				},
+				{
+					"ITEM_ID": "DT2507000018004",
+					"CLAIM_START_DATE": "2025-05-02",
+					"CLAIM_END_DATE": "2025-05-02",
+					"START_TIME": "11:00",
+					"END_TIME": "12:00",
+					"CLAIM_START_DATE_DISPLAY": "02 May, 2025",
+					"CLAIM_DAY": "Friday",
+					"HOURS_UNIT": "1.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 0
+				},
+				{
+					"ITEM_ID": "",
+					"CLAIM_START_DATE": "2025-05-08",
+					"CLAIM_END_DATE": "2025-05-08",
+					"START_TIME": "14:00",
+					"END_TIME": "18:00",
+					"CLAIM_START_DATE_DISPLAY": "08 May, 2025",
+					"CLAIM_DAY": "Thursday",
+					"HOURS_UNIT": "4.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "",
+					"DISC_RATETYPE_AMOUNT": "",
+					"IS_PH": 0,
+					"OT_COMMENCE_AFT_HRS": ""
+				},
+				{
+					"ITEM_ID": "",
+					"CLAIM_START_DATE": "2025-05-09",
+					"CLAIM_END_DATE": "2025-05-09",
+					"START_TIME": "15:00",
+					"END_TIME": "19:00",
+					"CLAIM_START_DATE_DISPLAY": "09 May, 2025",
+					"CLAIM_DAY": "Friday",
+					"HOURS_UNIT": "4.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "",
+					"DISC_RATETYPE_AMOUNT": "",
+					"IS_PH": 0,
+					"OT_COMMENCE_AFT_HRS": ""
+				}
+			]
+		}
+	]
+}
+
+### Expected Result:
+# After this POST call, the new items should get ITEM_ID values:
+# - DT2507000018005 (for 2025-05-08)
+# - DT2507000018006 (for 2025-05-09)
+# 
+# NOT:
+# - DT2507000018003 (which would duplicate existing item)
+# - DT2507000018004 (which would duplicate existing item) 

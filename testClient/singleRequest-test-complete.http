@@ -1,0 +1,520 @@
+@xsuaaHostname = https://nus-ariba-dev-px55m7l5.authentication.eu10.hana.ondemand.com
+@xsuaaClient = sb-utility!t169063
+@xsuaaSecret = 8f6e922d-4d5d-4fe6-910f-000dce2b4638$tk1PCoekKMDcX4OIh88nJSgmdU2bERyXw_RLMtfY_vA=
+@host = localhost:4004
+@protocol = https
+@unsecureProtocol = http
+@userId = OT_CA9
+
+### Request-1 Get xsuaa token
+#==================================================================#
+# @name getXsuaaToken
+
+POST {{xsuaaHostname}}/oauth/token
+Accept: application/json
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic {{xsuaaClient}}:{{xsuaaSecret}}
+
+client_id={{xsuaaClient}}
+&client_secret={{xsuaaSecret}}
+&grant_type=client_credentials
+
+### Store access token 
+@access_token = {{getXsuaaToken.response.body.$.access_token}}
+
+### Test Case 1: Initial Creation with 3 Items
+#==================================================================#
+# This test creates a new draft with 3 items to establish baseline
+
+POST {{unsecureProtocol}}://{{host}}/eclaims/singleRequest
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
+
+{
+	"data": [
+		{
+			"CLAIM_TYPE": "103",
+			"STAFF_ID": "151398",
+			"CLAIM_REQUEST_TYPE": "Daily",
+			"CLAIM_MONTH": "05-2025",
+			"TOTAL_AMOUNT": " ",
+			"WBS": " ",
+			"ULU": "0231054600",
+			"FDLU": "0005690002",
+			"DRAFT_ID": "",
+			"VERIFIER": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ADDTIONAL_APPROVER_1": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ADDTIONAL_APPROVER_2": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ATTACHMENTS": [],
+			"REQUEST_STATUS": "01",
+			"isMassUpload": "N",
+			"isSave": "Y",
+			"ACTION": "SAVE",
+			"ROLE": "CA",
+			"REQUEST_ID": "",
+			"selectedClaimDates": [
+				{
+					"ITEM_ID": "",
+					"CLAIM_START_DATE": "2025-05-01",
+					"CLAIM_END_DATE": "2025-05-01",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "01 May, 2025",
+					"CLAIM_DAY": "Thursday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "",
+					"DISC_RATETYPE_AMOUNT": "",
+					"IS_PH": 0,
+					"OT_COMMENCE_AFT_HRS": ""
+				},
+				{
+					"ITEM_ID": "",
+					"CLAIM_START_DATE": "2025-05-02",
+					"CLAIM_END_DATE": "2025-05-02",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "02 May, 2025",
+					"CLAIM_DAY": "Friday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "",
+					"DISC_RATETYPE_AMOUNT": "",
+					"IS_PH": 0,
+					"OT_COMMENCE_AFT_HRS": ""
+				},
+				{
+					"ITEM_ID": "",
+					"CLAIM_START_DATE": "2025-05-03",
+					"CLAIM_END_DATE": "2025-05-03",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "03 May, 2025",
+					"CLAIM_DAY": "Saturday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "",
+					"DISC_RATETYPE_AMOUNT": "",
+					"IS_PH": 0,
+					"OT_COMMENCE_AFT_HRS": ""
+				}
+			]
+		}
+	]
+}
+
+### Expected Result for Test Case 1:
+# New draft created with items:
+# - DT2507000018001 (for 2025-05-01)
+# - DT2507000018002 (for 2025-05-02) 
+# - DT2507000018003 (for 2025-05-03)
+
+### Test Case 2: Add More Items to Existing Draft
+#==================================================================#
+# This test adds 2 more items to the existing draft
+
+POST {{unsecureProtocol}}://{{host}}/eclaims/singleRequest
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
+
+{
+	"data": [
+		{
+			"CLAIM_TYPE": "103",
+			"STAFF_ID": "151398",
+			"CLAIM_REQUEST_TYPE": "Daily",
+			"CLAIM_MONTH": "05-2025",
+			"TOTAL_AMOUNT": " ",
+			"WBS": " ",
+			"ULU": "0231054600",
+			"FDLU": "0005690002",
+			"DRAFT_ID": "DT2507000018",
+			"VERIFIER": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ADDTIONAL_APPROVER_1": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ADDTIONAL_APPROVER_2": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ATTACHMENTS": [],
+			"REQUEST_STATUS": "01",
+			"isMassUpload": "N",
+			"isSave": "Y",
+			"ACTION": "SAVE",
+			"ROLE": "CA",
+			"REQUEST_ID": "",
+			"selectedClaimDates": [
+				{
+					"ITEM_ID": "DT2507000018001",
+					"CLAIM_START_DATE": "2025-05-01",
+					"CLAIM_END_DATE": "2025-05-01",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "01 May, 2025",
+					"CLAIM_DAY": "Thursday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 0
+				},
+				{
+					"ITEM_ID": "DT2507000018002",
+					"CLAIM_START_DATE": "2025-05-02",
+					"CLAIM_END_DATE": "2025-05-02",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "02 May, 2025",
+					"CLAIM_DAY": "Friday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 0
+				},
+				{
+					"ITEM_ID": "DT2507000018003",
+					"CLAIM_START_DATE": "2025-05-03",
+					"CLAIM_END_DATE": "2025-05-03",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "03 May, 2025",
+					"CLAIM_DAY": "Saturday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 0
+				},
+				{
+					"ITEM_ID": "",
+					"CLAIM_START_DATE": "2025-05-04",
+					"CLAIM_END_DATE": "2025-05-04",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "04 May, 2025",
+					"CLAIM_DAY": "Sunday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "",
+					"DISC_RATETYPE_AMOUNT": "",
+					"IS_PH": 0,
+					"OT_COMMENCE_AFT_HRS": ""
+				},
+				{
+					"ITEM_ID": "",
+					"CLAIM_START_DATE": "2025-05-05",
+					"CLAIM_END_DATE": "2025-05-05",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "05 May, 2025",
+					"CLAIM_DAY": "Monday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "",
+					"DISC_RATETYPE_AMOUNT": "",
+					"IS_PH": 0,
+					"OT_COMMENCE_AFT_HRS": ""
+				}
+			]
+		}
+	]
+}
+
+### Expected Result for Test Case 2:
+# Items 1,2,3 remain, new items get:
+# - DT2507000018004 (for 2025-05-04)
+# - DT2507000018005 (for 2025-05-05)
+
+### Test Case 3: Delete Item and Add New Item (Critical Test)
+#==================================================================#
+# This test deletes item 3 and adds a new item to verify no reuse
+
+POST {{unsecureProtocol}}://{{host}}/eclaims/singleRequest
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
+
+{
+	"data": [
+		{
+			"CLAIM_TYPE": "103",
+			"STAFF_ID": "151398",
+			"CLAIM_REQUEST_TYPE": "Daily",
+			"CLAIM_MONTH": "05-2025",
+			"TOTAL_AMOUNT": " ",
+			"WBS": " ",
+			"ULU": "0231054600",
+			"FDLU": "0005690002",
+			"DRAFT_ID": "DT2507000018",
+			"VERIFIER": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ADDTIONAL_APPROVER_1": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ADDTIONAL_APPROVER_2": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ATTACHMENTS": [],
+			"REQUEST_STATUS": "01",
+			"isMassUpload": "N",
+			"isSave": "Y",
+			"ACTION": "SAVE",
+			"ROLE": "CA",
+			"REQUEST_ID": "",
+			"selectedClaimDates": [
+				{
+					"ITEM_ID": "DT2507000018001",
+					"CLAIM_START_DATE": "2025-05-01",
+					"CLAIM_END_DATE": "2025-05-01",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "01 May, 2025",
+					"CLAIM_DAY": "Thursday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 0
+				},
+				{
+					"ITEM_ID": "DT2507000018002",
+					"CLAIM_START_DATE": "2025-05-02",
+					"CLAIM_END_DATE": "2025-05-02",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "02 May, 2025",
+					"CLAIM_DAY": "Friday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 0
+				},
+				{
+					"ITEM_ID": "DT2507000018004",
+					"CLAIM_START_DATE": "2025-05-04",
+					"CLAIM_END_DATE": "2025-05-04",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "04 May, 2025",
+					"CLAIM_DAY": "Sunday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 0
+				},
+				{
+					"ITEM_ID": "DT2507000018005",
+					"CLAIM_START_DATE": "2025-05-05",
+					"CLAIM_END_DATE": "2025-05-05",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "05 May, 2025",
+					"CLAIM_DAY": "Monday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 0
+				},
+				{
+					"ITEM_ID": "",
+					"CLAIM_START_DATE": "2025-05-06",
+					"CLAIM_END_DATE": "2025-05-06",
+					"START_TIME": "09:00",
+					"END_TIME": "17:00",
+					"CLAIM_START_DATE_DISPLAY": "06 May, 2025",
+					"CLAIM_DAY": "Tuesday",
+					"HOURS_UNIT": "8.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "",
+					"DISC_RATETYPE_AMOUNT": "",
+					"IS_PH": 0,
+					"OT_COMMENCE_AFT_HRS": ""
+				}
+			]
+		}
+	]
+}
+
+### Expected Result for Test Case 3:
+# Database state after this request:
+# - DT2507000018001 (active)
+# - DT2507000018002 (active) 
+# - DT2507000018003 (soft-deleted - NOT in request)
+# - DT2507000018004 (active)
+# - DT2507000018005 (active)
+# - DT2507000018006 (new item - should NOT reuse 3!)
+
+### Test Summary:
+# ✅ Node.js implementation finds max from ALL items (including soft-deleted)
+# ✅ New item gets DT2507000018006 (continues from highest number 5)
+# ✅ No reuse of soft-deleted DT2507000018003
+# ✅ Better than Java implementation which would reuse the deleted number 

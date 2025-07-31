@@ -865,6 +865,26 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     // Initialize item count
     let itemCount = (item.CLAIM_REQUEST_TYPE === ApplicationConstants.CLAIM_REQUEST_TYPE_PERIOD) ? 0 : 1;
 
+    // If we have a DRAFT_ID and savedData, calculate the correct itemCount based on existing items
+    if (item.DRAFT_ID && savedData) {
+        const existingItems = await EclaimsItemDataRepo.fetchByDraftId(item.DRAFT_ID);
+        if (existingItems && existingItems.length > 0) {
+            // Find the highest item number from ALL existing items (including soft-deleted)
+            // This ensures we never reuse any ITEM_ID number, even if it was soft-deleted
+            const itemNumbers = existingItems
+                .map(item => {
+                    // Extract the numeric part from ITEM_ID (e.g., "DT2507000018002" -> "002")
+                    const match = item.ITEM_ID.match(/(\d{3})$/);
+                    return match ? parseInt(match[1]) : 0;
+                })
+                .filter(num => num > 0);
+
+            if (itemNumbers.length > 0) {
+                itemCount = Math.max(...itemNumbers) + 1;
+            }
+        }
+    }
+
     // Generate draft and request ID patterns
     const now = new Date();
     const requestMonth = String(now.getMonth() + 1).padStart(2, "0");
@@ -1318,8 +1338,6 @@ async function initiateLockProcessDetails(tx, draftId, staffNusNetId, requestorG
         // Use provided loggedInUserDetails or fetch if not provided
         let staffId = staffNusNetId;
         if (loggedInUserDetails && loggedInUserDetails.STF_NUMBER) {
-            staffId = loggedInUserDetails.STF_NUMBER;
-        } else if (loggedInUserDetails && loggedInUserDetails.STF_NUMBER) {
             staffId = loggedInUserDetails.STF_NUMBER;
         } else {
             // Fallback: Fetch staff info from CHRS job info only if not provided
