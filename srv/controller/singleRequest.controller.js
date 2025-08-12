@@ -20,6 +20,7 @@ const TaskDetailsRepo = require("../repository/taskDetails.repo");
 const RequestLockService = require("../util/requestLockService");
 const EclaimService = require("../util/eclaimService");
 const UserUtil = require("../util/userUtil");
+const ProcessDetailsService = require("../util/processDetails");
 
 /**
  * Converted Single Request method from Java implementation
@@ -819,6 +820,86 @@ async function populateRemarksDataDetails(tx, claimInnerRequestDto, draftId) {
 }
 
 /**
+ * Checks if additional approver 1 exists for the given item
+ * @param {Object} item - The mass upload request item
+ * @returns {string|null} The NUSNET_ID of additional approver 1 if exists, null otherwise
+ */
+function isAdditionalApproverOneExists(item) {
+    console.log("ConvertedSingleRequestController isAdditionalApproverOneExists start()");
+
+    let additionalApprover = null;
+
+    if (item && item.ADDTIONAL_APPROVER_1 && Array.isArray(item.ADDTIONAL_APPROVER_1) && item.ADDTIONAL_APPROVER_1.length > 0) {
+        for (const additionalApproverOne of item.ADDTIONAL_APPROVER_1) {
+            if (additionalApproverOne && additionalApproverOne.NUSNET_ID && additionalApproverOne.NUSNET_ID.trim() !== "") {
+                additionalApprover = additionalApproverOne.NUSNET_ID;
+            }
+        }
+    }
+
+    console.log("ConvertedSingleRequestController isAdditionalApproverOneExists end()");
+    return additionalApprover;
+}
+
+/**
+ * Checks if verifier exists for the given item
+ * @param {Object} item - The mass upload request item
+ * @returns {string|null} The NUSNET_ID of verifier if exists, or default verifier value
+ */
+function isVerifierExists(item) {
+    console.log("ConvertedSingleRequestController isVerifierExists start()");
+
+    let verifierNusNetId = null;
+
+    if (item && item.VERIFIER && Array.isArray(item.VERIFIER) && item.VERIFIER.length > 0) {
+        for (const verifier of item.VERIFIER) {
+            if (verifier && verifier.NUSNET_ID && verifier.NUSNET_ID.trim() !== "") {
+                verifierNusNetId = verifier.NUSNET_ID;
+            } else {
+                if (item.CLAIM_TYPE && item.CLAIM_TYPE.toUpperCase() === ApplicationConstants.CLAIM_TYPE_102.toUpperCase()) {
+                    verifierNusNetId = null;
+                } else {
+                    verifierNusNetId = ApplicationConstants.VERIFIER;
+                }
+            }
+        }
+    } else {
+        if (item.CLAIM_TYPE && item.CLAIM_TYPE.toUpperCase() === ApplicationConstants.CLAIM_TYPE_102.toUpperCase()) {
+            verifierNusNetId = null;
+        } else {
+            verifierNusNetId = ApplicationConstants.VERIFIER;
+        }
+    }
+
+    console.log("ConvertedSingleRequestController isVerifierExists end()");
+    return verifierNusNetId;
+}
+
+
+
+/**
+ * Releases lock for a draft request (equivalent to Java releaseLock)
+ * @param {Object} tx - The CDS transaction object
+ * @param {string} staffId - The staff ID
+ * @param {string} draftId - The draft ID
+ * @returns {Promise<void>}
+ */
+async function releaseLock(tx, staffId, draftId) {
+    console.log("ConvertedSingleRequestController releaseLock start()");
+
+    try {
+        // Update lock value to empty string (equivalent to Java updateLockValue)
+        await RequestLockDetailsRepo.updateLockValue(draftId, staffId, "", tx);
+        console.log(`Lock released for draft ID: ${draftId} by staff: ${staffId}`);
+    } catch (error) {
+        console.error("Error in releaseLock:", error);
+        throw error; // Re-throw to maintain transaction integrity
+    }
+
+    console.log("ConvertedSingleRequestController releaseLock end()");
+}
+
+/**
  * Claimant CA Save Submit method - converts Java claimantCASaveSubmit to Node.js
  * @param {Object} tx - The CDS transaction object
  * @param {Object} item - The mass upload request item
@@ -1095,23 +1176,35 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
         }
         // Retract flow check - End
         else if (item.ACTION === ApplicationConstants.ACTION_SUBMIT) {
-            // TODO: Implement initiateProcessOnEclaimSubmit -- Pending Implementation
-            // This would involve async process initiation
-            // String additionalApproverOne = isAdditionalApproverOneExists(item);
-            // 	String verifier = isVerifierExists(item);
-            // 	CompletableFuture.runAsync(() -> {
-            // 		try {
-            // 			initiateProcessOnEclaimSubmit(savedMasterData, item, additionalApproverOne, nusNetId,
-            // 					chrsJobInfoDtls.get(0), verifier);
-            // 			if (StringUtils.isNotEmpty(item.getIsMassUpload())
-            // 					&& StringUtils.equalsIgnoreCase("Y", item.getIsMassUpload())) {
-            // 				releaseLock(savedMasterData.getSUBMITTED_BY(), savedMasterData.getDRAFT_ID());
-            // 			}
+            // Synchronous process initiation (wait for completion)
+            const additionalApproverOne = isAdditionalApproverOneExists(item);
+            const verifier = isVerifierExists(item);
 
-            // 		} catch (ApplicationException e) {
-            // 			logger.error("Exception in process persistence flow", e);
-            // 		}
-            // 	});
+            try {
+                let stfNumber = "";
+                if (chrsJobInfoList[0] && chrsJobInfoList[0].STF_NUMBER) {
+                    stfNumber = chrsJobInfoList[0].STF_NUMBER;
+                }
+
+                await ProcessDetailsService.initiateProcessOnEclaimSubmit(
+                    tx,
+                    eclaimsData,
+                    item.ACTION,
+                    additionalApproverOne,
+                    loggedInUserDetails.NUSNET_ID,
+                    stfNumber,
+                    verifier
+                );
+
+                // Handle mass upload lock release (equivalent to Java releaseLock)
+                if (item.IS_MASS_UPLOAD && item.IS_MASS_UPLOAD.toUpperCase() === "Y") {
+                    await releaseLock(tx, eclaimsData.SUBMITTED_BY, eclaimsData.DRAFT_ID);
+                }
+
+            } catch (error) {
+                console.error("Exception in process persistence flow:", error);
+                throw error; // Re-throw to maintain transaction integrity
+            }
         }
     } catch (exception) {
         console.error("Exception on process details and task details commit:", exception);
@@ -1124,10 +1217,6 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     console.log("ConvertedSingleRequestController claimantCASaveSubmit end()");
     return eclaimsDataResDto;
 }
-
-
-
-
 
 /**
  * Persists CHRS job info data to eclaims data

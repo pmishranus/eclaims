@@ -293,6 +293,30 @@ async function upsertEclaimsData(eclaimsData) {
     return result;
 }
 
+/**
+ * Updates request status on task completion
+ * @param {Object} tx - The CDS transaction object
+ * @param {string} toBeRequestStatus - The to be request status
+ * @param {string} draftId - The draft ID
+ * @param {string} stfNumber - The staff number
+ * @param {string} nusNetId - The NUSNET ID
+ * @returns {Promise<void>}
+ */
+async function updateRequestStatusOnTaskCompletion(tx, toBeRequestStatus, draftId, stfNumber, nusNetId) {
+    const { UPDATE } = require("@sap/cds/lib/ql/cds-ql");
+
+    const query = UPDATE("NUSEXT_ECLAIMS_HEADER_DATA")
+        .set({
+            REQUEST_STATUS: toBeRequestStatus,
+            MODIFIED_BY: stfNumber,
+            MODIFIED_BY_NID: nusNetId,
+            MODIFIED_ON: new Date()
+        })
+        .where({ DRAFT_ID: draftId });
+
+    await tx.run(query);
+}
+
 module.exports = {
     fetchByDraftId,
     fetchTbClaimStatusCount,
@@ -308,4 +332,5 @@ module.exports = {
     fetchDraftStatusEclaimsData,
     fetchPastThreeMonthsWbs,
     upsertEclaimsData,
+    updateRequestStatusOnTaskCompletion,
 };
