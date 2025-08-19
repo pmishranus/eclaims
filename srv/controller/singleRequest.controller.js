@@ -1,5 +1,4 @@
 /* eslint-disable no-use-before-define */
-const cds = require("@sap/cds");
 const CommonRepo = require("../repository/util.repo");
 const EclaimsHeaderDataRepo = require("../repository/eclaimsData.repo");
 const RequestLockDetailsRepo = require("../repository/requestLockDetails.repo");
@@ -74,7 +73,7 @@ async function singleRequest(request) {
                 responseDto = await claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, loggedInUserDetails);
                 break;
             case ApplicationConstants.VERIFIER:
-                responseDto = await verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails);
+                responseDto = await verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails, request);
                 break;
             case ApplicationConstants.REPORTING_MGR:
             case ApplicationConstants.APPROVER:
@@ -374,7 +373,7 @@ async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, log
  * @param {Object} loggedInUserDetails - The logged in user details
  * @returns {Promise<Object>} The response DTO
  */
-async function verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails) {
+async function verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails, req) {
     console.log("ConvertedSingleRequestController verifierSubmissionFlow start()");
 
     const massUploadResponseDto = {
@@ -408,8 +407,8 @@ async function verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
                 const taskApprovalDto = await buildTaskApprovalDto(tx, item, loggedInUserDetails);
                 const verifyRequest = [taskApprovalDto];
 
-                // Placeholder: call InboxService massTaskAction via external CAP app (to be integrated)
-                const response = await inboxServiceMassTaskAction(verifyRequest, item.ACTION);
+                // Call Utility InboxService action via external CAP service (CSN)
+                const response = await callUtilityInboxTaskActions(req, verifyRequest);
 
                 // Frame response message
                 if (response && response.length > 0 && response[0]) {
@@ -1534,27 +1533,15 @@ function extractRejectionRemarks(item, loggedInUserDetails) {
 }
 
 /**
- * Placeholder for InboxService.massTaskAction. To be replaced with external CAPM call by uploading csn file.
- * Returns a response array similar to Java service.
+ * Calls Utility's InboxService.taskactions action via CAP service consumption.
  */
-async function inboxServiceMassTaskAction(verifyRequest, action) {
-    const upperAction = (action || "").toUpperCase();
-    let RESPONSE_MESSAGE = "";
-    if (upperAction === ApplicationConstants.ACTION_REJECT) {
-        RESPONSE_MESSAGE = ApplicationConstants.ackMessageReject;
-    } else if (upperAction === ApplicationConstants.ACTION_VERIFY || upperAction === ApplicationConstants.ACTION_APPROVE) {
-        RESPONSE_MESSAGE = ApplicationConstants.ackMessageApprove;
-    } else if (upperAction === ApplicationConstants.ACTION_WITHDRAW) {
-        RESPONSE_MESSAGE = ApplicationConstants.ackMessageWithdrawn;
-    } else {
-        RESPONSE_MESSAGE = "Task processed successfully.";
-    }
-    return [
-        {
-            STATUS: ApplicationConstants.STATUS_SUCCESS,
-            RESPONSE_MESSAGE,
-        }
-    ];
+async function callUtilityInboxTaskActions(req, verifyRequest) {
+    const srv = await cds.connect.to('UtilityInboxService');
+    const payload = { data: verifyRequest };
+    // Use low-level REST send to avoid requiring a local CSN for the external service
+    const send = (context) => context.send({ method: 'POST', path: '/taskactions', data: payload });
+    const result = req ? await send(srv.tx(req)) : await send(srv);
+    return Array.isArray(result) ? result : [result];
 }
 
 /**

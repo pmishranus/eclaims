@@ -1,3 +1,17 @@
+Cross-App Call: Utility InboxService.taskactions
+
+Configuration
+
+- Add a destination named UTILITY_SRV pointing to the Utility app base URL; path '/task' is configured in cds.requires.UtilityInboxService.
+
+Usage in verifier flow
+
+- The eclaims verifier path calls UtilityInboxService 'taskactions' with payload { data: [ TaskApprovalDto ] }.
+
+Security
+
+- When both apps run on BTP, principal propagation is used via srv.tx(req).
+
 # fetchClaimTypes Function Optimization - Complete Summary
 
 ## 🎯 **PROBLEM SOLVED**
@@ -7,9 +21,11 @@ The `fetchClaimTypes` function in your SAP BTP CAPM Node.js application was expe
 ## ✅ **OPTIMIZATIONS IMPLEMENTED**
 
 ### 1. **N+1 Query Problem - FIXED** 🚀
+
 **Problem**: The function was making individual database calls for each claim type configuration, resulting in N+1 database queries.
 
-**Solution**: 
+**Solution**:
+
 - Created `fetchConfigsByKeysAndProcessCodes()` method in `AppConfigRepo`
 - Uses `IN` clause to fetch all configurations in one query
 - Creates efficient map lookup instead of O(n) loop
@@ -17,18 +33,22 @@ The `fetchClaimTypes` function in your SAP BTP CAPM Node.js application was expe
 **Impact**: Reduces database queries from N+1 to 2 queries
 
 ### 2. **Sequential Database Queries - FIXED** ⚡
+
 **Problem**: `fetchClaimTypes()` and `fetchClaimTypesForCw()` were executed sequentially.
 
-**Solution**: 
+**Solution**:
+
 - Used `Promise.all()` for parallel execution
 - Both queries now run simultaneously
 
 **Impact**: Reduces total query time by ~50% for ESS_MONTH users
 
 ### 3. **Query Structure Optimization - FIXED** 🔧
+
 **Problem**: Complex multi-table JOINs with inefficient subqueries.
 
-**Solution**: 
+**Solution**:
+
 - Optimized query structure using CDS query builder
 - Improved JOIN conditions and WHERE clauses
 - Better parameterization and error handling
@@ -36,9 +56,11 @@ The `fetchClaimTypes` function in your SAP BTP CAPM Node.js application was expe
 **Impact**: Better query execution plan and reduced complexity
 
 ### 4. **Error Handling - IMPROVED** 🛡️
+
 **Problem**: Inconsistent error handling and missing validation.
 
-**Solution**: 
+**Solution**:
+
 - Comprehensive input validation
 - Consistent error handling with proper error messages
 - Removed hardcoded values and unused code
@@ -47,7 +69,9 @@ The `fetchClaimTypes` function in your SAP BTP CAPM Node.js application was expe
 **Impact**: Faster failure detection and better debugging
 
 ### 5. **Performance Monitoring - ADDED** 📊
-**New Feature**: 
+
+**New Feature**:
+
 - Added performance monitoring utility
 - Automatic timing and logging of execution times
 - Slow query detection and warnings
@@ -56,19 +80,22 @@ The `fetchClaimTypes` function in your SAP BTP CAPM Node.js application was expe
 
 ## 📈 **PERFORMANCE IMPROVEMENTS**
 
-### Before Optimization:
+### Before Optimization
+
 - **Database Queries**: 3-5 queries per request
 - **Response Time**: 1000-3000ms (estimated)
 - **Error Handling**: Poor
 - **Code Quality**: Low
 
-### After Optimization:
+### After Optimization
+
 - **Database Queries**: 2-3 queries per request
 - **Response Time**: 300-1000ms (estimated)
 - **Error Handling**: Comprehensive
 - **Code Quality**: High
 
-### Expected Results:
+### Expected Results
+
 - **Response Time**: 60-70% reduction
 - **Database Load**: 50-60% reduction in queries
 - **Error Rate**: Significantly reduced
@@ -77,6 +104,7 @@ The `fetchClaimTypes` function in your SAP BTP CAPM Node.js application was expe
 ## 📁 **FILES MODIFIED**
 
 ### 1. **srv/controller/fetchClaimTypes.controller.js** ✅
+
 ```javascript
 // Key improvements:
 - Parallel query execution with Promise.all()
@@ -88,6 +116,7 @@ The `fetchClaimTypes` function in your SAP BTP CAPM Node.js application was expe
 ```
 
 ### 2. **srv/repository/appConfig.repo.js** ✅
+
 ```javascript
 // New method added:
 - fetchConfigsByKeysAndProcessCodes() - Batch fetch configurations
@@ -96,6 +125,7 @@ The `fetchClaimTypes` function in your SAP BTP CAPM Node.js application was expe
 ```
 
 ### 3. **srv/repository/eligibilityCriteria.repo.js** ✅
+
 ```javascript
 // Optimizations:
 - Improved query structure using CDS query builder
@@ -105,6 +135,7 @@ The `fetchClaimTypes` function in your SAP BTP CAPM Node.js application was expe
 ```
 
 ### 4. **srv/util/performanceMonitor.js** 🆕
+
 ```javascript
 // New utility:
 - Performance monitoring and timing
@@ -115,6 +146,7 @@ The `fetchClaimTypes` function in your SAP BTP CAPM Node.js application was expe
 ## 🔧 **CRITICAL NEXT STEPS**
 
 ### 1. **Database Indexes (HIGH PRIORITY)** 🎯
+
 Implement these indexes for maximum performance:
 
 ```sql
@@ -143,17 +175,21 @@ CREATE INDEX idx_app_configs_composite ON NUSEXT_UTILITY_APP_CONFIGS(CONFIG_KEY,
 ```
 
 ### 2. **Performance Monitoring** 📊
+
 The function now includes automatic performance monitoring. You'll see logs like:
+
 ```
 fetchClaimTypes completed in 450ms
 ```
 
 For slow queries (>1000ms), you'll see warnings:
+
 ```
 ⚠️  Slow operation detected: fetchClaimTypes took 1200ms
 ```
 
 ### 3. **Testing Recommendations** 🧪
+
 1. **Load Testing**: Test with multiple concurrent users
 2. **Performance Testing**: Monitor response times before/after
 3. **Database Testing**: Verify query execution plans
@@ -170,13 +206,15 @@ const result = await fetchClaimTypes(request);
 
 ## 📊 **MONITORING**
 
-### Performance Metrics to Watch:
+### Performance Metrics to Watch
+
 - **Response Time**: Target < 500ms
 - **Database Query Count**: Target < 3 queries per request
 - **Error Rate**: Target < 1%
 - **Memory Usage**: Monitor for leaks
 
-### Monitoring Queries:
+### Monitoring Queries
+
 ```sql
 -- Monitor slow queries
 SELECT * FROM performance_schema.events_statements_summary_by_digest 
@@ -211,9 +249,10 @@ The `fetchClaimTypes` function has been successfully optimized with:
 ## 📞 **SUPPORT**
 
 If you need any clarification or run into issues:
+
 1. Check the performance monitoring logs
 2. Verify database indexes are implemented
 3. Monitor database query execution plans
 4. Test with realistic load scenarios
 
-The optimizations maintain full backward compatibility while providing significant performance improvements and better reliability. 
+The optimizations maintain full backward compatibility while providing significant performance improvements and better reliability.

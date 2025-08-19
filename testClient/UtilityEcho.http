@@ -1,0 +1,39 @@
+@xsuaaHostname = https://nus-ariba-dev-px55m7l5.authentication.eu10.hana.ondemand.com
+@xsuaaClient = sb-utility!t169063
+@xsuaaSecret = 8f6e922d-4d5d-4fe6-910f-000dce2b4638$tk1PCoekKMDcX4OIh88nJSgmdU2bERyXw_RLMtfY_vA=
+@host = localhost:4004
+@protocol = https
+@unsecureProtocol = http
+@userId = OT_CA9
+
+### Request-1 Get xsuaa token
+#==================================================================#
+# @name getXsuaaToken
+
+POST {{xsuaaHostname}}/oauth/token
+Accept: application/json
+Content-Type: application/x-www-form-urlencoded
+Authorization: Basic {{xsuaaClient}}:{{xsuaaSecret}}
+
+client_id={{xsuaaClient}}
+&client_secret={{xsuaaSecret}}
+&grant_type=client_credentials
+
+### Store access token 
+@access_token = {{getXsuaaToken.response.body.$.access_token}}
+
+### Request-2 Utility Echo connectivity test
+#==================================================================#
+POST {{unsecureProtocol}}://{{host}}/eclaims/utilityEcho
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
+
+{
+  "data": {
+    "ping": "hello from eclaims",
+    "timestamp": "2025-08-19T00:00:00Z"
+  }
+}
+
+

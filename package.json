@@ -67,6 +67,14 @@
             },
             "auth": {
                 "kind": "xsuaa"
+            },
+            "UtilityInboxService": {
+                "kind": "rest",
+                "model": "srv/external/utility-inbox.csn",
+                "credentials": {
+                    "destination": "nusbtputil",
+                    "path": "/task"
+                }
             }
         }
     }

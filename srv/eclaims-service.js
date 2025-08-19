@@ -66,6 +66,15 @@ class EclaimsService extends cds.ApplicationService {
             return await claimantStaffInfoCtrl.fetchClaimantStaffInfo(request);
         });
 
+        // Temporary utility connectivity check to Utility InboxService.echo
+        this.on("utilityEcho", async (req) => {
+            const srv = await cds.connect.to('UtilityInboxService');
+            const payload = { data: req.data.data };
+            const response = await srv.tx(req).send({ method: 'POST', path: '/echo', data: payload });
+            console.log('Utility echo response:', response);
+            return { sent: payload.data, received: response };
+        });
+
         // this.on("singleRequest", async request => {
         //     try {
         //         // Call the main business logic (postClaims or equivalent)
@@ -100,8 +109,8 @@ class EclaimsService extends cds.ApplicationService {
 
         this.on("singleRequest", async request => {
             try {
-                 let oRet = await singleRequestCtrl.singleRequest(request);
-                 return oRet;
+                let oRet = await singleRequestCtrl.singleRequest(request);
+                return oRet;
             } catch (err) {
                 // Special handling for IGNORE_REQUEST
                 if (err && err.message && err.message === "IGNORE_REQUEST") {
