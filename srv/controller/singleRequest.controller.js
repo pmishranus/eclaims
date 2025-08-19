@@ -1144,12 +1144,10 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
 
     // Handle process details and task details
     try {
-        // Retract flow check - Start
-        if (savedData && item.ACTION === ApplicationConstants.ACTION_SUBMIT) {
-            // Fetch process details to check if process exists
+         // Fetch process details to check if process exists
             const processDetails = await ProcessDetailsRepo.fetchByReferenceId(draftNumber, item.CLAIM_TYPE);
-
-            if (processDetails && processDetails.PROCESS_INST_ID && processDetails.PROCESS_INST_ID.trim() !== "") {
+        // Retract flow check - Start
+        if (savedData && item.ACTION === ApplicationConstants.ACTION_SUBMIT && processDetails && processDetails.PROCESS_INST_ID && processDetails.PROCESS_INST_ID.trim() !== "") {
                 // Process exists, create task approval request for inbox service
                 const verifyRequest = [];
                 const taskApprovalDto = {
@@ -1173,7 +1171,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
                 // const response = await inboxService.massTaskAction(verifyRequest, token, null, item.ACTION);
                 console.log("Task approval request prepared for inbox service:", verifyRequest);
             }
-        }
+        
         // Retract flow check - End
         else if (item.ACTION === ApplicationConstants.ACTION_SUBMIT) {
             // Synchronous process initiation (wait for completion)

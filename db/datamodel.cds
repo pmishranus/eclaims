@@ -179,6 +179,7 @@ context MASTER_DATA {
             REMARKS        : VAR_TEXT_150;
             MODIFIED_ON    : VAR_TEXT_50;
     };
+
     @cds.persistence.exists
     entity CHRS_ELIG_CRITERIA {
         key STF_NUMBER          : VAR_TEXT_100;
@@ -265,9 +266,9 @@ context UTILITY {
             PROCESS_ACTUAL_DOC   : VAR_DATE; // Actual Date of Completion of the process
     };
 
-        /********************************************* Remarks Data Entity ***************************/
-     @cds.persistence.exists
-     entity REMARKS_DATA {
+    /********************************************* Remarks Data Entity ***************************/
+    @cds.persistence.exists
+    entity REMARKS_DATA {
         key ID                : VAR_TEXT_20;
             REFERENCE_ID      : VAR_TEXT_20;
             REMARKS           : VAR_TEXT_5000;
@@ -279,8 +280,8 @@ context UTILITY {
             NUSNET_ID         : VAR_TEXT_100;
             IS_EDITABLE       : VAR_INT; //Flag to allow for edit of remarks on the screen
     };
-    
-    
+
+
     /********************************************* Attachments Data Entity ***************************/
     @cds.persistence.exists
     entity ATTACHMENTS_DATA {
@@ -302,6 +303,56 @@ context UTILITY {
             MODIFIED_BY_NID  : VAR_TEXT_100;
             MODIFIED_ON      : VAR_TIMESTAMP;
             IS_ZIP_PROCESSED : VAR_TEXT_2;
+    };
+
+    /********************************************* Process Config Entity ***************************/
+    @cds.persistence.exists
+    entity PROCESS_CONFIG {
+        key PROCESS_CODE     : VAR_TEXT_6;
+            PROCESS_NAME     : VAR_TEXT_50;
+            PROCESS_TITLE    : VAR_TEXT_100;
+            PROCESS_SLA_DAYS : VAR_INT; // SLA of Process completion
+            REFERENCE_KEY    : VAR_TEXT_6;
+    };
+
+    /********************************************* Tasks Config Entity ***************************/
+    @cds.persistence.exists
+    entity TASKS_CONFIG {
+        key TCFG_ID             : VAR_TEXT_15; //Primary Key for Table - stored in the pattern of TSKCFG<2 digit no.>
+            PROCESS_CODE        : VAR_TEXT_6; // Populate Process Code for each Project Type
+            REQUESTOR_GRP       : VAR_TEXT_50; // Identify the source user group
+            TASK_NAME           : VAR_TEXT_40; // Task Technical Name
+            TASK_ALIAS          : VAR_TEXT_50; //Task Description to display on the Application
+            TASK_SEQUENCE       : VAR_INT; // Step in the process. eg. 2nd step - 2, etc.
+            TASK_SLA_DAYS       : VAR_INT; // SLA of Task completion
+            IS_MANDATORY        : VAR_FLAG; // Boolean value to store if the Step is mandatory or not
+            SOURCE_ACCESS       : VAR_TEXT_1; //Define the Source task Access - "I" for Inbox and "R" for Requestor
+            TASK_GRP            : VAR_TEXT_50; // Target Task Group Name
+            TASK_REQUEST_STATUS : VAR_TEXT_2; //Request Status column - use a map between Task and Status Name
+    };
+
+    /********************************************* Task Action Config Entity ***************************/
+    @cds.persistence.exists
+    entity TASK_ACTION_CONFIG {
+        key TACTION_ID            : VAR_TEXT_15; //Primary Key for Table - stored in the pattern of TACTCFG<2 digit no.>
+            REQUESTOR_GRP         : VAR_TEXT_50; //Identify the source user group
+            TASK_NAME             : VAR_TEXT_40; // Task Technical Name
+            ACTION_CODE           : VAR_TEXT_40; //Action Code
+            ACTION_NAME           : VAR_TEXT_50; //Action Name
+            CURRENT_TASK_SEQUENCE : VAR_INT;
+            TO_BE_TASK_SEQUENCE   : VAR_INT; //Upon Taking Action, To be Task Sequence to refer to the Task Config Table
+            TO_BE_PROCESS_STATUS  : VAR_TEXT_2; // Upon Taking Action, target Process status to update
+            TO_BE_REQUEST_STATUS  : VAR_TEXT_2; // Upon Taking Action, target Task status to update
+            BUTTON_TYPE           : VAR_TEXT_20; //Button Type to be displayed on the Inbox Screen
+            DISPLAY_ICON          : VAR_TEXT_40; //Button Icon to Display on the Inbox Screen
+            SEQUENCE_ORDER        : VAR_INT; // Sequence ORder to display on the form
+            DISPLAY_REQD          : VAR_TEXT_1; // "Y" - Display in Inbox, "N" - Not required in Inbox
+            PROCESS_CODE          : VAR_TEXT_6; // Populate Process Code for each Project Type
+            ACTION_ALIAS          : VAR_TEXT_100; //Alias name of the action
+            SUBMISSION_TYPE       : VAR_TEXT_15;
+            UPDATED_BY            : VAR_TEXT_20;
+            UPDATED_BY_NID        : VAR_TEXT_100;
+            UPDATED_ON            : VAR_TIMESTAMP;
     };
 
     /********************************************* Task Details Config Entity ***************************/
@@ -341,7 +392,7 @@ context UTILITY {
             IS_DELETED       : VAR_TEXT_2; // Column added for soft deleting data
     };
 
-     /*********************************************Holiday List table***************************/
+    /*********************************************Holiday List table***************************/
     @cds.persistence.exists
     entity NUS_CHRS_HOLIDAYS {
         key SEQ_NO       : VAR_INT;

@@ -23,7 +23,7 @@ async function fetchRole(massUploadRequest) {
     if (Array.isArray(massUploadRequest) && massUploadRequest.length > 0) {
         for (const item of massUploadRequest) {
             if (CommonUtils.isEmpty(item.ACTION)) {
-                throw new Error("No ACTION passed. Please provide valid action.");
+                throw new ApplicationException("No ACTION passed. Please provide valid action.");
             }
             if (CommonUtils.isNotBlank(item.ROLE)) {
                 switch (item.ROLE) {

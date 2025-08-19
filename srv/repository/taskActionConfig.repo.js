@@ -14,8 +14,8 @@ async function fetchCAToBeRequestStatusData(requestorGrp, fromTaskSequence, toTa
         .from("NUSEXT_UTILITY_TASK_ACTION_CONFIG")
         .where({
             REQUESTOR_GRP: requestorGrp,
-            FROM_TASK_SEQUENCE: fromTaskSequence,
-            TO_TASK_SEQUENCE: toTaskSequence,
+            CURRENT_TASK_SEQUENCE: fromTaskSequence,
+            TO_BE_TASK_SEQUENCE: toTaskSequence,
             PROCESS_CODE: claimType
         });
 

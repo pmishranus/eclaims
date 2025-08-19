@@ -28,9 +28,9 @@ class ProcessDetailsService {
      * @param {string} verifier - The verifier NUSNET ID
      * @returns {Promise<void>}
      */
-    async initiateProcessOnEclaimSubmit(tx, savedMasterData, action, additionalApproverOne, nusNetId, stfNumber, verifier) {
+    async initiateProcessOnEclaimSubmit(tx, savedMasterData, action, additionalApproverOne, userInfoDetails, stfNumber, verifier) {
         console.log("ProcessDetailsService initiateProcessOnEclaimSubmit start()");
-
+        let nusNetId = userInfoDetails.NUSNET_ID;
         try {
             // Validate input parameters
             if (!savedMasterData) {
@@ -46,7 +46,7 @@ class ProcessDetailsService {
             }
 
             // Get logged in user details
-            const userInfoDetails = await CommonRepo.fetchUserInfo(nusNetId);
+            // const userInfoDetails = await CommonRepo.fetchUserInfo(nusNetId);
             if (userInfoDetails && userInfoDetails.STAFF_ID) {
                 stfNumber = userInfoDetails.STAFF_ID;
             }
