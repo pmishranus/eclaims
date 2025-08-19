@@ -398,13 +398,29 @@ async function verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
 
             // Handle non-save actions
             if (item.ACTION && item.ACTION.toUpperCase() !== ApplicationConstants.ACTION_SAVE.toUpperCase()) {
-                // Implement remarks data details
+                // Persist remarks
                 await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
-                // TODO: Implement process participant and process logic
-                // await populateProcessParticipantDetails(item, loggedInUserDetails);
-                // TODO: Implement task approval and inboxService.massTaskAction
+
+                // Persist process participants (Verifier/Additional Approvers)
+                await populateProcessParticipantDetails(tx, item, loggedInUserDetails);
+
+                // Build task approval request
+                const taskApprovalDto = await buildTaskApprovalDto(tx, item, loggedInUserDetails);
+                const verifyRequest = [taskApprovalDto];
+
+                // Placeholder: call InboxService massTaskAction via external CAP app (to be integrated)
+                const response = await inboxServiceMassTaskAction(verifyRequest, item.ACTION);
+
+                // Frame response message
+                if (response && response.length > 0 && response[0]) {
+                    massUploadResponseDto.message = response[0].RESPONSE_MESSAGE || "";
+                    if (response[0].STATUS && response[0].STATUS.toUpperCase() === ApplicationConstants.STATUS_ERROR) {
+                        massUploadResponseDto.error = true;
+                    }
+                }
             } else {
-                // TODO: Implement verifierApproverSaveFlow
+                // SAVE flow for Verifier/Approver
+                await verifierApproverSaveFlow(tx, item, /* isProcessParticipantUpdate */ true, loggedInUserDetails);
             }
 
             // Fetch updated claim data
@@ -1144,34 +1160,34 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
 
     // Handle process details and task details
     try {
-         // Fetch process details to check if process exists
-            const processDetails = await ProcessDetailsRepo.fetchByReferenceId(draftNumber, item.CLAIM_TYPE);
+        // Fetch process details to check if process exists
+        const processDetails = await ProcessDetailsRepo.fetchByReferenceId(draftNumber, item.CLAIM_TYPE);
         // Retract flow check - Start
         if (savedData && item.ACTION === ApplicationConstants.ACTION_SUBMIT && processDetails && processDetails.PROCESS_INST_ID && processDetails.PROCESS_INST_ID.trim() !== "") {
-                // Process exists, create task approval request for inbox service
-                const verifyRequest = [];
-                const taskApprovalDto = {
-                    DRAFT_ID: item.DRAFT_ID,
-                    REQUEST_ID: savedData.REQUEST_ID,
-                    PROCESS_CODE: savedData.CLAIM_TYPE,
-                    ACTION_CODE: ApplicationConstants.ACTION_SUBMIT,
-                    ROLE: item.ROLE || roleFlow,
-                    IS_REMARKS_UPDATE: true
-                };
+            // Process exists, create task approval request for inbox service
+            const verifyRequest = [];
+            const taskApprovalDto = {
+                DRAFT_ID: item.DRAFT_ID,
+                REQUEST_ID: savedData.REQUEST_ID,
+                PROCESS_CODE: savedData.CLAIM_TYPE,
+                ACTION_CODE: ApplicationConstants.ACTION_SUBMIT,
+                ROLE: item.ROLE || roleFlow,
+                IS_REMARKS_UPDATE: true
+            };
 
-                // Fetch active task details
-                const taskDetails = await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE);
-                if (taskDetails) {
-                    taskApprovalDto.TASK_INST_ID = taskDetails.TASK_INST_ID;
-                }
-
-                verifyRequest.push(taskApprovalDto);
-
-                // TODO: Call inbox service API when it's available
-                // const response = await inboxService.massTaskAction(verifyRequest, token, null, item.ACTION);
-                console.log("Task approval request prepared for inbox service:", verifyRequest);
+            // Fetch active task details
+            const taskDetails = await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE);
+            if (taskDetails) {
+                taskApprovalDto.TASK_INST_ID = taskDetails.TASK_INST_ID;
             }
-        
+
+            verifyRequest.push(taskApprovalDto);
+
+            // TODO: Call inbox service API when it's available
+            // const response = await inboxService.massTaskAction(verifyRequest, token, null, item.ACTION);
+            console.log("Task approval request prepared for inbox service:", verifyRequest);
+        }
+
         // Retract flow check - End
         else if (item.ACTION === ApplicationConstants.ACTION_SUBMIT) {
             // Synchronous process initiation (wait for completion)
@@ -1455,6 +1471,107 @@ async function initiateLockProcessDetails(tx, draftId, staffNusNetId, requestorG
             stack: error.stack
         });
         throw new ApplicationException(`Failed to initiate lock process details: ${error.message}`);
+    }
+}
+
+/**
+ * Builds TaskApproval DTO for InboxService placeholder
+ * @param {Object} tx - The CDS transaction object
+ * @param {Object} item - The mass upload item
+ * @param {Object} loggedInUserDetails - The logged in user details
+ * @returns {Promise<Object>} Task approval dto
+ */
+async function buildTaskApprovalDto(tx, item, loggedInUserDetails) {
+    const taskApprovalDto = {
+        DRAFT_ID: item.DRAFT_ID,
+        ROLE: item.ROLE,
+        IS_REMARKS_UPDATE: true
+    };
+
+    const savedData = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
+    if (savedData) {
+        taskApprovalDto.REQUEST_ID = savedData.REQUEST_ID;
+        taskApprovalDto.PROCESS_CODE = savedData.CLAIM_TYPE;
+    } else if (item.CLAIM_TYPE) {
+        taskApprovalDto.PROCESS_CODE = item.CLAIM_TYPE;
+    }
+
+    // Map action
+    if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_VERIFY.toUpperCase()) {
+        taskApprovalDto.ACTION_CODE = ApplicationConstants.ACTION_VERIFY;
+    } else if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_REJECT.toUpperCase()) {
+        taskApprovalDto.ACTION_CODE = ApplicationConstants.ACTION_REJECT;
+        taskApprovalDto.REJECT_REMARKS = extractRejectionRemarks(item, loggedInUserDetails);
+    }
+
+    // Attach task instance id if active task exists
+    const taskDetails = await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE);
+    if (taskDetails) {
+        taskApprovalDto.TASK_INST_ID = taskDetails.TASK_INST_ID;
+    }
+
+    return taskApprovalDto;
+}
+
+/**
+ * Extracts rejection remarks from item.REMARKS for the logged-in user, or picks the last non-empty remark
+ */
+function extractRejectionRemarks(item, loggedInUserDetails) {
+    if (!item || !Array.isArray(item.REMARKS) || item.REMARKS.length === 0) return "";
+    const userStaffId = (loggedInUserDetails && loggedInUserDetails.STF_NUMBER) ? String(loggedInUserDetails.STF_NUMBER) : null;
+    let candidate = "";
+    for (const r of item.REMARKS) {
+        if (!r) continue;
+        const text = (r.REMARKS && String(r.REMARKS).trim() !== "") ? String(r.REMARKS) : "";
+        if (text) {
+            candidate = text;
+            if (userStaffId && r.STAFF_ID && String(r.STAFF_ID) === userStaffId) {
+                return text;
+            }
+        }
+    }
+    return candidate;
+}
+
+/**
+ * Placeholder for InboxService.massTaskAction. To be replaced with external CAPM call by uploading csn file.
+ * Returns a response array similar to Java service.
+ */
+async function inboxServiceMassTaskAction(verifyRequest, action) {
+    const upperAction = (action || "").toUpperCase();
+    let RESPONSE_MESSAGE = "";
+    if (upperAction === ApplicationConstants.ACTION_REJECT) {
+        RESPONSE_MESSAGE = ApplicationConstants.ackMessageReject;
+    } else if (upperAction === ApplicationConstants.ACTION_VERIFY || upperAction === ApplicationConstants.ACTION_APPROVE) {
+        RESPONSE_MESSAGE = ApplicationConstants.ackMessageApprove;
+    } else if (upperAction === ApplicationConstants.ACTION_WITHDRAW) {
+        RESPONSE_MESSAGE = ApplicationConstants.ackMessageWithdrawn;
+    } else {
+        RESPONSE_MESSAGE = "Task processed successfully.";
+    }
+    return [
+        {
+            STATUS: ApplicationConstants.STATUS_SUCCESS,
+            RESPONSE_MESSAGE,
+        }
+    ];
+}
+
+/**
+ * SAVE flow for Verifier/Approver: persists remarks and process participants.
+ * Mirrors Java verifierApproverSaveFlow.
+ */
+async function verifierApproverSaveFlow(tx, item, isProcessParticipantUpdate, loggedInUserDetails) {
+    if (!item.REQUEST_STATUS) {
+        throw new ApplicationException("Invalid Request Status");
+    }
+    if (item.DRAFT_ID && String(item.DRAFT_ID).trim() !== "") {
+        // Persist remarks
+        await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
+        // Persist process participants when requested
+        if (isProcessParticipantUpdate) {
+            await populateProcessParticipantDetails(tx, item, loggedInUserDetails);
+        }
     }
 }
 
