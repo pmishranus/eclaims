@@ -1,0 +1,57 @@
+{
+  "definitions": {
+    "InboxService": {
+      "kind": "service",
+      "@path": "/task"
+    },
+    "InboxService.object": {
+      "kind": "type",
+      "@open": true,
+      "elements": {}
+    },
+    "InboxService.taskactions": {
+      "kind": "action",
+      "params": {
+        "data": {
+          "@open": true,
+          "type": "InboxService.object"
+        }
+      },
+      "returns": {
+        "items": {
+          "type": "InboxService.object"
+        }
+      }
+    },
+    "InboxService.sendEmail": {
+      "kind": "action",
+      "params": {
+        "data": {
+          "@open": true,
+          "type": "InboxService.object"
+        }
+      },
+      "returns": {
+        "type": "cds.String"
+      }
+    },
+    "InboxService.echo": {
+      "kind": "action",
+      "params": {
+        "data": {
+          "@open": true,
+          "type": "InboxService.object"
+        }
+      },
+      "returns": {
+        "@open": true,
+        "type": "InboxService.object"
+      }
+    }
+  },
+  "meta": {
+    "creator": "CDS Compiler v5.9.2",
+    "flavor": "inferred"
+  },
+  "$version": "2.0"
+}

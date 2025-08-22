@@ -69,8 +69,8 @@
                 "kind": "xsuaa"
             },
             "UtilityInboxService": {
-                "kind": "rest",
-                "model": "srv/external/utility-inbox.csn",
+                "kind": "odata",
+                "model": "srv/external/InboxService",
                 "credentials": {
                     "destination": "nusbtputil",
                     "path": "/task"

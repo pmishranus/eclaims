@@ -9,7 +9,6 @@ const swaggerUi = require("swagger-ui-express");
 const path = require("path");
 const fs = require("fs");
 const express = require("express");
-const cds = require("@sap/cds");
 
 const multer = require("multer");
 
