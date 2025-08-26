@@ -1536,9 +1536,10 @@ function extractRejectionRemarks(item, loggedInUserDetails) {
  * Calls Utility's InboxService.taskactions action via CAP service consumption.
  */
 async function callUtilityInboxTaskActions(req, verifyRequest) {
-    const srv = await cds.connect.to('UtilityInboxService');
+    const srv = await cds.connect.to('InboxService');
     const payload = { data: verifyRequest };
     // Use low-level REST send to avoid requiring a local CSN for the external service
+    return;
     const send = (context) => context.send({ method: 'POST', path: '/taskactions', data: payload });
     const result = req ? await send(srv.tx(req)) : await send(srv);
     return Array.isArray(result) ? result : [result];

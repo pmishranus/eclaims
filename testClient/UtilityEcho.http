@@ -36,4 +36,13 @@ X-User-Id: {{userId}}
   }
 }
 
+### Request-2 Utility Echo connectivity test
+#==================================================================#
+GET {{unsecureProtocol}}://{{host}}/eclaims/utilityEcho
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
+
+
+
 

@@ -68,7 +68,7 @@ class EclaimsService extends cds.ApplicationService {
 
         // Temporary utility connectivity check to Utility InboxService.echo
         this.on("utilityEcho", async (req) => {
-            const srv = await cds.connect.to('UtilityInboxService');
+            const srv = await cds.connect.to('InboxService');
             const payload = { data: req.data.data };
             const response = await srv.tx(req).send({ method: 'POST', path: '/echo', data: payload });
             console.log('Utility echo response:', response);

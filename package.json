@@ -7,6 +7,8 @@
     "private": true,
     "dependencies": {
         "@cap-js-community/odata-v2-adapter": "^1.15.2",
+        "@sap-cloud-sdk/http-client": "^4.1.1",
+        "@sap-cloud-sdk/resilience": "^4.1.1",
         "@sap/cds": "^8",
         "@sap/cds-hana": "^2",
         "@sap/hdi": "^4.7.0",
@@ -68,9 +70,9 @@
             "auth": {
                 "kind": "xsuaa"
             },
-            "UtilityInboxService": {
+            "InboxService": {
                 "kind": "odata",
-                "model": "srv/external/InboxService",
+                "model": "srv/external/inbox-service",
                 "credentials": {
                     "destination": "nusbtputil",
                     "path": "/task"
