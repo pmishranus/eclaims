@@ -116,6 +116,8 @@ service EclaimsService @(path: '/eclaims') {
    * @returns Validation results object from ECP system
    */
   action   ecpWbsValidate(data : object)                                                                         returns object;
+  // Temporary utility connectivity check
+  action   utilityEcho(data: object)                                                                            returns object;
 
 
   /******************************************************************** Calculation Views Exposed *********************************************************************************/

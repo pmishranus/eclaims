@@ -4,7 +4,7 @@
 @host = localhost:4004
 @protocol = https
 @unsecureProtocol = http
-@userId = OT_CA9
+@userId = PTT_VF5
 
 ### Request-1 Get xsuaa token
 #==================================================================#
@@ -527,3 +527,105 @@ X-User-Id: {{userId}}
 # ✅ New item gets DT2507000018006 (continues from highest number 5)
 # ✅ No reuse of soft-deleted DT2507000018003
 # ✅ Better than Java implementation which would reuse the deleted number 
+
+
+POST {{unsecureProtocol}}://{{host}}/eclaims/singleRequest
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+X-User-Id: {{userId}}
+
+{
+	"data" : [
+	{
+		"CLAIM_TYPE": "101",
+		"CLAIM_REQUEST_TYPE": "Daily",
+		"CLAIM_MONTH": "11-2024",
+		"TOTAL_AMOUNT": " ",
+		"WBS": " ",
+		"ULU": "0500037300",
+		"FDLU": "0003730001",
+		"DRAFT_ID": "DT2505000027",
+		"VERIFIER": [
+			{
+				"PPNT_ID": "PPNT25050014",
+				"STAFF_ID": "52819",
+				"NUSNET_ID": "PTT_VF5",
+				"ULU": "",
+				"FDLU": "",
+				"STAFF_FULL_NAME": "Darien Huffman"
+			}
+		],
+		"ADDTIONAL_APPROVER_1": [
+			{
+				"PPNT_ID": "",
+				"STAFF_ID": "",
+				"NUSNET_ID": "",
+				"ULU": "",
+				"FDLU": "",
+				"STAFF_FULL_NAME": ""
+			}
+		],
+		"ADDTIONAL_APPROVER_2": [
+			{
+				"PPNT_ID": "",
+				"STAFF_ID": "",
+				"NUSNET_ID": "",
+				"ULU": "",
+				"FDLU": "",
+				"STAFF_FULL_NAME": ""
+			}
+		],
+		"ATTACHMENTS": [],
+		"REMARKS": [],
+		"REQUEST_STATUS": "03",
+		"isMassUpload": "N",
+		"ACTION": "VERIFY",
+		"ROLE": "VERIFIER",
+		"REQUEST_ID": "",
+		"selectedClaimDates": [
+			{
+				"ITEM_ID": "DT2505000027001",
+				"CLAIM_START_DATE": "2024-11-07",
+				"CLAIM_END_DATE": "2024-11-07",
+				"START_TIME": "10:00",
+				"END_TIME": "20:00",
+				"CLAIM_START_DATE_DISPLAY": "07 Nov, 2024",
+				"CLAIM_DAY": "Thursday",
+				"HOURS_UNIT": "9.00",
+				"RATE_TYPE": "10",
+				"CLAIM_REQUEST_TYPE_NUMBER": "10",
+				"CLAIM_DAY_TYPE": "Workday",
+				"WBS": "",
+				"WAGE_CODE": "",
+				"REMARKS": "",
+				"TOTAL_AMOUNT": "180.00",
+				"IS_DISCREPENCY": 0,
+				"RATE_TYPE_AMOUNT": "20.00",
+				"DISC_RATETYPE_AMOUNT": "0.00",
+				"OT_COMMENCE_AFT_HRS": ""
+			},
+			{
+				"ITEM_ID": "DT2505000027002",
+				"CLAIM_START_DATE": "2024-11-08",
+				"CLAIM_END_DATE": "2024-11-08",
+				"START_TIME": "10:00",
+				"END_TIME": "20:00",
+				"CLAIM_START_DATE_DISPLAY": "08 Nov, 2024",
+				"CLAIM_DAY": "Friday",
+				"HOURS_UNIT": "9.00",
+				"RATE_TYPE": "10",
+				"CLAIM_REQUEST_TYPE_NUMBER": "10",
+				"CLAIM_DAY_TYPE": "Workday",
+				"WBS": "",
+				"WAGE_CODE": "",
+				"REMARKS": "",
+				"TOTAL_AMOUNT": "180.00",
+				"IS_DISCREPENCY": 0,
+				"RATE_TYPE_AMOUNT": "20.00",
+				"DISC_RATETYPE_AMOUNT": "0.00",
+				"OT_COMMENCE_AFT_HRS": ""
+			}
+		]
+	}
+]
+}

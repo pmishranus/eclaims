@@ -1,0 +1,93 @@
+[
+    {
+        "CLAIM_TYPE": "101",
+        "CLAIM_REQUEST_TYPE": "Daily",
+        "CLAIM_MONTH": "02-2025",
+        "TOTAL_AMOUNT": " ",
+        "WBS": " ",
+        "ULU": "0500037300",
+        "FDLU": "0003730001",
+        "DRAFT_ID": "DT2503000020",
+        "VERIFIER": [
+            {
+                "PPNT_ID": "PPNT25030008",
+                "STAFF_ID": "52819",
+                "NUSNET_ID": "PTT_VF5",
+                "ULU": "",
+                "FDLU": "",
+                "STAFF_FULL_NAME": "Darien Huffman"
+            }
+        ],
+        "ADDTIONAL_APPROVER_1": [
+            {
+                "PPNT_ID": "PPNT25080001",
+                "STAFF_ID": "12387",
+                "NUSNET_ID": "PTT_AP10",
+                "ULU": "",
+                "FDLU": "",
+                "STAFF_FULL_NAME": "Brycen Holden"
+            }
+        ],
+        "ADDTIONAL_APPROVER_2": [
+            {
+                "PPNT_ID": "",
+                "STAFF_ID": "",
+                "NUSNET_ID": "",
+                "ULU": "",
+                "FDLU": "",
+                "STAFF_FULL_NAME": ""
+            }
+        ],
+        "ATTACHMENTS": [],
+        "REMARKS": [],
+        "REQUEST_STATUS": "03",
+        "isMassUpload": "N",
+        "ACTION": "VERIFY",
+        "ROLE": "VERIFIER",
+        "REQUEST_ID": "",
+        "selectedClaimDates": [
+            {
+                "ITEM_ID": "DT2503000020001",
+                "CLAIM_START_DATE": "2025-02-19",
+                "CLAIM_END_DATE": "2025-02-19",
+                "START_TIME": "08:00",
+                "END_TIME": "21:00",
+                "CLAIM_START_DATE_DISPLAY": "19 Feb, 2025",
+                "CLAIM_DAY": "Wednesday",
+                "HOURS_UNIT": "12.0",
+                "RATE_TYPE": "10",
+                "CLAIM_REQUEST_TYPE_NUMBER": "10",
+                "CLAIM_DAY_TYPE": "Workday",
+                "WBS": "",
+                "WAGE_CODE": "",
+                "REMARKS": "",
+                "TOTAL_AMOUNT": "240.00",
+                "IS_DISCREPENCY": 0,
+                "RATE_TYPE_AMOUNT": "20.00",
+                "DISC_RATETYPE_AMOUNT": "0.00",
+                "OT_COMMENCE_AFT_HRS": ""
+            },
+            {
+                "ITEM_ID": "DT2503000020002",
+                "CLAIM_START_DATE": "2025-02-20",
+                "CLAIM_END_DATE": "2025-02-20",
+                "START_TIME": "08:00",
+                "END_TIME": "21:00",
+                "CLAIM_START_DATE_DISPLAY": "20 Feb, 2025",
+                "CLAIM_DAY": "Thursday",
+                "HOURS_UNIT": "12.0",
+                "RATE_TYPE": "10",
+                "CLAIM_REQUEST_TYPE_NUMBER": "10",
+                "CLAIM_DAY_TYPE": "Workday",
+                "WBS": "",
+                "WAGE_CODE": "",
+                "REMARKS": "",
+                "TOTAL_AMOUNT": "240.00",
+                "IS_DISCREPENCY": 0,
+                "RATE_TYPE_AMOUNT": "20.00",
+                "DISC_RATETYPE_AMOUNT": "0.00",
+                "OT_COMMENCE_AFT_HRS": ""
+            }
+        ]
+    }
+]

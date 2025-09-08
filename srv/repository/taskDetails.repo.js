@@ -6,7 +6,7 @@ const { ApplicationConstants } = require("../util/constant");
  * @param draftId
  * @param processCode
  */
-async function fetchActiveTaskByDraftId(draftId, processCode) {
+async function fetchActiveTaskByDraftIdOld(draftId, processCode) {
     const fetchActiveTaskByDraftId = await cds.run(
         SELECT.one
             .from("NUSEXT_UTILITY_TASK_DETAILS as task")
@@ -17,7 +17,26 @@ async function fetchActiveTaskByDraftId(draftId, processCode) {
                 { "process.PROCESS_CODE": processCode },
                 { "task.TASK_STATUS": ApplicationConstants.STATUS_TASK_ACTIVE },
             ])
-            .columns(["task.*"]) // or list specific fields you want
+            // .columns(["task.*"]) // or list specific fields you want
+    );
+    return fetchActiveTaskByDraftId;
+}
+
+/**
+ *
+ * @param draftId
+ * @param processCode
+ */
+async function fetchActiveTaskByDraftId(draftId, processCode) {
+    const fetchActiveTaskByDraftId = await cds.run(
+        SELECT.one
+            .from("NUSEXT_UTILITY_TASK_DETAILS")
+            .where({
+                TASK_STATUS : ApplicationConstants.STATUS_TASK_ACTIVE,
+                "ItsProcessData.PROCESS_CODE" : processCode,
+                "ItsProcessData.REFERENCE_ID" : draftId
+            })
+            .columns(["*","ItsTaskStatus.STATUS_ALIAS"]) // or list specific fields you want
     );
     return fetchActiveTaskByDraftId;
 }

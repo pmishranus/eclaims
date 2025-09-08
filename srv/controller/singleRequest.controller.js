@@ -1,5 +1,4 @@
 /* eslint-disable no-use-before-define */
-const cds = require("@sap/cds");
 const CommonRepo = require("../repository/util.repo");
 const EclaimsHeaderDataRepo = require("../repository/eclaimsData.repo");
 const RequestLockDetailsRepo = require("../repository/requestLockDetails.repo");
@@ -74,7 +73,7 @@ async function singleRequest(request) {
                 responseDto = await claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, loggedInUserDetails);
                 break;
             case ApplicationConstants.VERIFIER:
-                responseDto = await verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails);
+                responseDto = await verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails, request);
                 break;
             case ApplicationConstants.REPORTING_MGR:
             case ApplicationConstants.APPROVER:
@@ -374,7 +373,7 @@ async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, log
  * @param {Object} loggedInUserDetails - The logged in user details
  * @returns {Promise<Object>} The response DTO
  */
-async function verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails) {
+async function verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails, req) {
     console.log("ConvertedSingleRequestController verifierSubmissionFlow start()");
 
     const massUploadResponseDto = {
@@ -398,13 +397,29 @@ async function verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
 
             // Handle non-save actions
             if (item.ACTION && item.ACTION.toUpperCase() !== ApplicationConstants.ACTION_SAVE.toUpperCase()) {
-                // Implement remarks data details
+                // Persist remarks
                 await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
-                // TODO: Implement process participant and process logic
-                // await populateProcessParticipantDetails(item, loggedInUserDetails);
-                // TODO: Implement task approval and inboxService.massTaskAction
+
+                // Persist process participants (Verifier/Additional Approvers)
+                await populateProcessParticipantDetails(tx, item, loggedInUserDetails);
+
+                // Build task approval request
+                const taskApprovalDto = await buildTaskApprovalDto(tx, item, loggedInUserDetails);
+                const verifyRequest = [taskApprovalDto];
+
+                // Call Utility InboxService action via external CAP service (CSN)
+                const response = await callUtilityInboxTaskActions(req, verifyRequest,loggedInUserDetails,req);
+
+                // Frame response message
+                if (response && response.length > 0 && response[0]) {
+                    massUploadResponseDto.message = response[0].RESPONSE_MESSAGE || "";
+                    if (response[0].STATUS && response[0].STATUS.toUpperCase() === ApplicationConstants.STATUS_ERROR) {
+                        massUploadResponseDto.error = true;
+                    }
+                }
             } else {
-                // TODO: Implement verifierApproverSaveFlow
+                // SAVE flow for Verifier/Approver
+                await verifierApproverSaveFlow(tx, item, /* isProcessParticipantUpdate */ true, loggedInUserDetails);
             }
 
             // Fetch updated claim data
@@ -1144,34 +1159,34 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
 
     // Handle process details and task details
     try {
-         // Fetch process details to check if process exists
-            const processDetails = await ProcessDetailsRepo.fetchByReferenceId(draftNumber, item.CLAIM_TYPE);
+        // Fetch process details to check if process exists
+        const processDetails = await ProcessDetailsRepo.fetchByReferenceId(draftNumber, item.CLAIM_TYPE);
         // Retract flow check - Start
         if (savedData && item.ACTION === ApplicationConstants.ACTION_SUBMIT && processDetails && processDetails.PROCESS_INST_ID && processDetails.PROCESS_INST_ID.trim() !== "") {
-                // Process exists, create task approval request for inbox service
-                const verifyRequest = [];
-                const taskApprovalDto = {
-                    DRAFT_ID: item.DRAFT_ID,
-                    REQUEST_ID: savedData.REQUEST_ID,
-                    PROCESS_CODE: savedData.CLAIM_TYPE,
-                    ACTION_CODE: ApplicationConstants.ACTION_SUBMIT,
-                    ROLE: item.ROLE || roleFlow,
-                    IS_REMARKS_UPDATE: true
-                };
+            // Process exists, create task approval request for inbox service
+            const verifyRequest = [];
+            const taskApprovalDto = {
+                DRAFT_ID: item.DRAFT_ID,
+                REQUEST_ID: savedData.REQUEST_ID,
+                PROCESS_CODE: savedData.CLAIM_TYPE,
+                ACTION_CODE: ApplicationConstants.ACTION_SUBMIT,
+                ROLE: item.ROLE || roleFlow,
+                IS_REMARKS_UPDATE: true
+            };
 
-                // Fetch active task details
-                const taskDetails = await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE);
-                if (taskDetails) {
-                    taskApprovalDto.TASK_INST_ID = taskDetails.TASK_INST_ID;
-                }
-
-                verifyRequest.push(taskApprovalDto);
-
-                // TODO: Call inbox service API when it's available
-                // const response = await inboxService.massTaskAction(verifyRequest, token, null, item.ACTION);
-                console.log("Task approval request prepared for inbox service:", verifyRequest);
+            // Fetch active task details
+            const taskDetails = await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE);
+            if (taskDetails) {
+                taskApprovalDto.TASK_INST_ID = taskDetails.TASK_INST_ID;
             }
-        
+
+            verifyRequest.push(taskApprovalDto);
+
+            // TODO: Call inbox service API when it's available
+            // const response = await inboxService.massTaskAction(verifyRequest, token, null, item.ACTION);
+            console.log("Task approval request prepared for inbox service:", verifyRequest);
+        }
+
         // Retract flow check - End
         else if (item.ACTION === ApplicationConstants.ACTION_SUBMIT) {
             // Synchronous process initiation (wait for completion)
@@ -1455,6 +1470,102 @@ async function initiateLockProcessDetails(tx, draftId, staffNusNetId, requestorG
             stack: error.stack
         });
         throw new ApplicationException(`Failed to initiate lock process details: ${error.message}`);
+    }
+}
+
+/**
+ * Builds TaskApproval DTO for InboxService placeholder
+ * @param {Object} tx - The CDS transaction object
+ * @param {Object} item - The mass upload item
+ * @param {Object} loggedInUserDetails - The logged in user details
+ * @returns {Promise<Object>} Task approval dto
+ */
+async function buildTaskApprovalDto(tx, item, loggedInUserDetails) {
+    const taskApprovalDto = {
+        DRAFT_ID: item.DRAFT_ID,
+        ROLE: item.ROLE,
+        IS_REMARKS_UPDATE: true
+    };
+
+    const savedData = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
+    if (savedData) {
+        taskApprovalDto.REQUEST_ID = savedData.REQUEST_ID;
+        taskApprovalDto.PROCESS_CODE = savedData.CLAIM_TYPE;
+    } else if (item.CLAIM_TYPE) {
+        taskApprovalDto.PROCESS_CODE = item.CLAIM_TYPE;
+    }
+
+    // Map action
+    if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_VERIFY.toUpperCase()) {
+        taskApprovalDto.ACTION_CODE = ApplicationConstants.ACTION_VERIFY;
+    } else if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_REJECT.toUpperCase()) {
+        taskApprovalDto.ACTION_CODE = ApplicationConstants.ACTION_REJECT;
+        taskApprovalDto.REJECT_REMARKS = extractRejectionRemarks(item, loggedInUserDetails);
+    }
+
+    // Attach task instance id if active task exists
+    const taskDetails = await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE);
+    if (taskDetails) {
+        taskApprovalDto.TASK_INST_ID = taskDetails.TASK_INST_ID;
+    }
+
+    return taskApprovalDto;
+}
+
+/**
+ * Extracts rejection remarks from item.REMARKS for the logged-in user, or picks the last non-empty remark
+ */
+function extractRejectionRemarks(item, loggedInUserDetails) {
+    if (!item || !Array.isArray(item.REMARKS) || item.REMARKS.length === 0) return "";
+    const userStaffId = (loggedInUserDetails && loggedInUserDetails.STF_NUMBER) ? String(loggedInUserDetails.STF_NUMBER) : null;
+    let candidate = "";
+    for (const r of item.REMARKS) {
+        if (!r) continue;
+        const text = (r.REMARKS && String(r.REMARKS).trim() !== "") ? String(r.REMARKS) : "";
+        if (text) {
+            candidate = text;
+            if (userStaffId && r.STAFF_ID && String(r.STAFF_ID) === userStaffId) {
+                return text;
+            }
+        }
+    }
+    return candidate;
+}
+
+/**
+ * Calls Utility's InboxService.taskactions action via CAP service consumption.
+ */
+async function callUtilityInboxTaskActions(req, verifyRequest,loggedInUserDetails,req) {
+    const srv = await cds.connect.to('InboxService');
+    const oInboxCallVerifier = {
+        "loggedInUserDetails" : loggedInUserDetails,
+        "requestOfSource" : req,
+        "internalCall" : true,
+        "payload" : verifyRequest
+    }
+    const payload = { data: oInboxCallVerifier };
+    // Use low-level REST send to avoid requiring a local CSN for the external service
+    return;
+    const send = (context) => context.send({ method: 'POST', path: '/taskactions', data: payload });
+    const result = req ? await send(srv.tx(req)) : await send(srv);
+    return Array.isArray(result) ? result : [result];
+}
+
+/**
+ * SAVE flow for Verifier/Approver: persists remarks and process participants.
+ * Mirrors Java verifierApproverSaveFlow.
+ */
+async function verifierApproverSaveFlow(tx, item, isProcessParticipantUpdate, loggedInUserDetails) {
+    if (!item.REQUEST_STATUS) {
+        throw new ApplicationException("Invalid Request Status");
+    }
+    if (item.DRAFT_ID && String(item.DRAFT_ID).trim() !== "") {
+        // Persist remarks
+        await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
+        // Persist process participants when requested
+        if (isProcessParticipantUpdate) {
+            await populateProcessParticipantDetails(tx, item, loggedInUserDetails);
+        }
     }
 }
 

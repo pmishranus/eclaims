@@ -33,7 +33,7 @@ cds.on("bootstrap", app => {
         const openApiSpecPath = path.join(__dirname, "../docs/EclaimsService.openapi3.json");
         if (fs.existsSync(openApiSpecPath)) {
             const openApiSpec = JSON.parse(fs.readFileSync(openApiSpecPath, 'utf8'));
-            
+
             // Enhance the OpenAPI specification
             const enhancedSpec = {
                 ...openApiSpec,
