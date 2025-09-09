@@ -134,10 +134,41 @@ function getFallbackUsername() {
     return FALLBACK_USERNAME;
 }
 
+/**
+ * Extracts username from authorization token
+ * 
+ * @param {string} token - The authorization token
+ * @returns {string} The extracted username
+ */
+function extractUsernameFromToken(token) {
+    if (!token) {
+        throw new ApplicationException('Authorization token is required');
+    }
+
+    try {
+        // Remove 'Bearer ' prefix if present
+        const cleanToken = token.replace(/^Bearer\s+/i, '');
+
+        // For JWT tokens, we would typically decode the token
+        // For now, we'll use a simple extraction method
+        // In a real implementation, you would decode the JWT and extract the username
+
+        // This is a placeholder implementation
+        // You should implement proper JWT decoding here
+        console.warn('extractUsernameFromToken: Using fallback username - implement proper JWT decoding');
+        return FALLBACK_USERNAME;
+
+    } catch (error) {
+        console.error('Error extracting username from token:', error);
+        throw new ApplicationException('Invalid authorization token');
+    }
+}
+
 module.exports = {
     extractUsername,
     getUserInfo,
     isValidUsername,
     setFallbackUsername,
-    getFallbackUsername
+    getFallbackUsername,
+    extractUsernameFromToken
 }; 

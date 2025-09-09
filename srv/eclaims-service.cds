@@ -151,6 +151,12 @@ service EclaimsService @(path: '/eclaims') {
    * @returns Response object with deletion status
    */
   action   deleteClaimClearRequest(data : object)                                                                returns object;
+  /**
+   * @description Uploads and processes Excel file for mass upload
+   * @param data Object containing file, claimCode, ulu, fdlu, period, noOfHeaderRows
+   * @returns Excel upload response object
+   */
+  action   requestUpload(data : object)                                                                          returns object;
 
 
   /******************************************************************** Calculation Views Exposed *********************************************************************************/
