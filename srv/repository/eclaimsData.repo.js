@@ -195,6 +195,20 @@ async function fetchRequestId(draftId) {
     let fetchRequestId = await cds.run(query, values);
     return fetchRequestId;
 }
+
+/**
+ * Fetches eclaims header data by request ID.
+ * @param {string} requestId
+ * @returns {Promise<Object>}
+ */
+async function fetchByRequestId(requestId) {
+    let query = SELECT.one.from("NUSEXT_ECLAIMS_HEADER_DATA").where({
+        REQUEST_ID: requestId,
+        IS_DELETED: "N"
+    });
+    const result = await cds.run(query);
+    return result;
+}
 /**
  * Fetches monthly claims.
  * @param {string} month
@@ -254,6 +268,35 @@ async function fetchDraftStatusEclaimsData(ULU, FDLU, CLAIM_TYPE, CLAIM_MONTH, C
     });
     let fetchDraftStatusEclaimsData = await cds.run(query);
     return fetchDraftStatusEclaimsData || [];
+}
+
+/**
+ * Fetches submitted status eclaims data.
+ * @param {string} ULU
+ * @param {string} FDLU
+ * @param {string} CLAIM_TYPE
+ * @param {string} CLAIM_MONTH
+ * @param {string} CLAIM_YEAR
+ * @param {string} STAFF_ID
+ * @param {string} NUSNET_ID
+ * @returns {Promise<Array>}
+ */
+async function fetchSubmittedStatusEclaimsData(ULU, FDLU, CLAIM_TYPE, CLAIM_MONTH, CLAIM_YEAR, STAFF_ID, NUSNET_ID) {
+    let query = SELECT.distinct.from("NUSEXT_ECLAIMS_HEADER_DATA").where({
+        ULU,
+        FDLU,
+        CLAIM_TYPE,
+        CLAIM_MONTH,
+        CLAIM_YEAR,
+        REQUEST_STATUS: ApplicationConstants.STATUS_ECLAIMS_CLAIMANT_SUBMITTED, // "02"
+        and: {
+            STAFF_ID: STAFF_ID.toUpperCase(),
+            or: { STAFF_NUSNET_ID: STAFF_ID.toUpperCase() },
+        },
+        SUBMITTED_BY_NID: NUSNET_ID.toUpperCase(),
+    });
+    let fetchSubmittedStatusEclaimsData = await cds.run(query);
+    return fetchSubmittedStatusEclaimsData || [];
 }
 /**
  * Fetches past three months WBS.
@@ -317,6 +360,29 @@ async function updateRequestStatusOnTaskCompletion(tx, toBeRequestStatus, draftI
     await tx.run(query);
 }
 
+/**
+ * Soft deletes eclaims header data by draft ID
+ * @param {Object} tx - The transaction object
+ * @param {string} draftId - The draft ID
+ * @param {string} modifiedBy - The user who modified the record
+ * @param {string} modifiedOn - The modification date
+ * @returns {Promise<Object>} Delete result
+ */
+async function softDeleteByDraftId(tx, draftId, modifiedBy, modifiedOn) {
+    const { UPDATE } = require("@sap/cds/lib/ql/cds-ql");
+
+    const query = UPDATE("NUSEXT_ECLAIMS_HEADER_DATA")
+        .set({
+            IS_DELETED: "Y",
+            MODIFIED_BY: modifiedBy,
+            MODIFIED_ON: modifiedOn
+        })
+        .where({ DRAFT_ID: draftId });
+
+    const result = await tx.run(query);
+    return result;
+}
+
 module.exports = {
     fetchByDraftId,
     fetchTbClaimStatusCount,
@@ -329,8 +395,11 @@ module.exports = {
     fetchMonthlyClaims,
     fetchMonthlyClaimsOnSubmittedOn,
     fetchRequestId,
+    fetchByRequestId,
     fetchDraftStatusEclaimsData,
+    fetchSubmittedStatusEclaimsData,
     fetchPastThreeMonthsWbs,
     upsertEclaimsData,
     updateRequestStatusOnTaskCompletion,
+    softDeleteByDraftId,
 };
