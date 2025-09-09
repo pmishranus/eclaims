@@ -157,6 +157,12 @@ service EclaimsService @(path: '/eclaims') {
    * @returns Excel upload response object
    */
   action   requestUpload(data : object)                                                                          returns object;
+  /**
+   * @description Filters eclaims data based on staff ID and request status
+   * @param data Object containing STAFF_ID and REQUEST_STATUS array
+   * @returns Filter response object with REQ_ID, CLAIM_TYPE, PERIOD, STATUS, and TASK arrays
+   */
+  action   filterData(data : object)                                                                             returns object;
 
 
   /******************************************************************** Calculation Views Exposed *********************************************************************************/
