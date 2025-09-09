@@ -71,6 +71,21 @@ service EclaimsService @(path: '/eclaims') {
                            staffId : String)                                                                     returns {};
 
   /**
+   * @description Retrieves submitted eclaim data for a specific claim type, ULU, FDLU, period, and staff ID
+   * @param claimType Type of claim
+   * @param ulu Unit Level Unit code
+   * @param fdlu Faculty Department Level Unit code
+   * @param period Time period
+   * @param staffId Staff identifier
+   * @returns Submitted eclaim data object
+   */
+  function submittedEclaimData(claimType : String,
+                               ulu : String,
+                               fdlu : String,
+                               period : String,
+                               staffId : String)                                                                 returns {};
+
+  /**
    * @description Retrieves claimant staff information for a given username
    * @param username Username to lookup
    * @returns Claimant staff information object
@@ -117,7 +132,25 @@ service EclaimsService @(path: '/eclaims') {
    */
   action   ecpWbsValidate(data : object)                                                                         returns object;
   // Temporary utility connectivity check
-  action   utilityEcho(data: object)                                                                            returns object;
+  action   utilityEcho(data : object)                                                                            returns object;
+  /**
+   * @description Clears/deletes claims by process code
+   * @param data Object containing processCode parameter
+   * @returns Response object with deletion status
+   */
+  action   clearRequestsByProcessCode(data : object)                                                             returns object;
+  /**
+   * @description Deletes claim requests (draft deletion)
+   * @param data Object containing array of RequestDto objects
+   * @returns Response object with deletion status
+   */
+  action   deleteClaimRequest(data : object)                                                                     returns object;
+  /**
+   * @description Clears claim requests (clear request deletion)
+   * @param data Object containing array of RequestDto objects
+   * @returns Response object with deletion status
+   */
+  action   deleteClaimClearRequest(data : object)                                                                returns object;
 
 
   /******************************************************************** Calculation Views Exposed *********************************************************************************/

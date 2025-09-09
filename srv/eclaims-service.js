@@ -2,6 +2,10 @@ const cds = require("@sap/cds");
 const eclaimsOverviewDashboardCtrl = require("./controller/eclaimsOverviewDashboard.controller");
 const singleRequestCtrl = require("./controller/singleRequest.controller");
 const draftEclaimRequestCtrl = require("./controller/fetchDraftEclaimRequest.controller")
+const submittedEclaimDataCtrl = require("./controller/submittedEclaimData.controller");
+const clearRequestsByProcessCodeCtrl = require("./controller/clearRequestsByProcessCode.controller");
+const deleteClaimRequestCtrl = require("./controller/deleteClaimRequest.controller");
+const deleteClaimClearRequestCtrl = require("./controller/deleteClaimClearRequest.controller");
 const fetchClaimTypesCtrl = require("./controller/fetchClaimTypes.controller");
 const rateTypesCtrl = require("./controller/rateTypes.controller");
 const caStaffCtrl = require("./controller/caStaffLookup.controller");
@@ -54,6 +58,10 @@ class EclaimsService extends cds.ApplicationService {
             return await draftEclaimRequestCtrl.fetchDraftEclaimRequest(request);
         });
 
+        this.on("submittedEclaimData", async request => {
+            return await submittedEclaimDataCtrl.fetchSubmittedEclaimData(request);
+        });
+
         this.on("fetchWBS", async request => {
             return await fetchWBSCtrl.fetchWBS(request);
         })
@@ -73,6 +81,18 @@ class EclaimsService extends cds.ApplicationService {
             const response = await srv.tx(req).send({ method: 'POST', path: '/echo', data: payload });
             console.log('Utility echo response:', response);
             return { sent: payload.data, received: response };
+        });
+
+        this.on("clearRequestsByProcessCode", async request => {
+            return await clearRequestsByProcessCodeCtrl.clearRequestsByProcessCode(request);
+        });
+
+        this.on("deleteClaimRequest", async request => {
+            return await deleteClaimRequestCtrl.deleteClaimRequest(request);
+        });
+
+        this.on("deleteClaimClearRequest", async request => {
+            return await deleteClaimClearRequestCtrl.deleteClaimClearRequest(request);
         });
 
         // this.on("singleRequest", async request => {
