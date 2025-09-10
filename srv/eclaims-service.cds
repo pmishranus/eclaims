@@ -28,14 +28,14 @@ service EclaimsService @(path: '/eclaims') {
    * @description Dummy function for testing purposes
    * @returns Empty object
    */
-  function dummy()                                                                                               returns {};
+  function dummy()                                                                                                      returns {};
   /**
    * @description Retrieves claim types based on staff ID and user group
    * @param staffId Staff identifier
    * @param userGroup User group for authorization
    * @returns Array of claim type objects
    */
-  function fetchClaimTypes(staffId : String, userGroup : String)                                                 returns array of {};
+  function fetchClaimTypes(staffId : String, userGroup : String)                                                        returns array of {};
   /**
    * @description Retrieves ULU and FDLU information for a given claim type, user group, and period
    * @param claimType Type of claim
@@ -43,7 +43,7 @@ service EclaimsService @(path: '/eclaims') {
    * @param period Time period for the data
    * @returns ULU and FDLU information object
    */
-  function fetchUluFdlu(claimType : String, userGroup : String, period : String)                                 returns {};
+  function fetchUluFdlu(claimType : String, userGroup : String, period : String)                                        returns {};
   /**
    * @description Enhanced CA Staff Lookup function with improved performance and error handling
    * @param ulu Unit Level Unit code
@@ -53,7 +53,7 @@ service EclaimsService @(path: '/eclaims') {
    * @param searchValue Search term for filtering staff (optional)
    * @returns Array of staff lookup results
    */
-  function caStaffLookup(ulu : String, fdlu : String, claimType : String, period : String, searchValue : String) returns array of {};
+  function caStaffLookup(ulu : String, fdlu : String, claimType : String, period : String, searchValue : String)        returns array of {};
 
   /**
    * @description Retrieves draft eclaim data for a specific claim type, ULU, FDLU, period, and staff ID
@@ -68,7 +68,7 @@ service EclaimsService @(path: '/eclaims') {
                            ulu : String,
                            fdlu : String,
                            period : String,
-                           staffId : String)                                                                     returns {};
+                           staffId : String)                                                                            returns {};
 
   /**
    * @description Retrieves submitted eclaim data for a specific claim type, ULU, FDLU, period, and staff ID
@@ -83,27 +83,44 @@ service EclaimsService @(path: '/eclaims') {
                                ulu : String,
                                fdlu : String,
                                period : String,
-                               staffId : String)                                                                 returns {};
+                               staffId : String)                                                                        returns {};
 
   /**
    * @description Retrieves claimant staff information for a given username
    * @param username Username to lookup
    * @returns Claimant staff information object
    */
-  function claimantStaffInfo(username : String)                                                                  returns {};
+  function claimantStaffInfo(username : String)                                                                         returns {};
   /**
    * @description Retrieves WBS (Work Breakdown Structure) information for a staff ID and claim date
    * @param staffId Staff identifier
    * @param claimDate Date of the claim
    * @returns WBS information object
    */
-  function fetchWBS(staffId : String, claimDate : String)                                                        returns {};
+  function fetchWBS(staffId : String, claimDate : String)                                                               returns {};
   /**
    * @description Fetches staff compensation info from CPI using stfNumber
    * @param stfNumber Staff number to query
    * @returns Compensation info object from CPI
    */
-  function fetchCompInfoFromCPI(stfNumber : String)                                                              returns object;
+  function fetchCompInfoFromCPI(stfNumber : String)                                                                     returns object;
+  /**
+   * @description Retrieves eligible claim types for the logged-in user (via XSUAA)
+   * @param claimMonth Claim month (MM)
+   * @param claimYear Claim year (YYYY)
+   * @returns Array of eligible claim type DTOs
+   */
+  function eligibleClaimTypes(claimMonth : String, claimYear : String)                                                  returns array of {};
+  /**
+   * @description CA Staff Benefit Lookup for the logged-in user (via XSUAA)
+   * @param claimType Type of claim
+   * @param ulu Unit Level Unit code
+   * @param fdlu Faculty Department Level Unit code
+   * @param period Time period in MM-YYYY format (optional, defaults to current date)
+   * @param searchValue Search term for filtering staff (optional)
+   * @returns Array of staff lookup results for benefit management
+   */
+  function caStaffBenefitLookup(claimType : String, ulu : String, fdlu : String, period : String, searchValue : String) returns array of {};
 
   /********************************************************************* Actions ***************************************************************************************************/
 
@@ -112,57 +129,57 @@ service EclaimsService @(path: '/eclaims') {
    * @param data Dashboard configuration data
    * @returns Dashboard data as string
    */
-  action   eclaimsOverviewDashboard(data : object)                                                               returns String;
+  action   eclaimsOverviewDashboard(data : object)                                                                      returns String;
   /**
    * @description Retrieves rate types information
    * @param data Rate type configuration data
    * @returns Rate types object
    */
-  action   rateTypes(data : object)                                                                              returns object;
+  action   rateTypes(data : object)                                                                                     returns object;
   /**
    * @description Validates eclaims data
    * @param data Eclaims data to validate
    * @returns Validation results object
    */
-  action   validateEclaims(data : object)                                                                        returns object;
+  action   validateEclaims(data : object)                                                                               returns object;
   /**
    * @description Validates WBS (Work Breakdown Structure) codes using ECP system
    * @param data Object containing WBSRequest with array of WBS codes
    * @returns Validation results object from ECP system
    */
-  action   ecpWbsValidate(data : object)                                                                         returns object;
+  action   ecpWbsValidate(data : object)                                                                                returns object;
   // Temporary utility connectivity check
-  action   utilityEcho(data : object)                                                                            returns object;
+  action   utilityEcho(data : object)                                                                                   returns object;
   /**
    * @description Clears/deletes claims by process code
    * @param data Object containing processCode parameter
    * @returns Response object with deletion status
    */
-  action   clearRequestsByProcessCode(data : object)                                                             returns object;
+  action   clearRequestsByProcessCode(data : object)                                                                    returns object;
   /**
    * @description Deletes claim requests (draft deletion)
    * @param data Object containing array of RequestDto objects
    * @returns Response object with deletion status
    */
-  action   deleteClaimRequest(data : object)                                                                     returns object;
+  action   deleteClaimRequest(data : object)                                                                            returns object;
   /**
    * @description Clears claim requests (clear request deletion)
    * @param data Object containing array of RequestDto objects
    * @returns Response object with deletion status
    */
-  action   deleteClaimClearRequest(data : object)                                                                returns object;
+  action   deleteClaimClearRequest(data : object)                                                                       returns object;
   /**
    * @description Uploads and processes Excel file for mass upload
    * @param data Object containing file, claimCode, ulu, fdlu, period, noOfHeaderRows
    * @returns Excel upload response object
    */
-  action   requestUpload(data : object)                                                                          returns object;
+  action   requestUpload(data : object)                                                                                 returns object;
   /**
    * @description Filters eclaims data based on staff ID and request status
    * @param data Object containing STAFF_ID and REQUEST_STATUS array
    * @returns Filter response object with REQ_ID, CLAIM_TYPE, PERIOD, STATUS, and TASK arrays
    */
-  action   filterData(data : object)                                                                             returns object;
+  action   filterData(data : object)                                                                                    returns object;
 
 
   /******************************************************************** Calculation Views Exposed *********************************************************************************/
@@ -365,13 +382,13 @@ service EclaimsService @(path: '/eclaims') {
 
   @protocol: 'rest'
 
-  action   singleRequest(data : object)                                                                          returns object;
+  action   singleRequest(data : object)                                                                                 returns object;
 
   /**
    * @description Converted single request method from Java implementation
    * @param data Object containing mass upload request data
    * @returns Upload response object with claim data and error status
    */
-  action   convertedSingleRequest(data : object)                                                                 returns object;
+  action   convertedSingleRequest(data : object)                                                                        returns object;
 
 }
