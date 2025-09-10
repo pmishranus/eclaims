@@ -383,6 +383,252 @@ async function softDeleteByDraftId(tx, draftId, modifiedBy, modifiedOn) {
     return result;
 }
 
+/**
+ * Filters request ID and status data
+ * @param {string} staffId - Staff ID or NUSNET ID
+ * @param {Array} statusList - Optional list of status codes to filter by
+ * @returns {Promise<Array>} Array of RequestIdFilterDto objects
+ */
+async function filterQueryRequestIdAndStatus(staffId, statusList = null) {
+    try {
+        let query;
+
+        if (statusList && statusList.length > 0) {
+            // Filter by specific status codes
+            query = SELECT.from("NUSEXT_ECLAIMS_HEADER_DATA")
+                .columns("REQUEST_ID", "REQUEST_STATUS")
+                .where({
+                    and: {
+                        STAFF_ID: staffId.toUpperCase(),
+                        or: { STAFF_NUSNET_ID: staffId.toUpperCase() },
+                        REQUEST_STATUS: { in: statusList },
+                        IS_DELETED: ApplicationConstants.N
+                    }
+                })
+                .groupBy("REQUEST_ID", "REQUEST_STATUS")
+                .orderBy({ REQUEST_ID: "desc" });
+        } else {
+            // Get all statuses
+            query = SELECT.from("NUSEXT_ECLAIMS_HEADER_DATA")
+                .columns("REQUEST_ID", "REQUEST_STATUS")
+                .where({
+                    and: {
+                        STAFF_ID: staffId.toUpperCase(),
+                        or: { STAFF_NUSNET_ID: staffId.toUpperCase() },
+                        IS_DELETED: ApplicationConstants.N
+                    }
+                })
+                .groupBy("REQUEST_ID", "REQUEST_STATUS")
+                .orderBy({ REQUEST_ID: "desc" });
+        }
+
+        const result = await cds.run(query);
+        return result || [];
+
+    } catch (error) {
+        console.error('Error in filterQueryRequestIdAndStatus:', error);
+        return [];
+    }
+}
+
+/**
+ * Filters claim type data
+ * @param {string} staffId - Staff ID or NUSNET ID
+ * @param {Array} statusList - Optional list of status codes to filter by
+ * @returns {Promise<Array>} Array of ClaimFilterDto objects
+ */
+async function filterQueryClaimType(staffId, statusList = null) {
+    try {
+        let query;
+
+        if (statusList && statusList.length > 0) {
+            // Filter by specific status codes
+            query = SELECT.from("NUSEXT_ECLAIMS_HEADER_DATA as ec")
+                .columns("ec.CLAIM_TYPE", "mct.CLAIM_TYPE_T")
+                .join("NUSEXT_MASTER_CLAIM_TYPE as mct").on("ec.CLAIM_TYPE = mct.CLAIM_TYPE_C")
+                .where({
+                    and: {
+                        "ec.STAFF_ID": staffId.toUpperCase(),
+                        or: { "ec.STAFF_NUSNET_ID": staffId.toUpperCase() },
+                        "ec.REQUEST_STATUS": { in: statusList },
+                        "ec.IS_DELETED": ApplicationConstants.N
+                    }
+                })
+                .groupBy("ec.CLAIM_TYPE", "mct.CLAIM_TYPE_T");
+        } else {
+            // Get all claim types
+            query = SELECT.from("NUSEXT_ECLAIMS_HEADER_DATA as ec")
+                .columns("ec.CLAIM_TYPE", "mct.CLAIM_TYPE_T")
+                .join("NUSEXT_MASTER_CLAIM_TYPE as mct").on("ec.CLAIM_TYPE = mct.CLAIM_TYPE_C")
+                .where({
+                    and: {
+                        "ec.STAFF_ID": staffId.toUpperCase(),
+                        or: { "ec.STAFF_NUSNET_ID": staffId.toUpperCase() },
+                        "ec.IS_DELETED": ApplicationConstants.N
+                    }
+                })
+                .groupBy("ec.CLAIM_TYPE", "mct.CLAIM_TYPE_T");
+        }
+
+        const result = await cds.run(query);
+        return result || [];
+
+    } catch (error) {
+        console.error('Error in filterQueryClaimType:', error);
+        return [];
+    }
+}
+
+/**
+ * Filters month and year data
+ * @param {string} staffId - Staff ID or NUSNET ID
+ * @param {Array} statusList - Optional list of status codes to filter by
+ * @returns {Promise<Array>} Array of PeriodFilterDto objects
+ */
+async function filterQueryMonthAndYear(staffId, statusList = null) {
+    try {
+        let query;
+
+        if (statusList && statusList.length > 0) {
+            // Filter by specific status codes
+            query = SELECT.from("NUSEXT_ECLAIMS_HEADER_DATA")
+                .columns("CLAIM_MONTH", "CLAIM_YEAR")
+                .where({
+                    and: {
+                        STAFF_ID: staffId.toUpperCase(),
+                        or: { STAFF_NUSNET_ID: staffId.toUpperCase() },
+                        REQUEST_STATUS: { in: statusList },
+                        IS_DELETED: ApplicationConstants.N
+                    }
+                })
+                .groupBy("CLAIM_MONTH", "CLAIM_YEAR");
+        } else {
+            // Get all periods
+            query = SELECT.from("NUSEXT_ECLAIMS_HEADER_DATA")
+                .columns("CLAIM_MONTH", "CLAIM_YEAR")
+                .where({
+                    and: {
+                        STAFF_ID: staffId.toUpperCase(),
+                        or: { STAFF_NUSNET_ID: staffId.toUpperCase() },
+                        IS_DELETED: ApplicationConstants.N
+                    }
+                })
+                .groupBy("CLAIM_MONTH", "CLAIM_YEAR");
+        }
+
+        const result = await cds.run(query);
+        return result || [];
+
+    } catch (error) {
+        console.error('Error in filterQueryMonthAndYear:', error);
+        return [];
+    }
+}
+
+/**
+ * Filters status data
+ * @param {string} staffId - Staff ID or NUSNET ID
+ * @param {Array} statusList - Optional list of status codes to filter by
+ * @returns {Promise<Array>} Array of StatusFilterDto objects
+ */
+async function filterQueryStatus(staffId, statusList = null) {
+    try {
+        let query;
+
+        if (statusList && statusList.length > 0) {
+            // Filter by specific status codes
+            query = SELECT.from("NUSEXT_ECLAIMS_HEADER_DATA as ec")
+                .columns("ec.REQUEST_STATUS", "sc.STATUS_ALIAS")
+                .join("NUSEXT_UTILITY_STATUS_CONFIG as sc").on("ec.REQUEST_STATUS = sc.STATUS_CODE")
+                .where({
+                    and: {
+                        "ec.STAFF_ID": staffId.toUpperCase(),
+                        or: { "ec.STAFF_NUSNET_ID": staffId.toUpperCase() },
+                        "ec.REQUEST_STATUS": { in: statusList },
+                        "ec.IS_DELETED": ApplicationConstants.N,
+                        "sc.STATUS_TYPE": "ECLAIMS"
+                    }
+                })
+                .groupBy("ec.REQUEST_STATUS", "sc.STATUS_ALIAS");
+        } else {
+            // Get all statuses
+            query = SELECT.from("NUSEXT_ECLAIMS_HEADER_DATA as ec")
+                .columns("ec.REQUEST_STATUS", "sc.STATUS_ALIAS")
+                .join("NUSEXT_UTILITY_STATUS_CONFIG as sc").on("ec.REQUEST_STATUS = sc.STATUS_CODE")
+                .where({
+                    and: {
+                        "ec.STAFF_ID": staffId.toUpperCase(),
+                        or: { "ec.STAFF_NUSNET_ID": staffId.toUpperCase() },
+                        "ec.IS_DELETED": ApplicationConstants.N,
+                        "sc.STATUS_TYPE": "ECLAIMS"
+                    }
+                })
+                .groupBy("ec.REQUEST_STATUS", "sc.STATUS_ALIAS");
+        }
+
+        const result = await cds.run(query);
+        return result || [];
+
+    } catch (error) {
+        console.error('Error in filterQueryStatus:', error);
+        return [];
+    }
+}
+
+/**
+ * Filters task details data
+ * @param {string} staffId - Staff ID or NUSNET ID
+ * @param {Array} statusList - Optional list of status codes to filter by
+ * @returns {Promise<Array>} Array of TaskFilterDto objects
+ */
+async function filterQueryTaskDetails(staffId, statusList = null) {
+    try {
+        let query;
+
+        if (statusList && statusList.length > 0) {
+            // Filter by specific status codes
+            query = SELECT.from("NUSEXT_ECLAIMS_HEADER_DATA as ec")
+                .columns("td.TASK_INST_ID", "td.TASK_NAME", "td.TASK_STATUS")
+                .join("NUSEXT_UTILITY_PROCESS_DETAILS as pd").on("ec.DRAFT_ID = pd.REFERENCE_ID")
+                .join("NUSEXT_UTILITY_TASK_DETAILS as td").on("pd.PROCESS_INST_ID = td.PROCESS_INST_ID")
+                .where({
+                    and: {
+                        "ec.STAFF_ID": staffId.toUpperCase(),
+                        or: { "ec.STAFF_NUSNET_ID": staffId.toUpperCase() },
+                        "ec.REQUEST_STATUS": { in: statusList },
+                        "ec.IS_DELETED": ApplicationConstants.N,
+                        "pd.IS_DELETED": ApplicationConstants.N,
+                        "td.IS_DELETED": ApplicationConstants.N
+                    }
+                })
+                .groupBy("td.TASK_INST_ID", "td.TASK_NAME", "td.TASK_STATUS");
+        } else {
+            // Get all task details
+            query = SELECT.from("NUSEXT_ECLAIMS_HEADER_DATA as ec")
+                .columns("td.TASK_INST_ID", "td.TASK_NAME", "td.TASK_STATUS")
+                .join("NUSEXT_UTILITY_PROCESS_DETAILS as pd").on("ec.DRAFT_ID = pd.REFERENCE_ID")
+                .join("NUSEXT_UTILITY_TASK_DETAILS as td").on("pd.PROCESS_INST_ID = td.PROCESS_INST_ID")
+                .where({
+                    and: {
+                        "ec.STAFF_ID": staffId.toUpperCase(),
+                        or: { "ec.STAFF_NUSNET_ID": staffId.toUpperCase() },
+                        "ec.IS_DELETED": ApplicationConstants.N,
+                        "pd.IS_DELETED": ApplicationConstants.N,
+                        "td.IS_DELETED": ApplicationConstants.N
+                    }
+                })
+                .groupBy("td.TASK_INST_ID", "td.TASK_NAME", "td.TASK_STATUS");
+        }
+
+        const result = await cds.run(query);
+        return result || [];
+
+    } catch (error) {
+        console.error('Error in filterQueryTaskDetails:', error);
+        return [];
+    }
+}
+
 module.exports = {
     fetchByDraftId,
     fetchTbClaimStatusCount,
@@ -402,4 +648,9 @@ module.exports = {
     upsertEclaimsData,
     updateRequestStatusOnTaskCompletion,
     softDeleteByDraftId,
+    filterQueryRequestIdAndStatus,
+    filterQueryClaimType,
+    filterQueryMonthAndYear,
+    filterQueryStatus,
+    filterQueryTaskDetails,
 };
