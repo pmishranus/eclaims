@@ -44,7 +44,19 @@ async function fetchConfigsByKeysAndProcessCodes(CONFIG_KEY, PROCESS_CODES) {
     return configMap;
 }
 
+/**
+ * Fetch configuration value by config key and process code
+ * @param {string} CONFIG_KEY - Configuration key
+ * @param {string} PROCESS_CODE - Process code
+ * @returns {string|null} Configuration value or null
+ */
+async function fetchConfigValue(CONFIG_KEY, PROCESS_CODE) {
+    const config = await fetchByConfigKeyAndProcessCode(CONFIG_KEY, PROCESS_CODE);
+    return config ? config.CONFIG_VALUE : null;
+}
+
 module.exports = {
     fetchByConfigKeyAndProcessCode,
     fetchConfigsByKeysAndProcessCodes,
+    fetchConfigValue,
 };

@@ -20,6 +20,7 @@ const RequestLockService = require("../util/requestLockService");
 const EclaimService = require("../util/eclaimService");
 const UserUtil = require("../util/userUtil");
 const ProcessDetailsService = require("../util/processDetails");
+const emailService = require("../service/emailService");
 
 /**
  * Converted Single Request method from Java implementation
@@ -67,23 +68,23 @@ async function singleRequest(request) {
         let responseDto;
         switch (roleFlow) {
             case ApplicationConstants.ESS:
-                responseDto = await claimantSubmissionFlow(tx, massUploadRequest, loggedInUserDetails);
+                responseDto = await claimantSubmissionFlow(tx, massUploadRequest, loggedInUserDetails, request);
                 break;
             case ApplicationConstants.CA:
-                responseDto = await claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, loggedInUserDetails);
+                responseDto = await claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, loggedInUserDetails, request);
                 break;
             case ApplicationConstants.VERIFIER:
                 responseDto = await verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails, request);
                 break;
             case ApplicationConstants.REPORTING_MGR:
             case ApplicationConstants.APPROVER:
-                responseDto = await approverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails);
+                responseDto = await approverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails, request);
                 break;
             case ApplicationConstants.ADDITIONAL_APP_1:
-                responseDto = await approverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails);
+                responseDto = await additionalApproverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails, request, ApplicationConstants.ADDITIONAL_APP_1);
                 break;
             case ApplicationConstants.ADDITIONAL_APP_2:
-                responseDto = await approverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails);
+                responseDto = await additionalApproverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails, request, ApplicationConstants.ADDITIONAL_APP_2);
                 break;
             default:
                 throw new ApplicationException("No valid Role type provided.");
@@ -172,9 +173,10 @@ function populateStartTimeEndTime(massUploadRequest) {
  * @param {Object} tx - The CDS transaction object
  * @param {Array} massUploadRequest - The mass upload request array
  * @param {Object} loggedInUserDetails - The logged in user details
+ * @param {Object} req - The request object for inbox service calls
  * @returns {Promise<Object>} The response DTO
  */
-async function claimantSubmissionFlow(tx, massUploadRequest, loggedInUserDetails) {
+async function claimantSubmissionFlow(tx, massUploadRequest, loggedInUserDetails, req) {
     console.log("ConvertedSingleRequestController claimantSubmissionFlow start()");
 
     const massUploadResponseDto = {
@@ -191,12 +193,12 @@ async function claimantSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
 
             // Handle withdraw action
             if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_WITHDRAW.toUpperCase()) {
-                return await withdrawClaimSubmission(tx, item, loggedInUserDetails);
+                return await withdrawClaimSubmission(tx, item, loggedInUserDetails, req);
             }
 
             // Handle retract action
             if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_RETRACT.toUpperCase()) {
-                return await retractClaimSubmission(tx, item, ApplicationConstants.ESS, loggedInUserDetails);
+                return await retractClaimSubmission(tx, item, ApplicationConstants.ESS, loggedInUserDetails, req);
             }
 
             // Get saved data if DRAFT_ID exists
@@ -237,6 +239,31 @@ async function claimantSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
             }
 
             massUploadResponseDto.eclaimsData.push(eclaimsDataResDto);
+
+            // Email Acknowledgement sending - Start
+            if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_SUBMIT.toUpperCase() &&
+                eclaimsDataResDto.DRAFT_ID) {
+                try {
+                    // Call local EmailService
+                    const emailResponse = await emailService.sendOnDemandEmails(
+                        eclaimsDataResDto.DRAFT_ID,
+                        eclaimsDataResDto.CLAIM_TYPE,
+                        item.ACTION,
+                        eclaimsDataResDto.REQUESTOR_GRP,
+                        loggedInUserDetails.NUSNET_ID,
+                        null,
+                        item.ROLE,
+                        null,
+                        null,
+                        eclaimsDataResDto.STAFF_ID
+                    );
+                    console.log("Email sent successfully for draft:", eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
+                } catch (exception) {
+                    console.error("Exception in email flow", exception);
+                    // Don't throw error to avoid blocking the main flow
+                }
+            }
+            // Email Acknowledgement sending - End
         }
     } catch (error) {
         console.error("Error in claimantSubmissionFlow:", error);
@@ -253,9 +280,10 @@ async function claimantSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
  * @param {Array} massUploadRequest - The mass upload request array
  * @param {string} roleFlow - The role flow
  * @param {Object} loggedInUserDetails - The logged in user details
+ * @param {Object} req - The request object for inbox service calls
  * @returns {Promise<Object>} The response DTO
  */
-async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, loggedInUserDetails) {
+async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, loggedInUserDetails, req) {
     console.log("ConvertedSingleRequestController claimAssistantSubmissionFlow start()");
 
     const massUploadResponseDto = {
@@ -272,22 +300,22 @@ async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, log
 
             // Handle reject action
             if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_REJECT.toUpperCase()) {
-                return await rejectClaimSubmission(tx, item, roleFlow, loggedInUserDetails);
+                return await rejectClaimSubmission(tx, item, roleFlow, loggedInUserDetails, req);
             }
 
             // Handle check action
             if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_CHECK.toUpperCase()) {
-                return await checkClaimSubmission(tx, item, roleFlow, loggedInUserDetails);
+                return await checkClaimSubmission(tx, item, roleFlow, loggedInUserDetails, req);
             }
 
             // Handle withdraw action
             if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_WITHDRAW.toUpperCase()) {
-                return await withdrawClaimSubmission(tx, item, loggedInUserDetails);
+                return await withdrawClaimSubmission(tx, item, loggedInUserDetails, req);
             }
 
             // Handle retract action
             if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_RETRACT.toUpperCase()) {
-                return await retractClaimSubmission(tx, item, roleFlow, loggedInUserDetails);
+                return await retractClaimSubmission(tx, item, roleFlow, loggedInUserDetails, req);
             }
 
             // Handle save and submit actions
@@ -341,19 +369,32 @@ async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, log
 
                 massUploadResponseDto.eclaimsData.push(eclaimsDataResDto);
 
-                // Email Acknowledgement sending - Start --Pending Implementation
-                // 	if (item.getACTION().equalsIgnoreCase(ApplicationConstants.ACTION_SUBMIT)
-                //         && StringUtils.isNotEmpty(eclaimsDataResDto.getDRAFT_ID())) {
-                //     try {
-                //         emailService.sendOnDemandEmails(eclaimsDataResDto.getDRAFT_ID(),
-                //                 eclaimsDataResDto.getCLAIM_TYPE(), item.getACTION(),
-                //                 eclaimsDataResDto.getREQUESTOR_GRP(),
-                //                 eclaimsJWTTokenUtil.fetchNusNetIdFromToken(token), null, item.getROLE(), null,
-                //                 null, null);
-                //     } catch (Exception exception) {
-                //         logger.error("Exception in email flow", exception);
-                //     }
-                // }
+                // Email Acknowledgement sending - Start
+                if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_SUBMIT.toUpperCase() &&
+                    eclaimsDataResDto.DRAFT_ID) {
+                    try {
+                        // Get task name from role for email
+                        const taskName = await emailService.getTaskNameFromRole(item.ROLE, eclaimsDataResDto.CLAIM_TYPE);
+
+                        // Call local EmailService
+                        const emailResponse = await emailService.sendOnDemandEmails(
+                            eclaimsDataResDto.DRAFT_ID,
+                            eclaimsDataResDto.CLAIM_TYPE,
+                            item.ACTION,
+                            eclaimsDataResDto.REQUESTOR_GRP,
+                            loggedInUserDetails.NUSNET_ID,
+                            null,
+                            item.ROLE,
+                            taskName,
+                            null,
+                            eclaimsDataResDto.STAFF_ID
+                        );
+                        console.log("CA submission email sent successfully for draft:", eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
+                    } catch (exception) {
+                        console.error("Exception in CA email flow", exception);
+                        // Don't throw error to avoid blocking the main flow
+                    }
+                }
                 // Email Acknowledgement sending - End
             }
         }
@@ -408,7 +449,7 @@ async function verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
                 const verifyRequest = [taskApprovalDto];
 
                 // Call Utility InboxService action via external CAP service (CSN)
-                const response = await callUtilityInboxTaskActions(req, verifyRequest,loggedInUserDetails,req);
+                const response = await callUtilityInboxTaskActions(req, verifyRequest, loggedInUserDetails, req);
 
                 // Frame response message
                 if (response && response.length > 0 && response[0]) {
@@ -426,6 +467,34 @@ async function verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
             const updated = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
             const eclaimsDataResDto = { ...updated };
             massUploadResponseDto.eclaimsData.push(eclaimsDataResDto);
+
+            // Email Acknowledgement sending - Start
+            if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_VERIFY.toUpperCase() &&
+                eclaimsDataResDto.DRAFT_ID) {
+                try {
+                    // Get task name from role for email
+                    const taskName = await emailService.getTaskNameFromRole(item.ROLE, eclaimsDataResDto.CLAIM_TYPE);
+
+                    // Call local EmailService
+                    const emailResponse = await emailService.sendOnDemandEmails(
+                        eclaimsDataResDto.DRAFT_ID,
+                        eclaimsDataResDto.CLAIM_TYPE,
+                        item.ACTION,
+                        eclaimsDataResDto.REQUESTOR_GRP,
+                        loggedInUserDetails.NUSNET_ID,
+                        item.REMARKS || null,
+                        item.ROLE,
+                        taskName,
+                        null,
+                        eclaimsDataResDto.STAFF_ID
+                    );
+                    console.log("Verifier email sent successfully for draft:", eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
+                } catch (exception) {
+                    console.error("Exception in verifier email flow", exception);
+                    // Don't throw error to avoid blocking the main flow
+                }
+            }
+            // Email Acknowledgement sending - End
 
             // Initiate lock process details
             let lockRequestorGrp = ApplicationConstants.CLAIM_ASSISTANT;
@@ -453,13 +522,14 @@ async function verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
 }
 
 /**
- * Handles approver submission flow
+ * Handles approver submission flow for REPORTING_MGR and APPROVER roles
  * @param {Object} tx - The CDS transaction object
  * @param {Array} massUploadRequest - The mass upload request array
  * @param {Object} loggedInUserDetails - The logged in user details
+ * @param {Object} req - The request object for inbox service calls
  * @returns {Promise<Object>} The response DTO
  */
-async function approverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails) {
+async function approverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails, req) {
     console.log("ConvertedSingleRequestController approverSubmissionFlow start()");
 
     const massUploadResponseDto = {
@@ -481,23 +551,64 @@ async function approverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
             const fetchRequestLockedByUser = await fetchRequestLockedUser(item.DRAFT_ID);
             await checkIsLocked(loggedInUserDetails, fetchRequestLockedByUser);
 
-            // Handle non-save actions
+            // Handle non-save actions (APPROVE, REJECT)
             if (item.ACTION && item.ACTION.toUpperCase() !== ApplicationConstants.ACTION_SAVE.toUpperCase()) {
-                // Implement remarks data details
+                // Populate remarks data
                 await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
-                // TODO: Implement task approval and inboxService.massTaskAction
+
+                // Build task approval request for APPROVER/REPORTING_MGR actions
+                const taskApprovalDto = await buildApproverTaskApprovalDto(tx, item, loggedInUserDetails);
+                const verifyRequest = [taskApprovalDto];
+
+                // Call Utility InboxService action via external CAP service
+                const response = await callUtilityInboxTaskActions(req, verifyRequest, loggedInUserDetails, req);
+
+                // Frame response message
+                massUploadResponseDto.error = false;
+                if (response && response.length > 0 && response[0]) {
+                    massUploadResponseDto.message = response[0].RESPONSE_MESSAGE || "";
+                    if (response[0].STATUS && response[0].STATUS.toUpperCase() === ApplicationConstants.STATUS_ERROR) {
+                        massUploadResponseDto.error = true;
+                    }
+                }
             } else {
-                // TODO: Implement verifierApproverSaveFlow
+                // SAVE flow for Approver/Reporting Manager
+                await verifierApproverSaveFlow(tx, item, false, loggedInUserDetails);
             }
 
             // Fetch updated claim data
             const updated = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
             const eclaimsDataResDto = { ...updated };
+
+            // Fetch associated item data
+            const savedEclaimsItemData = await EclaimsItemDataRepo.fetchByDraftId(item.DRAFT_ID);
+            const eclaimsItemsRes = [];
+            if (savedEclaimsItemData && savedEclaimsItemData.length > 0) {
+                for (const savedItemsData of savedEclaimsItemData) {
+                    eclaimsItemsRes.push({ ...savedItemsData });
+                }
+            }
+            eclaimsDataResDto.eclaimsItemDataDetails = eclaimsItemsRes;
+
             massUploadResponseDto.eclaimsData.push(eclaimsDataResDto);
 
-            // Initiate lock process details based on status
+            // Determine requestor group from process participants
+            const processParticipants = await ProcessParticipantsRepo.fetchByDraftId(item.DRAFT_ID);
+            let requestorGroup = ApplicationConstants.APPROVER;
+            if (processParticipants && processParticipants.length > 0) {
+                for (const processParticipant of processParticipants) {
+                    if (processParticipant.NUSNET_ID &&
+                        processParticipant.NUSNET_ID.toUpperCase() === loggedInUserDetails.NUSNET_ID.toUpperCase()) {
+                        requestorGroup = processParticipant.USER_DESIGNATION;
+                        break;
+                    }
+                }
+            }
+
+            // Handle lock process details based on status
             if (eclaimsDataResDto.REQUEST_STATUS === ApplicationConstants.STATUS_ECLAIMS_CLAIM_ASSISTANT_REJECT) {
-                await EclaimService.initiateLockProcessDetails(
+                await initiateLockProcessDetails(
+                    tx,
                     eclaimsDataResDto.DRAFT_ID,
                     loggedInUserDetails.NUSNET_ID,
                     ApplicationConstants.CLAIM_ASSISTANT,
@@ -507,6 +618,61 @@ async function approverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
             } else if (eclaimsDataResDto.REQUEST_STATUS === ApplicationConstants.STATUS_ECLAIMS_APPROVED) {
                 // Delete lock details when approved
                 await RequestLockDetailsRepo.deleteByDraftId(eclaimsDataResDto.DRAFT_ID);
+            }
+
+            // Email Acknowledgement sending - Start
+            if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_APPROVE.toUpperCase() &&
+                eclaimsDataResDto.DRAFT_ID) {
+                try {
+                    // Get task name from role for email
+                    const taskName = await emailService.getTaskNameFromRole(item.ROLE, eclaimsDataResDto.CLAIM_TYPE);
+
+                    // Call local EmailService
+                    const emailResponse = await emailService.sendOnDemandEmails(
+                        eclaimsDataResDto.DRAFT_ID,
+                        eclaimsDataResDto.CLAIM_TYPE,
+                        item.ACTION,
+                        eclaimsDataResDto.REQUESTOR_GRP,
+                        loggedInUserDetails.NUSNET_ID,
+                        null,
+                        item.ROLE,
+                        taskName,
+                        null,
+                        eclaimsDataResDto.STAFF_ID
+                    );
+                    console.log("Approval email sent successfully for draft:", eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
+                } catch (exception) {
+                    console.error("Exception in email flow", exception);
+                    // Don't throw error to avoid blocking the main flow
+                }
+            }
+            // Email Acknowledgement sending - End
+
+            // Email for reject action
+            if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_REJECT.toUpperCase() &&
+                eclaimsDataResDto.DRAFT_ID) {
+                try {
+                    // Get task name from role for email
+                    const taskName = await emailService.getTaskNameFromRole(item.ROLE, eclaimsDataResDto.CLAIM_TYPE);
+
+                    // Call local EmailService
+                    const emailResponse = await emailService.sendOnDemandEmails(
+                        eclaimsDataResDto.DRAFT_ID,
+                        eclaimsDataResDto.CLAIM_TYPE,
+                        item.ACTION,
+                        eclaimsDataResDto.REQUESTOR_GRP,
+                        loggedInUserDetails.NUSNET_ID,
+                        item.REMARKS || null,
+                        item.ROLE,
+                        taskName,
+                        null,
+                        eclaimsDataResDto.STAFF_ID
+                    );
+                    console.log("Rejection email sent successfully for draft:", eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
+                } catch (exception) {
+                    console.error("Exception in email flow", exception);
+                    // Don't throw error to avoid blocking the main flow
+                }
             }
         }
     } catch (error) {
@@ -558,9 +724,10 @@ async function checkIsLocked(loggedInUserDetails, fetchRequestLockedByUser) {
  * @param {Object} tx - The CDS transaction object
  * @param {Object} item - The claim item
  * @param {Object} loggedInUserDetails - The logged in user details
+ * @param {Object} req - The request object for inbox service calls
  * @returns {Promise<Object>} The response DTO
  */
-async function withdrawClaimSubmission(tx, item, loggedInUserDetails) {
+async function withdrawClaimSubmission(tx, item, loggedInUserDetails, req) {
     console.log("ConvertedSingleRequestController withdrawClaimSubmission start()");
 
     const massUploadResponseDto = {
@@ -587,20 +754,76 @@ async function withdrawClaimSubmission(tx, item, loggedInUserDetails) {
             throw new ApplicationException("Withdraw is not possible. Claim already in Approved status.");
         }
 
-        // TODO: Implement TaskApprovalDto, taskDetailsRepo, inboxService.massTaskAction
-        // Process Details update flow (stubbed)
+        // Process Details update flow - Start
+        const taskApprovalDto = {
+            DRAFT_ID: item.DRAFT_ID,
+            ROLE: item.ROLE,
+            IS_REMARKS_UPDATE: true,
+            ACTION_CODE: item.ACTION
+        };
+
+        const savedData = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
+        if (savedData) {
+            taskApprovalDto.REQUEST_ID = savedData.REQUEST_ID;
+            taskApprovalDto.PROCESS_CODE = savedData.CLAIM_TYPE;
+        }
+
+        // Fetch task details
+        const taskDetails = await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE);
+        if (taskDetails) {
+            taskApprovalDto.TASK_INST_ID = taskDetails.TASK_INST_ID;
+        }
+
+        const verifyRequest = [taskApprovalDto];
+
+        // Call inbox service for task action
+        try {
+            const response = await callUtilityInboxTaskActions(req, verifyRequest, loggedInUserDetails, req);
+            if (response && response.length > 0 && response[0]) {
+                massUploadResponseDto.message = response[0].RESPONSE_MESSAGE || "Claim Withdrawn successfully.";
+                if (response[0].STATUS && response[0].STATUS.toUpperCase() === ApplicationConstants.STATUS_ERROR) {
+                    massUploadResponseDto.error = true;
+                }
+            }
+        } catch (error) {
+            console.error("Error calling inbox service:", error);
+            // Continue with withdrawal even if inbox service fails
+        }
+        // Process Details update flow - End
 
         // Update claim and item data
         const updated = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
         const eclaimsDataResDto = { ...updated };
 
-        // TODO: Fetch items
-        // const savedEclaimsItemData = await EclaimsItemDataRepo.fetchByDraftId(item.DRAFT_ID);
-        // eclaimsDataResDto.eclaimsItemDataDetails = savedEclaimsItemData || [];
+        // Fetch items
+        const savedEclaimsItemData = await EclaimsItemDataRepo.fetchByDraftId(item.DRAFT_ID);
+        eclaimsDataResDto.eclaimsItemDataDetails = savedEclaimsItemData || [];
 
         massUploadResponseDto.eclaimsData = [eclaimsDataResDto];
         massUploadResponseDto.error = false;
         massUploadResponseDto.message = "Claim Withdrawn successfully.";
+
+        // Email Acknowledgement sending - Start
+        try {
+            // Call local EmailService
+            const emailResponse = await emailService.sendOnDemandEmails(
+                item.DRAFT_ID,
+                eclaimsDataResDto.CLAIM_TYPE,
+                item.ACTION,
+                eclaimsDataResDto.REQUESTOR_GRP,
+                loggedInUserDetails.NUSNET_ID,
+                null,
+                item.ROLE,
+                null,
+                null,
+                eclaimsDataResDto.STAFF_ID
+            );
+            console.log("Withdrawal email sent successfully for draft:", item.DRAFT_ID, "Response:", emailResponse);
+        } catch (exception) {
+            console.error("Exception in email flow", exception);
+            // Don't throw error to avoid blocking the main flow
+        }
+        // Email Acknowledgement sending - End
 
     } catch (error) {
         console.error("Error in withdrawClaimSubmission:", error);
@@ -617,9 +840,10 @@ async function withdrawClaimSubmission(tx, item, loggedInUserDetails) {
  * @param {Object} item - The claim item
  * @param {string} roleFlow - The role flow
  * @param {Object} loggedInUserDetails - The logged in user details
+ * @param {Object} req - The request object for inbox service calls
  * @returns {Promise<Object>} The response DTO
  */
-async function retractClaimSubmission(tx, item, roleFlow, loggedInUserDetails) {
+async function retractClaimSubmission(tx, item, roleFlow, loggedInUserDetails, req) {
     console.log("ConvertedSingleRequestController retractClaimSubmission start()");
 
     const massUploadResponseDto = {
@@ -651,23 +875,123 @@ async function retractClaimSubmission(tx, item, roleFlow, loggedInUserDetails) {
             throw new ApplicationException("Retract is not possible. Claim already in Approved status.");
         }
 
-        // TODO: Role-based restrictions
-        // TODO: Process Details update flow
+        // Role-based restrictions
+        if (roleFlow === ApplicationConstants.ESS) {
+            const claimantRestrictedStatus = [
+                ApplicationConstants.STATUS_ECLAIMS_DRAFT,
+                ApplicationConstants.STATUS_ECLAIMS_CLAIMANT_REJECT,
+                ApplicationConstants.STATUS_ECLAIMS_APPROVED,
+                ApplicationConstants.STATUS_ECLAIMS_TRANSFERRED_TO_PAYROLL_SYSTEM,
+                ApplicationConstants.STATUS_ECLAIMS_POSTED_SUCCESSFULLY
+            ];
+
+            if (claimantRestrictedStatus.includes(eclaimsData.REQUEST_STATUS)) {
+                throw new ApplicationException("Retract is not possible. Claim Request cannot be retracted.");
+            }
+        }
+
+        if (roleFlow === ApplicationConstants.CA) {
+            const caRestrictedStatus = [
+                ApplicationConstants.STATUS_ECLAIMS_DRAFT,
+                ApplicationConstants.STATUS_ECLAIMS_CLAIMANT_SUBMITTED,
+                ApplicationConstants.STATUS_ECLAIMS_CLAIM_ASSISTANT_REJECT,
+                ApplicationConstants.STATUS_ECLAIMS_APPROVED,
+                ApplicationConstants.STATUS_ECLAIMS_TRANSFERRED_TO_PAYROLL_SYSTEM,
+                ApplicationConstants.STATUS_ECLAIMS_POSTED_SUCCESSFULLY
+            ];
+
+            if (caRestrictedStatus.includes(eclaimsData.REQUEST_STATUS)) {
+                throw new ApplicationException("Retract is not possible. Claim Request cannot be retracted.");
+            }
+        }
+
+        // Process Details update flow - Start
+        const taskApprovalDto = {
+            DRAFT_ID: item.DRAFT_ID,
+            ROLE: roleFlow,
+            IS_REMARKS_UPDATE: true,
+            ACTION_CODE: item.ACTION
+        };
+
+        const savedData = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
+        if (savedData) {
+            taskApprovalDto.REQUEST_ID = savedData.REQUEST_ID;
+            taskApprovalDto.PROCESS_CODE = savedData.CLAIM_TYPE;
+        }
+
+        // Fetch task details
+        const taskDetails = await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE);
+        if (taskDetails) {
+            taskApprovalDto.TASK_INST_ID = taskDetails.TASK_INST_ID;
+        }
+
+        const verifyRequest = [taskApprovalDto];
+
+        // Call inbox service for task action
+        try {
+            const response = await callUtilityInboxTaskActions(req, verifyRequest, loggedInUserDetails, req);
+            if (response && response.length > 0 && response[0]) {
+                massUploadResponseDto.message = response[0].RESPONSE_MESSAGE || "Claim Retracted successfully.";
+                if (response[0].STATUS && response[0].STATUS.toUpperCase() === ApplicationConstants.STATUS_ERROR) {
+                    massUploadResponseDto.error = true;
+                }
+            }
+        } catch (error) {
+            console.error("Error calling inbox service:", error);
+            // Continue with retraction even if inbox service fails
+        }
+        // Process Details update flow - End
 
         // Update claim and item data
         const updated = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
         const eclaimsDataResDto = { ...updated };
 
-        // TODO: Fetch items
-        // const savedEclaimsItemData = await EclaimsItemDataRepo.fetchByDraftId(item.DRAFT_ID);
-        // eclaimsDataResDto.eclaimsItemDataDetails = savedEclaimsItemData || [];
+        // Fetch items
+        const savedEclaimsItemData = await EclaimsItemDataRepo.fetchByDraftId(item.DRAFT_ID);
+        eclaimsDataResDto.eclaimsItemDataDetails = savedEclaimsItemData || [];
 
         massUploadResponseDto.eclaimsData = [eclaimsDataResDto];
 
-        // TODO: Persist Lock Details Table
+        // Persist Lock Details Table - Start
+        let lockRequestorGrp = ApplicationConstants.CLAIM_ASSISTANT;
+        if (eclaimsDataResDto.REQUEST_STATUS === ApplicationConstants.STATUS_ECLAIMS_CLAIMANT_RETRACT) {
+            lockRequestorGrp = ApplicationConstants.NUS_CHRS_ECLAIMS_ESS;
+        }
+
+        await initiateLockProcessDetails(
+            tx,
+            eclaimsDataResDto.DRAFT_ID,
+            loggedInUserDetails.NUSNET_ID,
+            lockRequestorGrp,
+            eclaimsDataResDto.CLAIM_TYPE,
+            loggedInUserDetails
+        );
+        // Persist Lock Details Table - End
 
         massUploadResponseDto.error = false;
         massUploadResponseDto.message = "Claim Retracted successfully.";
+
+        // Email Acknowledgement sending - Start
+        try {
+            // Call local EmailService
+            const emailResponse = await emailService.sendOnDemandEmails(
+                item.DRAFT_ID,
+                eclaimsDataResDto.CLAIM_TYPE,
+                item.ACTION,
+                eclaimsDataResDto.REQUESTOR_GRP,
+                loggedInUserDetails.NUSNET_ID,
+                null,
+                roleFlow,
+                null,
+                null,
+                eclaimsDataResDto.STAFF_ID
+            );
+            console.log("Retraction email sent successfully for draft:", item.DRAFT_ID, "Response:", emailResponse);
+        } catch (exception) {
+            console.error("Exception in email flow", exception);
+            // Don't throw error to avoid blocking the main flow
+        }
+        // Email Acknowledgement sending - End
 
     } catch (error) {
         console.error("Error in retractClaimSubmission:", error);
@@ -684,9 +1008,10 @@ async function retractClaimSubmission(tx, item, roleFlow, loggedInUserDetails) {
  * @param {Object} item - The claim item
  * @param {string} roleFlow - The role flow
  * @param {Object} loggedInUserDetails - The logged in user details
+ * @param {Object} req - The request object for inbox service calls
  * @returns {Promise<Object>} The response DTO
  */
-async function rejectClaimSubmission(tx, item, roleFlow, loggedInUserDetails) {
+async function rejectClaimSubmission(tx, item, roleFlow, loggedInUserDetails, req) {
     console.log("ConvertedSingleRequestController rejectClaimSubmission start()");
 
     const massUploadResponseDto = {
@@ -707,17 +1032,106 @@ async function rejectClaimSubmission(tx, item, roleFlow, loggedInUserDetails) {
             throw new ApplicationException("Reject is not possible. Claim already in Approved status.");
         }
 
-        // TODO: Implement reject logic with status updates
-        // TODO: Process Details update flow
-        // TODO: Task approval and inbox service operations
+        // Validation for remarks
+        const validationResult = await EclaimService.validateRejectionData(item, loggedInUserDetails.STF_NUMBER);
+        if (validationResult && validationResult.length > 0) {
+            const eclaimsDataResDto = {
+                validationResults: validationResult,
+                ERROR_STATE: true
+            };
+            massUploadResponseDto.eclaimsData = [eclaimsDataResDto];
+            return massUploadResponseDto;
+        }
+
+        // Populate remarks data
+        await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
+
+        // Process Details update flow - Start
+        const taskApprovalDto = {
+            DRAFT_ID: item.DRAFT_ID,
+            ROLE: item.ROLE,
+            IS_REMARKS_UPDATE: true,
+            ACTION_CODE: item.ACTION
+        };
+
+        const savedData = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
+        if (savedData) {
+            taskApprovalDto.REQUEST_ID = savedData.REQUEST_ID;
+            taskApprovalDto.PROCESS_CODE = savedData.CLAIM_TYPE;
+        }
+
+        // Fetch task details
+        const taskDetails = await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE);
+        if (taskDetails) {
+            taskApprovalDto.TASK_INST_ID = taskDetails.TASK_INST_ID;
+        }
+
+        // Add rejection remarks
+        const rejectionRemarks = await EclaimService.fetchRemarksValue(item, loggedInUserDetails.STF_NUMBER);
+        taskApprovalDto.REJECT_REMARKS = rejectionRemarks;
+
+        const verifyRequest = [taskApprovalDto];
+
+        // Call inbox service for task action
+        try {
+            const response = await callUtilityInboxTaskActions(req, verifyRequest, loggedInUserDetails, req);
+            if (response && response.length > 0 && response[0]) {
+                massUploadResponseDto.message = response[0].RESPONSE_MESSAGE || "Claim Rejected successfully.";
+                if (response[0].STATUS && response[0].STATUS.toUpperCase() === ApplicationConstants.STATUS_ERROR) {
+                    massUploadResponseDto.error = true;
+                }
+            }
+        } catch (error) {
+            console.error("Error calling inbox service:", error);
+            // Continue with rejection even if inbox service fails
+        }
+        // Process Details update flow - End
 
         // Update claim and item data
         const updated = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
         const eclaimsDataResDto = { ...updated };
 
+        // Fetch items
+        const savedEclaimsItemData = await EclaimsItemDataRepo.fetchByDraftId(item.DRAFT_ID);
+        eclaimsDataResDto.eclaimsItemDataDetails = savedEclaimsItemData || [];
+
         massUploadResponseDto.eclaimsData = [eclaimsDataResDto];
+
+        // Persist Lock Details Table - Start
+        await initiateLockProcessDetails(
+            tx,
+            eclaimsDataResDto.DRAFT_ID,
+            loggedInUserDetails.NUSNET_ID,
+            ApplicationConstants.NUS_CHRS_ECLAIMS_ESS,
+            eclaimsDataResDto.CLAIM_TYPE,
+            loggedInUserDetails
+        );
+        // Persist Lock Details Table - End
+
         massUploadResponseDto.error = false;
         massUploadResponseDto.message = "Claim Rejected successfully.";
+
+        // Email Acknowledgement sending - Start
+        try {
+            // Call local EmailService
+            const emailResponse = await emailService.sendOnDemandEmails(
+                item.DRAFT_ID,
+                eclaimsDataResDto.CLAIM_TYPE,
+                item.ACTION,
+                eclaimsDataResDto.REQUESTOR_GRP,
+                loggedInUserDetails.NUSNET_ID,
+                item.REMARKS || null,
+                roleFlow,
+                null,
+                null,
+                eclaimsDataResDto.STAFF_ID
+            );
+            console.log("Rejection email sent successfully for draft:", item.DRAFT_ID, "Response:", emailResponse);
+        } catch (exception) {
+            console.error("Exception in email flow", exception);
+            // Don't throw error to avoid blocking the main flow
+        }
+        // Email Acknowledgement sending - End
 
     } catch (error) {
         console.error("Error in rejectClaimSubmission:", error);
@@ -734,9 +1148,10 @@ async function rejectClaimSubmission(tx, item, roleFlow, loggedInUserDetails) {
  * @param {Object} item - The claim item
  * @param {string} roleFlow - The role flow
  * @param {Object} loggedInUserDetails - The logged in user details
+ * @param {Object} req - The request object for inbox service calls
  * @returns {Promise<Object>} The response DTO
  */
-async function checkClaimSubmission(tx, item, roleFlow, loggedInUserDetails) {
+async function checkClaimSubmission(tx, item, roleFlow, loggedInUserDetails, req) {
     console.log("ConvertedSingleRequestController checkClaimSubmission start()");
 
     const massUploadResponseDto = {
@@ -757,17 +1172,96 @@ async function checkClaimSubmission(tx, item, roleFlow, loggedInUserDetails) {
             throw new ApplicationException("Check is not possible. Claim already in Approved status.");
         }
 
-        // TODO: Implement check logic with status updates
-        // TODO: Process Details update flow
-        // TODO: Task approval and inbox service operations
+        // Process the claim using claimantCASaveSubmit
+        const eclaimsDataResDto = await claimantCASaveSubmit(
+            tx,
+            item,
+            ApplicationConstants.NUS_CHRS_ECLAIMS_ESS,
+            eclaimsData,
+            true,
+            roleFlow,
+            loggedInUserDetails
+        );
 
-        // Update claim and item data
-        const updated = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
-        const eclaimsDataResDto = { ...updated };
+        if (eclaimsDataResDto.ERROR_STATE) {
+            massUploadResponseDto.message = MessageConstants.VALIDATION_RESULT_MESSAGE;
+            massUploadResponseDto.error = true;
+        } else {
+            // Process Details update flow - Start
+            const taskApprovalDto = {
+                DRAFT_ID: item.DRAFT_ID,
+                ROLE: item.ROLE,
+                IS_REMARKS_UPDATE: true,
+                ACTION_CODE: item.ACTION
+            };
+
+            const savedData = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
+            if (savedData) {
+                taskApprovalDto.REQUEST_ID = savedData.REQUEST_ID;
+                taskApprovalDto.PROCESS_CODE = savedData.CLAIM_TYPE;
+            }
+
+            // Fetch task details
+            const taskDetails = await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE);
+            if (taskDetails) {
+                taskApprovalDto.TASK_INST_ID = taskDetails.TASK_INST_ID;
+            }
+
+            const verifyRequest = [taskApprovalDto];
+
+            // Call inbox service for task action
+            try {
+                const response = await callUtilityInboxTaskActions(req, verifyRequest, loggedInUserDetails, req);
+                if (response && response.length > 0 && response[0]) {
+                    massUploadResponseDto.message = response[0].RESPONSE_MESSAGE || "Claim Checked successfully.";
+                    if (response[0].STATUS && response[0].STATUS.toUpperCase() === ApplicationConstants.STATUS_ERROR) {
+                        massUploadResponseDto.error = true;
+                    }
+                }
+            } catch (error) {
+                console.error("Error calling inbox service:", error);
+                // Continue with check even if inbox service fails
+            }
+            // Process Details update flow - End
+
+            // Persist Lock Details Table - Start
+            const lockRequestorGrp = StatusConfigType.fromValue(eclaimsDataResDto.REQUEST_STATUS).getValue();
+            await initiateLockProcessDetails(
+                tx,
+                eclaimsDataResDto.DRAFT_ID,
+                loggedInUserDetails.NUSNET_ID,
+                lockRequestorGrp,
+                eclaimsDataResDto.CLAIM_TYPE,
+                loggedInUserDetails
+            );
+            // Persist Lock Details Table - End
+        }
 
         massUploadResponseDto.eclaimsData = [eclaimsDataResDto];
         massUploadResponseDto.error = false;
         massUploadResponseDto.message = "Claim Checked successfully.";
+
+        // Email Acknowledgement sending - Start
+        try {
+            // Call local EmailService
+            const emailResponse = await emailService.sendOnDemandEmails(
+                item.DRAFT_ID,
+                eclaimsDataResDto.CLAIM_TYPE,
+                item.ACTION,
+                eclaimsDataResDto.REQUESTOR_GRP,
+                loggedInUserDetails.NUSNET_ID,
+                null,
+                roleFlow,
+                null,
+                null,
+                eclaimsDataResDto.STAFF_ID
+            );
+            console.log("Check email sent successfully for draft:", item.DRAFT_ID, "Response:", emailResponse);
+        } catch (exception) {
+            console.error("Exception in email flow", exception);
+            // Don't throw error to avoid blocking the main flow
+        }
+        // Email Acknowledgement sending - End
 
     } catch (error) {
         console.error("Error in checkClaimSubmission:", error);
@@ -1513,6 +2007,256 @@ async function buildTaskApprovalDto(tx, item, loggedInUserDetails) {
 }
 
 /**
+ * Builds TaskApproval DTO specifically for APPROVER and REPORTING_MGR actions
+ * @param {Object} tx - The CDS transaction object
+ * @param {Object} item - The mass upload item
+ * @param {Object} loggedInUserDetails - The logged in user details
+ * @returns {Promise<Object>} Task approval dto for approver actions
+ */
+async function buildApproverTaskApprovalDto(tx, item, loggedInUserDetails) {
+    const taskApprovalDto = {
+        DRAFT_ID: item.DRAFT_ID,
+        ROLE: item.ROLE,
+        IS_REMARKS_UPDATE: true
+    };
+
+    const savedData = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
+    if (savedData) {
+        taskApprovalDto.REQUEST_ID = savedData.REQUEST_ID;
+        taskApprovalDto.PROCESS_CODE = savedData.CLAIM_TYPE;
+    } else if (item.CLAIM_TYPE) {
+        taskApprovalDto.PROCESS_CODE = item.CLAIM_TYPE;
+    }
+
+    // Map approver actions
+    if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_APPROVE.toUpperCase()) {
+        taskApprovalDto.ACTION_CODE = ApplicationConstants.ACTION_APPROVE;
+    } else if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_REJECT.toUpperCase()) {
+        taskApprovalDto.ACTION_CODE = ApplicationConstants.ACTION_REJECT;
+        taskApprovalDto.REJECT_REMARKS = extractRejectionRemarks(item, loggedInUserDetails);
+    }
+
+    // Attach task instance id if active task exists
+    const taskDetails = await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE);
+    if (taskDetails) {
+        taskApprovalDto.TASK_INST_ID = taskDetails.TASK_INST_ID;
+    }
+
+    return taskApprovalDto;
+}
+
+/**
+ * Handles additional approver submission flow for ADDITIONAL_APP_1 and ADDITIONAL_APP_2 roles
+ * @param {Object} tx - The CDS transaction object
+ * @param {Array} massUploadRequest - The mass upload request array
+ * @param {Object} loggedInUserDetails - The logged in user details
+ * @param {Object} req - The request object for inbox service calls
+ * @param {string} approverRole - The specific additional approver role (ADDITIONAL_APP_1 or ADDITIONAL_APP_2)
+ * @returns {Promise<Object>} The response DTO
+ */
+async function additionalApproverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails, req, approverRole) {
+    console.log(`ConvertedSingleRequestController additionalApproverSubmissionFlow start() for role: ${approverRole}`);
+
+    const massUploadResponseDto = {
+        error: false,
+        eclaimsData: []
+    };
+
+    try {
+        for (const item of massUploadRequest) {
+            if (!item) {
+                continue;
+            }
+
+            if (!item.DRAFT_ID) {
+                throw new ApplicationException("Draft Id is blank/empty. Please provide Draft Id.");
+            }
+
+            // Check if request is locked
+            const fetchRequestLockedByUser = await fetchRequestLockedUser(item.DRAFT_ID);
+            await checkIsLocked(loggedInUserDetails, fetchRequestLockedByUser);
+
+            // Handle non-save actions (APPROVE, REJECT)
+            if (item.ACTION && item.ACTION.toUpperCase() !== ApplicationConstants.ACTION_SAVE.toUpperCase()) {
+                // Populate remarks data
+                await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
+
+                // Build task approval request for ADDITIONAL_APP_1/ADDITIONAL_APP_2 actions
+                const taskApprovalDto = await buildAdditionalApproverTaskApprovalDto(tx, item, loggedInUserDetails, approverRole);
+                const verifyRequest = [taskApprovalDto];
+
+                // Call Utility InboxService action via external CAP service
+                const response = await callUtilityInboxTaskActions(req, verifyRequest, loggedInUserDetails, req);
+
+                // Frame response message
+                massUploadResponseDto.error = false;
+                if (response && response.length > 0 && response[0]) {
+                    massUploadResponseDto.message = response[0].RESPONSE_MESSAGE || "";
+                    if (response[0].STATUS && response[0].STATUS.toUpperCase() === ApplicationConstants.STATUS_ERROR) {
+                        massUploadResponseDto.error = true;
+                    }
+                }
+            } else {
+                // SAVE flow for Additional Approver
+                await verifierApproverSaveFlow(tx, item, false, loggedInUserDetails);
+            }
+
+            // Fetch updated claim data
+            const updated = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
+            const eclaimsDataResDto = { ...updated };
+
+            // Fetch associated item data
+            const savedEclaimsItemData = await EclaimsItemDataRepo.fetchByDraftId(item.DRAFT_ID);
+            const eclaimsItemsRes = [];
+            if (savedEclaimsItemData && savedEclaimsItemData.length > 0) {
+                for (const savedItemsData of savedEclaimsItemData) {
+                    eclaimsItemsRes.push({ ...savedItemsData });
+                }
+            }
+            eclaimsDataResDto.eclaimsItemDataDetails = eclaimsItemsRes;
+
+            massUploadResponseDto.eclaimsData.push(eclaimsDataResDto);
+
+            // Determine requestor group from process participants
+            const processParticipants = await ProcessParticipantsRepo.fetchByDraftId(item.DRAFT_ID);
+            let requestorGroup = approverRole; // Use the specific additional approver role
+            if (processParticipants && processParticipants.length > 0) {
+                for (const processParticipant of processParticipants) {
+                    if (processParticipant.NUSNET_ID &&
+                        processParticipant.NUSNET_ID.toUpperCase() === loggedInUserDetails.NUSNET_ID.toUpperCase()) {
+                        requestorGroup = processParticipant.USER_DESIGNATION;
+                        break;
+                    }
+                }
+            }
+
+            // Handle lock process details based on status
+            if (eclaimsDataResDto.REQUEST_STATUS === ApplicationConstants.STATUS_ECLAIMS_CLAIM_ASSISTANT_REJECT) {
+                await initiateLockProcessDetails(
+                    tx,
+                    eclaimsDataResDto.DRAFT_ID,
+                    loggedInUserDetails.NUSNET_ID,
+                    ApplicationConstants.CLAIM_ASSISTANT,
+                    eclaimsDataResDto.CLAIM_TYPE,
+                    loggedInUserDetails
+                );
+            } else if (eclaimsDataResDto.REQUEST_STATUS === ApplicationConstants.STATUS_ECLAIMS_APPROVED) {
+                // Delete lock details when approved
+                await RequestLockDetailsRepo.deleteByDraftId(eclaimsDataResDto.DRAFT_ID);
+            }
+
+            // Email Acknowledgement sending - Start
+            if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_APPROVE.toUpperCase() &&
+                eclaimsDataResDto.DRAFT_ID) {
+                try {
+                    // Get task name from role for email
+                    const taskName = await emailService.getTaskNameFromRole(approverRole, eclaimsDataResDto.CLAIM_TYPE);
+
+                    // Call local EmailService
+                    const emailResponse = await emailService.sendOnDemandEmails(
+                        eclaimsDataResDto.DRAFT_ID,
+                        eclaimsDataResDto.CLAIM_TYPE,
+                        item.ACTION,
+                        eclaimsDataResDto.REQUESTOR_GRP,
+                        loggedInUserDetails.NUSNET_ID,
+                        null,
+                        approverRole,
+                        taskName,
+                        null,
+                        eclaimsDataResDto.STAFF_ID
+                    );
+                    console.log(`${approverRole} approval email sent successfully for draft:`, eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
+                } catch (exception) {
+                    console.error("Exception in email flow", exception);
+                    // Don't throw error to avoid blocking the main flow
+                }
+            }
+
+            // Email for reject action
+            if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_REJECT.toUpperCase() &&
+                eclaimsDataResDto.DRAFT_ID) {
+                try {
+                    // Get task name from role for email
+                    const taskName = await emailService.getTaskNameFromRole(approverRole, eclaimsDataResDto.CLAIM_TYPE);
+
+                    // Call local EmailService
+                    const emailResponse = await emailService.sendOnDemandEmails(
+                        eclaimsDataResDto.DRAFT_ID,
+                        eclaimsDataResDto.CLAIM_TYPE,
+                        item.ACTION,
+                        eclaimsDataResDto.REQUESTOR_GRP,
+                        loggedInUserDetails.NUSNET_ID,
+                        item.REMARKS || null,
+                        approverRole,
+                        taskName,
+                        null,
+                        eclaimsDataResDto.STAFF_ID
+                    );
+                    console.log(`${approverRole} rejection email sent successfully for draft:`, eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
+                } catch (exception) {
+                    console.error("Exception in email flow", exception);
+                    // Don't throw error to avoid blocking the main flow
+                }
+            }
+            // Email Acknowledgement sending - End
+        }
+    } catch (error) {
+        console.error(`Error in additionalApproverSubmissionFlow for ${approverRole}:`, error);
+        throw error;
+    }
+
+    console.log(`ConvertedSingleRequestController additionalApproverSubmissionFlow end() for role: ${approverRole}`);
+    return massUploadResponseDto;
+}
+
+/**
+ * Builds TaskApproval DTO specifically for ADDITIONAL_APP_1 and ADDITIONAL_APP_2 actions
+ * @param {Object} tx - The CDS transaction object
+ * @param {Object} item - The mass upload item
+ * @param {Object} loggedInUserDetails - The logged in user details
+ * @param {string} approverRole - The specific additional approver role
+ * @returns {Promise<Object>} Task approval dto for additional approver actions
+ */
+async function buildAdditionalApproverTaskApprovalDto(tx, item, loggedInUserDetails, approverRole) {
+    const taskApprovalDto = {
+        DRAFT_ID: item.DRAFT_ID,
+        ROLE: item.ROLE || approverRole,
+        IS_REMARKS_UPDATE: true
+    };
+
+    const savedData = await EclaimsHeaderDataRepo.fetchByDraftId(item.DRAFT_ID);
+    if (savedData) {
+        taskApprovalDto.REQUEST_ID = savedData.REQUEST_ID;
+        taskApprovalDto.PROCESS_CODE = savedData.CLAIM_TYPE;
+    } else if (item.CLAIM_TYPE) {
+        taskApprovalDto.PROCESS_CODE = item.CLAIM_TYPE;
+    }
+
+    // Map additional approver actions
+    if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_APPROVE.toUpperCase()) {
+        taskApprovalDto.ACTION_CODE = ApplicationConstants.ACTION_APPROVE;
+    } else if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_REJECT.toUpperCase()) {
+        taskApprovalDto.ACTION_CODE = ApplicationConstants.ACTION_REJECT;
+        taskApprovalDto.REJECT_REMARKS = extractRejectionRemarks(item, loggedInUserDetails);
+    }
+
+    // Attach task instance id if active task exists
+    const taskDetails = await TaskDetailsRepo.fetchActiveTaskByDraftId(item.DRAFT_ID, item.CLAIM_TYPE);
+    if (taskDetails) {
+        taskApprovalDto.TASK_INST_ID = taskDetails.TASK_INST_ID;
+    }
+
+    // Set specific task action based on additional approver role
+    if (approverRole === ApplicationConstants.ADDITIONAL_APP_1) {
+        taskApprovalDto.TASK_ACTION = ApplicationConstants.TASK_ACTION_addapp1;
+    } else if (approverRole === ApplicationConstants.ADDITIONAL_APP_2) {
+        taskApprovalDto.TASK_ACTION = ApplicationConstants.TASK_ACTION_addapp2;
+    }
+
+    return taskApprovalDto;
+}
+
+/**
  * Extracts rejection remarks from item.REMARKS for the logged-in user, or picks the last non-empty remark
  */
 function extractRejectionRemarks(item, loggedInUserDetails) {
@@ -1532,16 +2276,17 @@ function extractRejectionRemarks(item, loggedInUserDetails) {
     return candidate;
 }
 
+
 /**
  * Calls Utility's InboxService.taskactions action via CAP service consumption.
  */
-async function callUtilityInboxTaskActions(req, verifyRequest,loggedInUserDetails,req) {
+async function callUtilityInboxTaskActions(req, verifyRequest, loggedInUserDetails, req) {
     const srv = await cds.connect.to('InboxService');
     const oInboxCallVerifier = {
-        "loggedInUserDetails" : loggedInUserDetails,
-        "requestOfSource" : req,
-        "internalCall" : true,
-        "payload" : verifyRequest
+        "loggedInUserDetails": loggedInUserDetails,
+        "requestOfSource": req,
+        "internalCall": true,
+        "payload": verifyRequest
     }
     const payload = { data: oInboxCallVerifier };
     // Use low-level REST send to avoid requiring a local CSN for the external service
