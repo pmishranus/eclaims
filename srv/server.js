@@ -12,6 +12,34 @@ const express = require("express");
 
 const multer = require("multer");
 
+// Configure multer for file uploads
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB limit
+        files: 1 // Only one file at a time
+    },
+    fileFilter: (req, file, cb) => {
+        // Check file type
+        const allowedMimeTypes = [
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+            'application/vnd.ms-excel', // .xls
+            'application/vnd.ms-excel.sheet.macroEnabled.12', // .xlsm
+            'text/csv' // .csv
+        ];
+
+        if (allowedMimeTypes.includes(file.mimetype) ||
+            file.originalname.toLowerCase().endsWith('.xlsx') ||
+            file.originalname.toLowerCase().endsWith('.xls') ||
+            file.originalname.toLowerCase().endsWith('.csv')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only Excel files (.xlsx, .xls, .csv) are allowed'), false);
+        }
+    }
+});
+
 cds.on("bootstrap", app => {
     app.use(cov2ap()); // Removed deprecated adapter
     xsenv.loadEnv();
@@ -133,6 +161,20 @@ cds.on("bootstrap", app => {
     } catch (error) {
         console.error('❌ Error setting up Swagger UI:', error.message);
     }
+
+    // File upload route for Excel mass upload
+    app.post('/eclaims/requestUpload', upload.single('claimFile'), async (req, res, next) => {
+        try {
+            const requestUploadCtrl = require('./controller/requestUpload.controller');
+            await requestUploadCtrl.handleFileUpload(req, res, next);
+        } catch (error) {
+            console.error('Error in file upload route:', error);
+            res.status(500).json({
+                message: "Internal server error",
+                isError: true
+            });
+        }
+    });
 
     // // Configure Multer for file uploads
     // const upload = multer({ dest: 'uploads/' });

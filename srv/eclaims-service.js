@@ -6,6 +6,7 @@ const submittedEclaimDataCtrl = require("./controller/submittedEclaimData.contro
 const clearRequestsByProcessCodeCtrl = require("./controller/clearRequestsByProcessCode.controller");
 const deleteClaimRequestCtrl = require("./controller/deleteClaimRequest.controller");
 const deleteClaimClearRequestCtrl = require("./controller/deleteClaimClearRequest.controller");
+const requestUploadCtrl = require("./controller/requestUpload.controller");
 const fetchClaimTypesCtrl = require("./controller/fetchClaimTypes.controller");
 const rateTypesCtrl = require("./controller/rateTypes.controller");
 const caStaffCtrl = require("./controller/caStaffLookup.controller");
@@ -93,6 +94,10 @@ class EclaimsService extends cds.ApplicationService {
 
         this.on("deleteClaimClearRequest", async request => {
             return await deleteClaimClearRequestCtrl.deleteClaimClearRequest(request);
+        });
+
+        this.on("requestUpload", async request => {
+            return await requestUploadCtrl.requestUpload(request);
         });
 
         // this.on("singleRequest", async request => {
