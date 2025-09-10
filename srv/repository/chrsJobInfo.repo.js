@@ -9,8 +9,8 @@ module.exports = {
             SELECT.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
                 .where({ NUSNET_ID: upperNusNetId })
                 .or({ STF_NUMBER: upperNusNetId })
-                .where({ START_DATE: { "<=" : "CURRENT_DATE" } })
-                .where({ END_DATE: { ">=" : "CURRENT_DATE" } })
+                .where({ START_DATE: { "<=": "CURRENT_DATE" } })
+                .where({ END_DATE: { ">=": "CURRENT_DATE" } })
         );
         return fetchUserDetails;
     },
@@ -20,8 +20,8 @@ module.exports = {
             SELECT.from("NUSEXT_UTILITY_CHRS_EXTERNAL_USERS")
                 .where({ NUSNET_ID: upperNusNetId })
                 .or({ STF_NUMBER: upperNusNetId })
-                .where({ START_DATE: { "<=" : "CURRENT_DATE" } })
-                .where({ END_DATE: { ">=" : "CURRENT_DATE" } })
+                .where({ START_DATE: { "<=": "CURRENT_DATE" } })
+                .where({ END_DATE: { ">=": "CURRENT_DATE" } })
         );
         return retrieveExternalUserDetails;
     },
@@ -58,8 +58,8 @@ module.exports = {
                 .where({
                     "cj.STF_NUMBER": STF_NUMBER,
                     "cj.SF_STF_NUMBER": STF_NUMBER,
-                    "cj.START_DATE": { "<=" : "CURRENT_DATE" },
-                    "cj.END_DATE": { ">=" : "CURRENT_DATE" }
+                    "cj.START_DATE": { "<=": "CURRENT_DATE" },
+                    "cj.END_DATE": { ">=": "CURRENT_DATE" }
                 })
         );
         return fetchName;
@@ -153,7 +153,7 @@ module.exports = {
         // Using CDS query builder instead of string concatenation
         let retrieveJobInfoDetails = await cds.run(
             SELECT.one.from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
-                .where({ STF_NUMBER: { "=" : { ref: ["SF_STF_NUMBER"] } } })
+                .where({ STF_NUMBER: { "=": { ref: ["SF_STF_NUMBER"] } } })
                 .where({ NUSNET_ID: nusNetId.toUpperCase() })
                 .or({ STF_NUMBER: nusNetId.toUpperCase() })
                 .where({ START_DATE: { "<=": today } })
@@ -333,26 +333,136 @@ ORDER BY
         }
     },
 
-    fetchStaffInfoDetails : async function(nusNetId) {
+    fetchStaffInfoDetails: async function (nusNetId) {
         const currentDate = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
         let query = SELECT.distinct
-                .from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
+            .from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO")
+            .where({
+                START_DATE: {
+                    "<=": currentDate,
+                },
+                END_DATE: {
+                    ">=": currentDate,
+                },
+                and: {
+                    "UPPER(NUSNET_ID)": nusNetId.toUpperCase(),
+                    or: { STF_NUMBER: nusNetId },
+                },
+            })
+            .orderBy('END_DATE desc')
+        let fetchStaffInfoDetails = await cds.run(query);
+
+        return fetchStaffInfoDetails;
+    },
+
+    /**
+     * Claim Assistant Staff Benefit Lookup - mirrors Java claimAssistantStaffBenefitLookup
+     * @param {string} nusNetId - NUSNET ID of the requesting user
+     * @param {string} ulu - Unit Level Unit code
+     * @param {string} fdlu - Faculty Department Level Unit code
+     * @param {Date} startDate - Start date for the lookup
+     * @param {Date} endDate - End date for the lookup
+     * @param {string} searchValue - Optional search value for filtering
+     * @returns {Promise<Array>} Array of staff lookup results
+     */
+    claimAssistantStaffBenefitLookup: async function (nusNetId, ulu, fdlu, startDate, endDate, searchValue = null) {
+        try {
+            // Input validation
+            if (!nusNetId || !ulu || !fdlu || !startDate || !endDate) {
+                throw new Error("Missing required parameters for staff benefit lookup");
+            }
+
+            // Build the base query
+            let query = SELECT
+                .columns(
+                    "cj.SF_STF_NUMBER",
+                    "cj.STF_NUMBER",
+                    "cj.START_DATE",
+                    "cj.END_DATE",
+                    "cj.FIRST_NM",
+                    "cj.LAST_NM",
+                    "cj.FULL_NM",
+                    "cj.NUSNET_ID",
+                    "cj.ULU_C",
+                    "cj.ULU_T",
+                    "cj.FDLU_C",
+                    "cj.FDLU_T",
+                    "cj.EMAIL",
+                    "cj.JOIN_DATE"
+                )
+                .from("NUSEXT_MASTER_DATA_CHRS_JOB_INFO as cj")
                 .where({
-                    START_DATE: {
-                        "<=" : currentDate,
-                    },
-                    END_DATE: {
-                        ">=" : currentDate,
-                    },
                     and: {
-                        "UPPER(NUSNET_ID)": nusNetId.toUpperCase(),
-                        or: { STF_NUMBER: nusNetId },
-                    },
-                })
-                .orderBy('END_DATE desc')
-            let fetchStaffInfoDetails = await cds.run(query);
-        
-            return fetchStaffInfoDetails;
+                        "cj.START_DATE": { "<=": endDate },
+                        "cj.END_DATE": { ">=": startDate },
+                        "cj.ULU_C": ulu,
+                        "cj.FDLU_C": fdlu,
+                        "cj.EMPL_STS_C": "A",
+                        or: {
+                            "UPPER(cj.NUSNET_ID)": { "!=": nusNetId.toUpperCase() }
+                        }
+                    }
+                });
+
+            // Add search conditions if searchValue is provided
+            if (searchValue && searchValue.trim() !== '') {
+                const searchPattern = `%${searchValue.toUpperCase()}%`;
+                query = query.where({
+                    and: [
+                        {
+                            and: {
+                                "cj.START_DATE": { "<=": endDate },
+                                "cj.END_DATE": { ">=": startDate },
+                                "cj.ULU_C": ulu,
+                                "cj.FDLU_C": fdlu,
+                                "cj.EMPL_STS_C": "A",
+                                or: {
+                                    "UPPER(cj.NUSNET_ID)": { "!=": nusNetId.toUpperCase() }
+                                }
+                            }
+                        },
+                        {
+                            or: [
+                                { "cj.STF_NUMBER": { like: `%${searchValue}%` } },
+                                { "UPPER(cj.FULL_NM)": { like: searchPattern } },
+                                { "UPPER(cj.NUSNET_ID)": { like: searchPattern } },
+                                { "cj.ULU_C": { like: `%${searchValue}%` } },
+                                { "cj.FDLU_C": { like: `%${searchValue}%` } },
+                                { "UPPER(cj.ULU_T)": { like: searchPattern } },
+                                { "UPPER(cj.FDLU_T)": { like: searchPattern } }
+                            ]
+                        }
+                    ]
+                });
+            }
+
+            // Add grouping and ordering
+            query = query
+                .groupBy(
+                    "cj.SF_STF_NUMBER",
+                    "cj.STF_NUMBER",
+                    "cj.START_DATE",
+                    "cj.END_DATE",
+                    "cj.FIRST_NM",
+                    "cj.LAST_NM",
+                    "cj.FULL_NM",
+                    "cj.NUSNET_ID",
+                    "cj.ULU_C",
+                    "cj.ULU_T",
+                    "cj.FDLU_C",
+                    "cj.FDLU_T",
+                    "cj.EMAIL",
+                    "cj.JOIN_DATE"
+                )
+                .orderBy("cj.STF_NUMBER DESC");
+
+            const result = await cds.run(query);
+            return result || [];
+
+        } catch (error) {
+            console.error("Error in claimAssistantStaffBenefitLookup:", error);
+            throw new Error(`Database query failed: ${error.message}`);
+        }
     }
-    
+
 };
