@@ -18,10 +18,14 @@ const fetchWBSCtrl = require("./controller/fetchWBS.controller");
 const validateEclaimsCtrl = require("./controller/validateEclaims.controller");
 const fetchUluFdluCtrl = require("./controller/fetchUluFdlu.controller");
 const ecpWbsValidateCtrl = require("./controller/ecpWbsValidateCtrl.controller");
+const sendRejectionEmailCtrl = require("./controller/sendRejectionEmail.controller");
+const sendPendingEmailNotificationCtrl = require("./controller/sendPendingEmailNotification.controller");
 // const singleRequestCtrl = require("./controller/singleRequest.controller");
 
 class EclaimsService extends cds.ApplicationService {
     init() {
+
+
         this.on("userInfo", req => {
             let results = {};
             results.user = req.user.id;
@@ -144,6 +148,32 @@ class EclaimsService extends cds.ApplicationService {
                 return await ecpWbsValidateCtrl.ecpWbsValidate(request);
             } catch (err) {
                 return { error: true, message: err.message || "Failed to fetch WBS info" };
+            }
+        });
+
+        this.on("sendRejectionEmail", async request => {
+            try {
+                return await sendRejectionEmailCtrl.sendRejectionEmail(request);
+            } catch (err) {
+                return {
+                    status: "ERROR",
+                    message: "Mail sending FAILURE: " + (err.message || "An unexpected error occurred"),
+                    templateId: null,
+                    error: true
+                };
+            }
+        });
+
+        this.on("sendPendingEmailNotification", async request => {
+            try {
+                return await sendPendingEmailNotificationCtrl.sendPendingEmailNotification(request);
+            } catch (err) {
+                return [{
+                    status: "ERROR",
+                    message: "Mail sending FAILURE: " + (err.message || "An unexpected error occurred"),
+                    templateId: null,
+                    error: true
+                }];
             }
         });
 
