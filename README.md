@@ -21,3 +21,8 @@ It contains these folders and files, following our recommended project layout:
 ## Learn More
 
 Learn more at https://cap.cloud.sap/docs/get-started/.
+
+ "mocha-init": "npm install chai-as-promised@^7.1.2 chai-http@^4.4.0 chai-subset@^1.6.0 jest@^29.7.0 chai@^4.4.1 express-mock-server@^3.4.3 mocha@^10.4.0 --no-save",
+    "test": "npm run mocha-init && mocha unit-test/**/*.test.js unit-test/*.test.js --timeout 240000 --exit --quiet",
+    "testeclaims": "npm run mocha-init && mocha unit-test/eclaims.test.js --timeout 240000 --exit --quiet",
+        "build": "mbt build -s .",

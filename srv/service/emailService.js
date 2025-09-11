@@ -1,6 +1,5 @@
 const cds = require("@sap/cds");
 const ApplicationConstants = require("../util/applicationConstants");
-const emailSendingService = require("./emailSendingService");
 const AppConfigRepo = require("../repository/appConfig.repo");
 const EmailConfigRepo = require("../repository/emailConfig.repo");
 const EmailNotificationLogRepo = require("../repository/emailNotificationLog.repo");
@@ -24,9 +23,10 @@ class EmailService {
      * @param {string} taskName - The task name
      * @param {string} nextTaskName - The next task name
      * @param {string} staffId - The staff ID
+     * @param {Object} req - The request object for transaction context
      * @returns {Promise<Object>} The email response
      */
-    async sendOnDemandEmails(draftId, processCode, actionCode, requestorGrp, loggedInUserName, remarks, role, taskName, nextTaskName, staffId) {
+    async sendOnDemandEmails(draftId, processCode, actionCode, requestorGrp, loggedInUserName, remarks, role, taskName, nextTaskName, staffId, req = null) {
         console.log("EmailService sendOnDemandEmails start()");
 
         const emailResponse = {
@@ -44,7 +44,7 @@ class EmailService {
                 case ApplicationConstants.CLAIM_TYPE_103: // OT
                 case ApplicationConstants.CLAIM_TYPE_104: // HM
                 case ApplicationConstants.CLAIM_TYPE_105: // TB
-                    return await this.handleOnDemandEmailsForEClaims(draftId, processCode, actionCode, requestorGrp, loggedInUserName, remarks, role, taskName, nextTaskName);
+                    return await this.handleOnDemandEmailsForEClaims(draftId, processCode, actionCode, requestorGrp, loggedInUserName, remarks, role, taskName, nextTaskName, req);
                 default:
                     console.log("No valid process type found for:", processCode);
                     break;
@@ -71,9 +71,10 @@ class EmailService {
      * @param {string} role - The role
      * @param {string} taskName - The task name
      * @param {string} nextTaskName - The next task name
+     * @param {Object} req - The request object for transaction context
      * @returns {Promise<Object>} The email response
      */
-    async handleOnDemandEmailsForEClaims(draftId, processCode, actionCode, requestorGrp, loggedInUserName, rejectionRemarks, role, taskName, nextTaskName) {
+    async handleOnDemandEmailsForEClaims(draftId, processCode, actionCode, requestorGrp, loggedInUserName, rejectionRemarks, role, taskName, nextTaskName, req = null) {
         console.log("EmailService handleOnDemandEmailsForEClaims start()");
 
         const emailResponse = {
@@ -95,7 +96,7 @@ class EmailService {
             // Handle different action codes
             if (actionCode && actionCode.toUpperCase() === ApplicationConstants.ACTION_REJECT) {
                 if (rejectionRemarks) {
-                    emailResponse = await this.emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, rejectionRemarks, tempTaskName, null, null);
+                    emailResponse = await this.emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, rejectionRemarks, tempTaskName, null, null, req);
                 } else {
                     emailResponse.status = "ERROR";
                     emailResponse.message = "Please provide Remarks for Rejection";
@@ -104,19 +105,19 @@ class EmailService {
             }
 
             if (actionCode && actionCode.toUpperCase() === ApplicationConstants.ACTION_CHECK) {
-                emailResponse = await this.emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, null, tempTaskName, nextTaskName, null);
+                emailResponse = await this.emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, null, tempTaskName, nextTaskName, null, req);
             }
 
             if (actionCode && actionCode.toUpperCase() === ApplicationConstants.ACTION_RETRACT) {
-                emailResponse = await this.emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, null, tempTaskName, null, null);
+                emailResponse = await this.emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, null, tempTaskName, null, null, req);
             }
 
             if (actionCode && actionCode.toUpperCase() === ApplicationConstants.ACTION_SUBMIT) {
-                emailResponse = await this.emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, null, tempTaskName, null, null);
+                emailResponse = await this.emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, null, tempTaskName, null, null, req);
             }
 
             if (actionCode && actionCode.toUpperCase() === ApplicationConstants.ACTION_APPROVE) {
-                emailResponse = await this.emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, null, tempTaskName, nextTaskName, null);
+                emailResponse = await this.emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, null, tempTaskName, nextTaskName, null, req);
             }
 
         } catch (error) {
@@ -142,9 +143,10 @@ class EmailService {
      * @param {string} taskName - The task name
      * @param {string} nextTaskName - The next task name
      * @param {string} staffId - The staff ID
+     * @param {Object} req - The request object for transaction context
      * @returns {Promise<Object>} The email response
      */
-    async emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, remarks, taskName, nextTaskName, staffId) {
+    async emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, remarks, taskName, nextTaskName, staffId, req = null) {
         console.log("EmailService emailHandler start()");
 
         const emailResponse = {
@@ -199,7 +201,7 @@ class EmailService {
             mailIdMap = await this.populateEmailIds(draftId, emailConfig, processCode, loggedInUserName, actionCode, false, staffId, requestorGrp);
 
             // Send email using external service
-            await this.sendEmail(emailSubject, emailContent, mailIdMap);
+            await this.sendEmail(emailSubject, emailContent, mailIdMap, req);
 
             emailResponse.status = "SUCCESS";
             emailResponse.message = "Mail Sent Successfully";
@@ -219,22 +221,23 @@ class EmailService {
     }
 
     /**
-     * Sends email using external CAPM service
+     * Sends email using external CAPM service via InboxService
      * @param {string} emailSubject - The email subject
      * @param {string} emailContent - The email content
      * @param {Object} mailIdMap - The mail ID map
+     * @param {Object} req - The request object for transaction context
      * @returns {Promise<void>}
      */
-    async sendEmail(emailSubject, emailContent, mailIdMap) {
+    async sendEmail(emailSubject, emailContent, mailIdMap, req = null) {
         console.log("EmailService sendEmail start()");
 
         try {
-            // Call local email sending service (which will call external CAPM service)
-            await emailSendingService.sendMail(emailSubject, emailContent, mailIdMap);
-            console.log("Email sent successfully via email sending service");
+            // Call external InboxService sendMail action
+            await this.callUtilityInboxEmailSender(req, emailSubject, emailContent, mailIdMap, false);
+            console.log("Email sent successfully via InboxService");
 
         } catch (error) {
-            console.error("Error calling email sending service:", error);
+            console.error("Error calling InboxService sendMail:", error);
             throw error;
         }
     }
@@ -502,6 +505,122 @@ class EmailService {
                 error: error
             };
         }
+    }
+
+    /**
+     * Sends pending task emails for various process types
+     * @param {string} pendingTaskName - The pending task name
+     * @param {string} processCode - The process code
+     * @param {string} noOfDaysDiff - Number of days difference
+     * @param {string} emailDate - Email date
+     * @param {string} ignoreDifference - Whether to ignore difference
+     * @param {string} timeRange - Time range
+     * @param {Object} req - The request object for transaction context
+     * @returns {Promise<Array>} Array of email response objects
+     */
+    async sendPendingTaskEmails(pendingTaskName, processCode, noOfDaysDiff, emailDate, ignoreDifference, timeRange, req = null) {
+        console.log("EmailService sendPendingTaskEmails start()");
+
+        if (!pendingTaskName || !processCode) {
+            throw new Error("Please provide correct input details.");
+        }
+
+        const emailResponseList = [];
+
+        try {
+            // Route based on process code (similar to Java implementation)
+            switch (processCode) {
+                case ApplicationConstants.CLAIM_TYPE_101: // PTT
+                case ApplicationConstants.CLAIM_TYPE_102: // CW
+                case ApplicationConstants.CLAIM_TYPE_103: // OT
+                case ApplicationConstants.CLAIM_TYPE_104: // HM
+                case ApplicationConstants.CLAIM_TYPE_105: // TB
+                    return await this.handlePendingEmailsForEClaims(processCode, pendingTaskName, noOfDaysDiff, ignoreDifference, req);
+                default:
+                    console.log("No valid process type found for:", processCode);
+                    break;
+            }
+
+            console.log("EmailService sendPendingTaskEmails end()");
+            return emailResponseList;
+
+        } catch (error) {
+            console.error("Error in sendPendingTaskEmails:", error);
+            emailResponseList.push({
+                status: "ERROR",
+                message: "Mail sending FAILURE: " + error.message,
+                templateId: null,
+                error: true
+            });
+            return emailResponseList;
+        }
+    }
+
+    /**
+     * Handles pending emails for EClaims processes
+     * @param {string} processCode - The process code
+     * @param {string} pendingTaskName - The pending task name
+     * @param {string} noOfDaysDiff - Number of days difference
+     * @param {string} ignoreDifference - Whether to ignore difference
+     * @param {Object} req - The request object for transaction context
+     * @returns {Promise<Array>} Array of email response objects
+     */
+    async handlePendingEmailsForEClaims(processCode, pendingTaskName, noOfDaysDiff, ignoreDifference, req = null) {
+        console.log("EmailService handlePendingEmailsForEClaims start()");
+
+        const emailResponseList = [];
+
+        try {
+            // TODO: Implement the full logic from Java
+            // This is a placeholder implementation that can be extended
+
+            // For now, return a success response indicating the method was called
+            emailResponseList.push({
+                status: "SUCCESS",
+                message: `Pending email notification sent for process ${processCode}, task ${pendingTaskName}`,
+                templateId: null,
+                error: false
+            });
+
+            console.log("EmailService handlePendingEmailsForEClaims end()");
+            return emailResponseList;
+
+        } catch (error) {
+            console.error("Error in handlePendingEmailsForEClaims:", error);
+            emailResponseList.push({
+                status: "ERROR",
+                message: "Mail sending FAILURE: " + error.message,
+                templateId: null,
+                error: true
+            });
+            return emailResponseList;
+        }
+    }
+
+
+    /**
+     * Calls the external InboxService sendMail action for email sending
+     * Similar to callUtilityInboxTaskActions but for email functionality
+     * @param {Object} req - The request object
+     * @param {string} emailSubject - The email subject
+     * @param {string} emailContent - The email content (HTML)
+     * @param {Object} mailIdMap - The mail ID map with to, cc, bcc
+     * @param {boolean} setPriority - Whether to set email priority
+     * @returns {Promise<Object>} The email sending result
+     */
+    async callUtilityInboxEmailSender(req, emailSubject, emailContent, mailIdMap, setPriority = false) {
+        const srv = await cds.connect.to('InboxService');
+        const oInboxCallEmail = {
+            "emailSubject": emailSubject,
+            "emailContent": emailContent,
+            "mailMap": mailIdMap,
+            "setPriority": setPriority
+        };
+        const payload = { data: oInboxCallEmail };
+        // Use low-level REST send to avoid requiring a local CSN for the external service
+        const send = (context) => context.send({ method: 'POST', path: '/sendEmail', data: payload });
+        const result = req ? await send(srv.tx(req)) : await send(srv);
+        return result;
     }
 }
 

@@ -255,7 +255,8 @@ async function claimantSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
                         item.ROLE,
                         null,
                         null,
-                        eclaimsDataResDto.STAFF_ID
+                        eclaimsDataResDto.STAFF_ID,
+                        req
                     );
                     console.log("Email sent successfully for draft:", eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
                 } catch (exception) {
@@ -486,7 +487,8 @@ async function verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
                         item.ROLE,
                         taskName,
                         null,
-                        eclaimsDataResDto.STAFF_ID
+                        eclaimsDataResDto.STAFF_ID,
+                        req
                     );
                     console.log("Verifier email sent successfully for draft:", eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
                 } catch (exception) {
@@ -638,7 +640,8 @@ async function approverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
                         item.ROLE,
                         taskName,
                         null,
-                        eclaimsDataResDto.STAFF_ID
+                        eclaimsDataResDto.STAFF_ID,
+                        req
                     );
                     console.log("Approval email sent successfully for draft:", eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
                 } catch (exception) {
@@ -666,7 +669,8 @@ async function approverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
                         item.ROLE,
                         taskName,
                         null,
-                        eclaimsDataResDto.STAFF_ID
+                        eclaimsDataResDto.STAFF_ID,
+                        req
                     );
                     console.log("Rejection email sent successfully for draft:", eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
                 } catch (exception) {
@@ -2163,7 +2167,8 @@ async function additionalApproverSubmissionFlow(tx, massUploadRequest, loggedInU
                         approverRole,
                         taskName,
                         null,
-                        eclaimsDataResDto.STAFF_ID
+                        eclaimsDataResDto.STAFF_ID,
+                        req
                     );
                     console.log(`${approverRole} approval email sent successfully for draft:`, eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
                 } catch (exception) {
@@ -2190,7 +2195,8 @@ async function additionalApproverSubmissionFlow(tx, massUploadRequest, loggedInU
                         approverRole,
                         taskName,
                         null,
-                        eclaimsDataResDto.STAFF_ID
+                        eclaimsDataResDto.STAFF_ID,
+                        req
                     );
                     console.log(`${approverRole} rejection email sent successfully for draft:`, eclaimsDataResDto.DRAFT_ID, "Response:", emailResponse);
                 } catch (exception) {
@@ -2290,11 +2296,12 @@ async function callUtilityInboxTaskActions(req, verifyRequest, loggedInUserDetai
     }
     const payload = { data: oInboxCallVerifier };
     // Use low-level REST send to avoid requiring a local CSN for the external service
-    return;
+    // return;
     const send = (context) => context.send({ method: 'POST', path: '/taskactions', data: payload });
     const result = req ? await send(srv.tx(req)) : await send(srv);
     return Array.isArray(result) ? result : [result];
 }
+
 
 /**
  * SAVE flow for Verifier/Approver: persists remarks and process participants.
