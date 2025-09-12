@@ -129,8 +129,8 @@ module.exports = {
      * @param {string} userId - The logged-in user ID from XSUAA (optional, defaults to 'SYSTEM')
      * @returns {Promise<Object>} The upsert result.
      * 
-     * For new records: Sets createdOn, createdBy, modifiedOn, modifiedBy, and generates CUID if needed
-     * For updates: Only sets modifiedOn, modifiedBy (preserves original createdOn, createdBy)
+     * For new records: Sets createdAt, createdBy, modifiedAt, modifiedBy, and generates CUID if needed
+     * For updates: Only sets modifiedAt, modifiedBy (preserves original createdAt, createdBy)
      */
     upsertOperationChained: async function (tx, entityName, record, isNewRecord = false, userId = 'SYSTEM') {
         // Prepare the record with CUID and managed fields
@@ -148,28 +148,28 @@ module.exports = {
         // Handle managed fields based on whether it's a new record or update
         if (isNewRecord) {
             // For new records, set all managed fields using the logged-in user
-            if (!processedRecord.createdOn) {
-                processedRecord.createdOn = now;
+            if (!processedRecord.createdAt) {
+                processedRecord.createdAt = now;
             }
             if (!processedRecord.createdBy) {
                 processedRecord.createdBy = userId;
             }
-            if (!processedRecord.modifiedOn) {
-                processedRecord.modifiedOn = now;
+            if (!processedRecord.modifiedAt) {
+                processedRecord.modifiedAt = now;
             }
             if (!processedRecord.modifiedBy) {
                 processedRecord.modifiedBy = userId;
             }
         } else {
             // For updates, only set modified fields (don't touch created fields)
-            if (!processedRecord.modifiedOn) {
-                processedRecord.modifiedOn = now;
+            if (!processedRecord.modifiedAt) {
+                processedRecord.modifiedAt = now;
             }
             if (!processedRecord.modifiedBy) {
                 processedRecord.modifiedBy = userId;
             }
             // Remove created fields from update to avoid overwriting them
-            delete processedRecord.createdOn;
+            delete processedRecord.createdAt;
             delete processedRecord.createdBy;
         }
 
