@@ -440,7 +440,7 @@ async function verifierSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
             // Handle non-save actions
             if (item.ACTION && item.ACTION.toUpperCase() !== ApplicationConstants.ACTION_SAVE.toUpperCase()) {
                 // Persist remarks
-                await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
+                await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID, loggedInUserDetails.STF_NUMBER);
 
                 // Persist process participants (Verifier/Additional Approvers)
                 await populateProcessParticipantDetails(tx, item, loggedInUserDetails);
@@ -556,7 +556,7 @@ async function approverSubmissionFlow(tx, massUploadRequest, loggedInUserDetails
             // Handle non-save actions (APPROVE, REJECT)
             if (item.ACTION && item.ACTION.toUpperCase() !== ApplicationConstants.ACTION_SAVE.toUpperCase()) {
                 // Populate remarks data
-                await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
+                await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID, loggedInUserDetails.STF_NUMBER);
 
                 // Build task approval request for APPROVER/REPORTING_MGR actions
                 const taskApprovalDto = await buildApproverTaskApprovalDto(tx, item, loggedInUserDetails);
@@ -1048,7 +1048,7 @@ async function rejectClaimSubmission(tx, item, roleFlow, loggedInUserDetails, re
         }
 
         // Populate remarks data
-        await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
+        await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID, loggedInUserDetails.STF_NUMBER);
 
         // Process Details update flow - Start
         const taskApprovalDto = {
@@ -1281,9 +1281,10 @@ async function checkClaimSubmission(tx, item, roleFlow, loggedInUserDetails, req
  * @param {Object} tx - The CDS transaction object
  * @param {Array} claimInnerRequestDto - The remarks data array.
  * @param {string} draftId - The draft ID.
+ * @param {string} userId - The logged-in user ID (optional, defaults to 'SYSTEM')
  * @returns {Promise<void>}
  */
-async function populateRemarksDataDetails(tx, claimInnerRequestDto, draftId) {
+async function populateRemarksDataDetails(tx, claimInnerRequestDto, draftId, userId = 'SYSTEM') {
     if (
         claimInnerRequestDto &&
         Array.isArray(claimInnerRequestDto) &&
@@ -1325,7 +1326,9 @@ async function populateRemarksDataDetails(tx, claimInnerRequestDto, draftId) {
                 await CommonRepo.upsertOperationChained(
                     tx,
                     "NUSEXT_UTILITY_REMARKS_DATA",
-                    inputData
+                    inputData,
+                    false, // This is typically an update, not a new record
+                    userId
                 );
             }
         }
@@ -1607,10 +1610,14 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     }
 
     // Save eclaims data using transaction
+    // Determine if this is a new record (no savedData means it's new)
+    const isNewRecord = !savedData;
     await CommonRepo.upsertOperationChained(
         tx,
         "NUSEXT_ECLAIMS_HEADER_DATA",
-        eclaimsData
+        eclaimsData,
+        isNewRecord,
+        loggedInUserDetails.STF_NUMBER
     );
 
     // Handle selected claim dates
@@ -1653,7 +1660,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     }
 
     // Populate remarks data
-    await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
+    await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID, loggedInUserDetails.STF_NUMBER);
 
     // Handle process details and task details
     try {
@@ -1680,8 +1687,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
 
             verifyRequest.push(taskApprovalDto);
 
-            // TODO: Call inbox service API when it's available
-            // const response = await inboxService.massTaskAction(verifyRequest, token, null, item.ACTION);
+            const response = await callUtilityInboxTaskActions(req, verifyRequest, loggedInUserDetails, req);
             console.log("Task approval request prepared for inbox service:", verifyRequest);
         }
 
@@ -1811,7 +1817,9 @@ async function persistEclaimsItemData(tx, draftNumber, itemCount, selectedClaimD
     await CommonRepo.upsertOperationChained(
         tx,
         "NUSEXT_ECLAIMS_ITEMS_DATA",
-        eclaimsItemData
+        eclaimsItemData,
+        false, // This is typically an update, not a new record
+        loggedInUserDetails.STF_NUMBER
     );
 
     console.log("ConvertedSingleRequestController persistEclaimsItemData end()");
@@ -1918,7 +1926,9 @@ async function persistProcessParticipantDetails(tx, claimInnerRequestDto, item, 
     await CommonRepo.upsertOperationChained(
         tx,
         "NUSEXT_UTILITY_PROCESS_PARTICIPANTS",
-        processParticipantData
+        processParticipantData,
+        false, // This is typically an update, not a new record
+        loggedInUserDetails.STF_NUMBER
     );
     return processParticipantData;
 }
@@ -2083,7 +2093,7 @@ async function additionalApproverSubmissionFlow(tx, massUploadRequest, loggedInU
             // Handle non-save actions (APPROVE, REJECT)
             if (item.ACTION && item.ACTION.toUpperCase() !== ApplicationConstants.ACTION_SAVE.toUpperCase()) {
                 // Populate remarks data
-                await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
+                await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID, loggedInUserDetails.STF_NUMBER);
 
                 // Build task approval request for ADDITIONAL_APP_1/ADDITIONAL_APP_2 actions
                 const taskApprovalDto = await buildAdditionalApproverTaskApprovalDto(tx, item, loggedInUserDetails, approverRole);
@@ -2313,7 +2323,7 @@ async function verifierApproverSaveFlow(tx, item, isProcessParticipantUpdate, lo
     }
     if (item.DRAFT_ID && String(item.DRAFT_ID).trim() !== "") {
         // Persist remarks
-        await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID);
+        await populateRemarksDataDetails(tx, item.REMARKS, item.DRAFT_ID, loggedInUserDetails.STF_NUMBER);
         // Persist process participants when requested
         if (isProcessParticipantUpdate) {
             await populateProcessParticipantDetails(tx, item, loggedInUserDetails);

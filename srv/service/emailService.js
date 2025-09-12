@@ -1,5 +1,5 @@
 const cds = require("@sap/cds");
-const ApplicationConstants = require("../util/applicationConstants");
+const ApplicationConstants = require("../util/constants");
 const AppConfigRepo = require("../repository/appConfig.repo");
 const EmailConfigRepo = require("../repository/emailConfig.repo");
 const EmailNotificationLogRepo = require("../repository/emailNotificationLog.repo");
