@@ -1,0 +1,34 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Build Try
+
+on:
+  push:
+    branches: [ "Development" ,"Quality", "Development_Live", "Quality_Live" ]
+  pull_request:
+    branches: [ "Development" ,"Quality", "Development_Live", "Quality_Live" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'  # Directly set Node.js version to 20.x
+          cache: 'npm'
+
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install MBT
+        run: npm install mbt
+
+      - name: Build Project on Node.js 20.x
+        run: npm run build --if-present && echo "✅ Completed"

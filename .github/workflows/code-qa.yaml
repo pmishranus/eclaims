@@ -1,0 +1,48 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Code Quality
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'  # Directly set Node.js version to 20.x
+          cache: 'npm'
+          
+      - name: es-linting-npm
+        run: npm install && npm install "@sap/cds-dk" && npm install  "@sap/eslint-plugin-cds"@3.1.2
+
+      - name: es-lint
+        run: npm run lint
+
+      - name: Check JS File Line Limits
+        run: |
+          # Find all .js files and check their line count
+          max_lines=5000
+          error=0
+          for file in $(find . -name "*.js" -not -path "./node_modules/*"); do
+            line_count=$(wc -l < "$file")
+            if [ "$line_count" -gt "$max_lines" ]; then
+              echo "❌ $file has $line_count lines, which exceeds the limit of $max_lines lines."
+              error=1
+            else
+              echo "✅ $file has $line_count lines, which is within the limit."
+            fi
+          done
+          if [ "$error" -eq 1 ]; then
+            exit 1
+          fi

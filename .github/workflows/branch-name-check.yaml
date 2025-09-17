@@ -1,0 +1,19 @@
+name: Check Branch Name
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  branch_name_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name
+        run: |
+          BRANCH_NAME=$(echo "${{ github.head_ref }}")
+          echo "Checking branch name: $BRANCH_NAME"
+          if [[ ! $BRANCH_NAME =~ ^(feature|bugfix|hotfix|feat)/ ]]; then
+            echo "Branch name does not match the required pattern (feature/*, bugfix/*, hotfix/*, feat/* )."
+            exit 1
+          echo "✅ Completed"
+          fi
