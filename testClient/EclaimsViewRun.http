@@ -93,9 +93,7 @@ Content-Type: application/json
 Authorization: Bearer {{access_token}}
 X-User-Id: {{userId}}
 
-{
-	"data" : {"PROCESS_CODE":"104","CLAIM_MONTH":"05-2025","STAFF_ID":"151401","ULU":"0231054600","FDLU":"0005690002"}
-}
+{"data":{"PROCESS_CODE":"101","CLAIM_MONTH":"08-2025","STAFF_ID":"151397","ULU":"0231054600","FDLU":"0005690002"}}
 
 ### Request-2 Get eclaims header data
 #==================================================================#

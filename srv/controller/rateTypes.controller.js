@@ -66,13 +66,13 @@ async function fetchRateTypes(request) {
                     if (!responseMap[item.RATE_CODE]) {
                         // Clone non-child fields
                         const updatedResponseItem = {
+                            items: [],
+                            wage_CODE: item.WAGE_CODE,
+                            RATE_TYPE_C: item.RATE_TYPE_C,
                             RATE_CODE: item.RATE_CODE,
                             RATE_DESC: item.RATE_DESC,
-                            RATE_TYPE_C: item.RATE_TYPE_C,
                             MAX_LIMIT: item.MAX_LIMIT,
                             WAGE_CODE: item.WAGE_CODE,
-                            WORKING_HOURS: item.WORKING_HOURS,
-                            items: [],
                         };
 
                         // Prepare the child item
@@ -103,7 +103,6 @@ async function fetchRateTypes(request) {
                             NUSNET_ID: item.NUSNET_ID,
                             SF_STF_NUMBER: item.SF_STF_NUMBER,
                             STF_NUMBER: item.STF_NUMBER,
-                            MAX_LIMIT: item.MAX_LIMIT,
                             WAGE_CODE: item.WAGE_CODE,
                             WORKING_HOURS: item.WORKING_HOURS,
                         };
@@ -116,7 +115,7 @@ async function fetchRateTypes(request) {
             const updatedResponse = [];
             Object.values(responseMap).forEach(val => updatedResponse.push(val));
 
-            oResponse.eligibleRateTypes = responseMap;
+            oResponse.eligibleRateTypes = updatedResponse;
         }
 
         return oResponse;
