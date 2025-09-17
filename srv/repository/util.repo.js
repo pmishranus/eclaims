@@ -129,13 +129,13 @@ module.exports = {
      * @param {string} userId - The logged-in user ID from XSUAA (optional, defaults to 'SYSTEM')
      * @returns {Promise<Object>} The upsert result.
      * 
-     * For new records: Sets createdAt, createdBy, modifiedAt, modifiedBy, and generates CUID if needed
-     * For updates: Only sets modifiedAt, modifiedBy (preserves original createdAt, createdBy)
+     * For new records: Sets CREATEDAT, CREATEDBY, MODIFIEDAT, MODIFIEDBY, and generates CUID if needed
+     * For updates: Only sets MODIFIEDAT, MODIFIEDBY (preserves original CREATEDAT, CREATEDBY)
      */
     upsertOperationChained: async function (tx, entityName, record, isNewRecord = false, userId = 'SYSTEM') {
         // Prepare the record with CUID and managed fields
         const processedRecord = { ...record };
-        const now = new Date();
+        const now = new Date().toISOString();
 
         // Handle CUID for entities that require it (entities with :cuid aspect)
         if (requiresCuid(entityName)) {
@@ -148,29 +148,29 @@ module.exports = {
         // Handle managed fields based on whether it's a new record or update
         if (isNewRecord) {
             // For new records, set all managed fields using the logged-in user
-            if (!processedRecord.createdAt) {
-                processedRecord.createdAt = now;
+            if (!processedRecord.CREATEDAT) {
+                processedRecord.CREATEDAT = now;
             }
-            if (!processedRecord.createdBy) {
-                processedRecord.createdBy = userId;
+            if (!processedRecord.CREATEDBY) {
+                processedRecord.CREATEDBY = userId;
             }
-            if (!processedRecord.modifiedAt) {
-                processedRecord.modifiedAt = now;
+            if (!processedRecord.MODIFIEDAT) {
+                processedRecord.MODIFIEDAT = now;
             }
-            if (!processedRecord.modifiedBy) {
-                processedRecord.modifiedBy = userId;
+            if (!processedRecord.MODIFIEDBY) {
+                processedRecord.MODIFIEDBY = userId;
             }
         } else {
             // For updates, only set modified fields (don't touch created fields)
-            if (!processedRecord.modifiedAt) {
-                processedRecord.modifiedAt = now;
+            if (!processedRecord.MODIFIEDAT) {
+                processedRecord.MODIFIEDAT = now;
             }
-            if (!processedRecord.modifiedBy) {
-                processedRecord.modifiedBy = userId;
+            if (!processedRecord.MODIFIEDBY) {
+                processedRecord.MODIFIEDBY = userId;
             }
             // Remove created fields from update to avoid overwriting them
-            delete processedRecord.createdAt;
-            delete processedRecord.createdBy;
+            delete processedRecord.CREATEDAT;
+            delete processedRecord.CREATEDBY;
         }
 
         // Perform the upsert operation using the original entity name
