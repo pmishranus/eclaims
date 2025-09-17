@@ -21,6 +21,7 @@ const EclaimService = require("../util/eclaimService");
 const UserUtil = require("../util/userUtil");
 const ProcessDetailsService = require("../util/processDetails");
 const emailService = require("../service/emailService");
+const { message } = require("@sap/cds/lib/log/cds-error");
 
 /**
  * Converted Single Request method from Java implementation
@@ -401,7 +402,12 @@ async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, log
         }
     } catch (error) {
         console.error("Error in claimAssistantSubmissionFlow:", error);
-        throw error;
+        // throw error;
+        return req.reject({
+            code : 400,
+            message : error.message,
+            target : error.stack
+        });
     }
 
     console.log("ConvertedSingleRequestController claimAssistantSubmissionFlow end()");
@@ -1427,6 +1433,7 @@ async function releaseLock(tx, staffId, draftId) {
  * @returns {Promise<Object>} The eclaims data response DTO
  */
 async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASave, roleFlow, loggedInUserDetails) {
+    
     console.log("ConvertedSingleRequestController claimantCASaveSubmit start()");
 
     // Check if status is being changed to draft from process flow
@@ -1489,6 +1496,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     const draftIdPatternVal = ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_DRAFT_ID_PATTERN + requestYear + requestMonth;
     const requestIdPatternVal = ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_REQUEST_ID_PATTERN + requestYear + requestMonth;
     let draftNumber = "";
+    let cuidId="";
 
     // Check if claim is already submitted
     if (savedData && item.ACTION === ApplicationConstants.ACTION_SUBMIT &&
@@ -1501,6 +1509,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
     if (item.DRAFT_ID) {
         if (savedData) {
             draftNumber = item.DRAFT_ID;
+            cuidId = item.ID;
             // Use existing data
         } else {
             draftNumber = await CommonRepo.fetchSequenceNumber(draftIdPatternVal, ApplicationConstants.SEQUENCE_PATTERN.SEQUENCE_DRAFT_ID_DIGITS);
@@ -1511,6 +1520,7 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
 
     // Build eclaims data object
     const eclaimsData = {
+        ID : cuidId,
         DRAFT_ID: draftNumber,
         CREATED_ON: savedData ? savedData.CREATED_ON : new Date(),
         REQUEST_ID: savedData ? savedData.REQUEST_ID : null,

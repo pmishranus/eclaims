@@ -1,4 +1,10 @@
 
+using {
+    managed,
+    temporal,
+    cuid
+} from '@sap/cds/common';
+
 namespace nusext;
 
 
@@ -44,7 +50,7 @@ context ECLAIMS {
 entity ***************************/
 
     @cds.persistence.exists
-    entity HEADER_DATA   {
+    entity HEADER_DATA : cuid, managed  {
         key DRAFT_ID               : VAR_TEXT_15;
             REQUEST_ID             : VAR_TEXT_15;
             CLAIM_TYPE             : VAR_TEXT_6;
@@ -689,7 +695,7 @@ entity ***************************/
     /********************************************* Task Details Config @cds.persistence.exists
 entity ***************************/
     @cds.persistence.exists
-    entity TASK_DETAILS   {
+    entity TASK_DETAILS  : cuid, managed   {
         key TASK_INST_ID             : VAR_TEXT_12; //Task Instance ID in the format of TK<YY><MM><6 digit no.>
             PROCESS_INST_ID          : VAR_TEXT_12; //Process Instance ID in the format of PS<YY><MM><6 digit no.>
             TASK_NAME                : VAR_TEXT_40; // Task Technical Name
@@ -883,7 +889,7 @@ entity ***************************/
     /********************************************* Approver Matrix @cds.persistence.exists
 entity ***************************/
     @cds.persistence.exists
-    entity CHRS_APPROVER_MATRIX { //CHRS Approver Matrix Table
+    entity CHRS_APPROVER_MATRIX : cuid, managed  { //CHRS Approver Matrix Table
         key AUTH_ID         : VAR_TEXT_15; //Authorization ID will be in patter AUTHYY<4 digit sequence no.>
             PROCESS_CODE    : VAR_TEXT_6; // Claim Type Code Configuration
             ULU             : VAR_TEXT_15; // Store the ULU configured
@@ -1030,7 +1036,7 @@ entity ***************************/
     };
 
     @cds.persistence.exists
-    entity TICKET_MGMT_DETAILS{
+    entity TICKET_MGMT_DETAILS : cuid, managed {
         key TCKT_ID          : VAR_TEXT_20; //Pattern TCKT<4digit seq no>
             PROCESS_CODE     : VAR_TEXT_6; // Process code of the request
             REFERENCE_TCKTNO : VAR_TEXT_50; //Reference Ticket No. from Remedy System

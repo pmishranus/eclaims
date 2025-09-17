@@ -4,7 +4,7 @@
 @host = localhost:4004
 @protocol = https
 @unsecureProtocol = http
-@userId = PTT_CA9
+@userId = OT_CA9
 
 ### Request-1 Get xsuaa token
 #==================================================================#
@@ -159,103 +159,139 @@ Authorization: Bearer {{access_token}}
 X-User-Id: {{userId}}
 
 {
-  "data": [
-    {
-      "CLAIM_TYPE": "104",
-      "STAFF_ID": "151415",
-      "CLAIM_REQUEST_TYPE": "Daily",
-      "CLAIM_MONTH": "02-2025",
-      "TOTAL_AMOUNT": " ",
-      "WBS": " ",
-      "ULU": "0210010100",
-      "FDLU": "0001270002",
-      "DRAFT_ID": "DT2504000002",
-      "VERIFIER": [
-        {
-          "PPNT_ID": "",
-          "STAFF_ID": "",
-          "NUSNET_ID": "",
-          "ULU": "",
-          "FDLU": "",
-          "STAFF_FULL_NAME": ""
-        }
-      ],
-      "ADDTIONAL_APPROVER_1": [
-        {
-          "PPNT_ID": "",
-          "STAFF_ID": "",
-          "NUSNET_ID": "",
-          "ULU": "",
-          "FDLU": "",
-          "STAFF_FULL_NAME": ""
-        }
-      ],
-      "ADDTIONAL_APPROVER_2": [
-        {
-          "PPNT_ID": "",
-          "STAFF_ID": "",
-          "NUSNET_ID": "",
-          "ULU": "",
-          "FDLU": "",
-          "STAFF_FULL_NAME": ""
-        }
-      ],
-      "ATTACHMENTS": [],
-      "REMARKS": [],
-      "REQUEST_STATUS": "01",
-      "isMassUpload": "N",
-      "isSave": "N",
-      "ACTION": "SUBMIT",
-      "ROLE": "CA",
-      "REQUEST_ID": "",
-      "selectedClaimDates": [
-        {
-          "ITEM_ID": "",
-          "CLAIM_START_DATE": "2025-02-01",
-          "CLAIM_END_DATE": "2025-02-01",
-          "START_TIME": "11:00",
-          "END_TIME": "12:00",
-          "CLAIM_START_DATE_DISPLAY": "01 Feb, 2025",
-          "CLAIM_DAY": "Saturday",
-          "HOURS_UNIT": "1.00",
-          "RATE_TYPE": "",
-          "CLAIM_REQUEST_TYPE_NUMBER": "",
-          "CLAIM_DAY_TYPE": "Offday",
-          "WBS": "A-0000009-00-00",
-          "WAGE_CODE": "",
-          "REMARKS": "",
-          "TOTAL_AMOUNT": "",
-          "IS_DISCREPENCY": 0,
-          "RATE_TYPE_AMOUNT": "",
-          "DISC_RATETYPE_AMOUNT": "",
-          "IS_PH": 3,
-          "OT_COMMENCE_AFT_HRS": ""
-        },
-        {
-          "ITEM_ID": "",
-          "CLAIM_START_DATE": "2025-02-02",
-          "CLAIM_END_DATE": "2025-02-02",
-          "START_TIME": "11:00",
-          "END_TIME": "12:00",
-          "CLAIM_START_DATE_DISPLAY": "02 Feb, 2025",
-          "CLAIM_DAY": "Sunday",
-          "HOURS_UNIT": "1.00",
-          "RATE_TYPE": "",
-          "CLAIM_REQUEST_TYPE_NUMBER": "",
-          "CLAIM_DAY_TYPE": "Restday",
-          "WBS": "A-0000009-00-00",
-          "WAGE_CODE": "",
-          "REMARKS": "",
-          "TOTAL_AMOUNT": "",
-          "IS_DISCREPENCY": 0,
-          "RATE_TYPE_AMOUNT": "",
-          "DISC_RATETYPE_AMOUNT": "",
-          "IS_PH": 1,
-          "OT_COMMENCE_AFT_HRS": ""
-        }
-      ]
-    }
-  ]
+	"data": [
+		{
+			"CLAIM_TYPE": "101",
+			"STAFF_ID": "151397",
+			"CLAIM_REQUEST_TYPE": "Daily",
+			"CLAIM_MONTH": "08-2025",
+			"TOTAL_AMOUNT": " ",
+			"WBS": " ",
+			"ULU": "0231054600",
+			"FDLU": "0005690002",
+			"DRAFT_ID": "DT2509000009",
+			"VERIFIER": [
+				{
+					"PPNT_ID": "PPNT25090003",
+					"STAFF_ID": "22818",
+					"NUSNET_ID": "PTT_VF9",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": "Randal Krueger"
+				}
+			],
+			"ADDTIONAL_APPROVER_1": [
+				{
+					"PPNT_ID": "PPNT25090001",
+					"STAFF_ID": "30316",
+					"NUSNET_ID": "PTT_AAP9_1",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": "Carter Tavian"
+				}
+			],
+			"ADDTIONAL_APPROVER_2": [
+				{
+					"PPNT_ID": "PPNT25090002",
+					"STAFF_ID": "12330",
+					"NUSNET_ID": "PTT_AAP9_2",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": "Sofia Macias"
+				}
+			],
+			"ATTACHMENTS": [],
+			"REMARKS": [
+				{
+					"ID": "RMK250900001",
+					"REFERENCE_ID": "DT2509000009",
+					"REMARKS": "Hello I am a Claim Assistant",
+					"STAFF_ID": "1625",
+					"STAFF_NAME": "Aliviah Hasset",
+					"STAFF_USER_TYPE": "CA",
+					"REMARKS_UPDATE_ON": "2025-09-15 17:29:54",
+					"REMARKS_TYPE": null,
+					"NUSNET_ID": null,
+					"IS_EDITABLE": 0,
+					"__metadata": {
+						"type": "EclaimsService.PRJ_REMARKS_DETAILS",
+						"uri": "https://port8080-workspaces-ws-8qmdt.eu10.applicationstudio.cloud.sap,nusbtpeclaim.dest:443/destinations/nusbtpeclaim/odata/v2/eclaims/PRJ_REMARKS_DETAILS('RMK250900001')"
+					}
+				}
+			],
+			"REQUEST_STATUS": "01",
+			"isMassUpload": "N",
+			"isSave": "N",
+			"ACTION": "SUBMIT",
+			"ROLE": "CA",
+			"REQUEST_ID": "",
+			"selectedClaimDates": [
+				{
+					"ITEM_ID": "",
+					"CLAIM_START_DATE": "2025-08-01",
+					"CLAIM_END_DATE": "2025-08-01",
+					"START_TIME": "11:00",
+					"END_TIME": "16:00",
+					"CLAIM_START_DATE_DISPLAY": "01 Aug, 2025",
+					"CLAIM_DAY": "Friday",
+					"HOURS_UNIT": "5.00",
+					"RATE_TYPE": "10",
+					"CLAIM_REQUEST_TYPE_NUMBER": "10",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "125.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "25.00",
+					"DISC_RATETYPE_AMOUNT": "",
+					"OT_COMMENCE_AFT_HRS": ""
+				},
+				{
+					"ITEM_ID": "",
+					"CLAIM_START_DATE": "2025-08-02",
+					"CLAIM_END_DATE": "2025-08-02",
+					"START_TIME": "11:00",
+					"END_TIME": "16:00",
+					"CLAIM_START_DATE_DISPLAY": "02 Aug, 2025",
+					"CLAIM_DAY": "Saturday",
+					"HOURS_UNIT": "5.00",
+					"RATE_TYPE": "10",
+					"CLAIM_REQUEST_TYPE_NUMBER": "10",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "150.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "30.00",
+					"DISC_RATETYPE_AMOUNT": "",
+					"OT_COMMENCE_AFT_HRS": ""
+				},
+				{
+					"ITEM_ID": "",
+					"CLAIM_START_DATE": "2025-08-03",
+					"CLAIM_END_DATE": "2025-08-03",
+					"START_TIME": "11:00",
+					"END_TIME": "16:00",
+					"CLAIM_START_DATE_DISPLAY": "03 Aug, 2025",
+					"CLAIM_DAY": "Sunday",
+					"HOURS_UNIT": "5.00",
+					"RATE_TYPE": "10",
+					"CLAIM_REQUEST_TYPE_NUMBER": "10",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "125.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "25.00",
+					"DISC_RATETYPE_AMOUNT": "",
+					"OT_COMMENCE_AFT_HRS": ""
+				}
+			]
+		}
+	]
 }
 
 ### Request-2 Get eclaims header data

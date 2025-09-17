@@ -31,57 +31,123 @@ Authorization: Bearer {{access_token}}
 X-User-Id: {{userId}}
 
 {
-	"data" : [
-        {
-          "CLAIM_TYPE": "101",
-          "STAFF_ID": "151407",
-          "CLAIM_REQUEST_TYPE": "Daily",
-          "CLAIM_MONTH": "06-2025",
-          "TOTAL_AMOUNT": " ",
-          "WBS": " ",
-          "ULU": "0301060200",
-          "FDLU": "0006020001",
-          "DRAFT_ID": "",
-          "VERIFIER": [
-            {
-              "PPNT_ID": "",
-              "STAFF_ID": "",
-              "NUSNET_ID": "",
-              "ULU": "",
-              "FDLU": "",
-              "STAFF_FULL_NAME": ""
-            }
-          ],
-          "ADDTIONAL_APPROVER_1": [
-            {
-              "PPNT_ID": "",
-              "STAFF_ID": "",
-              "NUSNET_ID": "",
-              "ULU": "",
-              "FDLU": "",
-              "STAFF_FULL_NAME": ""
-            }
-          ],
-          "ADDTIONAL_APPROVER_2": [
-            {
-              "PPNT_ID": "",
-              "STAFF_ID": "",
-              "NUSNET_ID": "",
-              "ULU": "",
-              "FDLU": "",
-              "STAFF_FULL_NAME": ""
-            }
-          ],
-          "ATTACHMENTS": [],
-          "REQUEST_STATUS": "01",
-          "isMassUpload": "N",
-          "isSave": "Y",
-          "ACTION": "SAVE",
-          "ROLE": "CA",
-          "REQUEST_ID": "",
-          "selectedClaimDates": []
-        }
-    ]
+	"data": [
+		{
+			"CLAIM_TYPE": "103",
+			"STAFF_ID": "151261",
+			"CLAIM_REQUEST_TYPE": "Daily",
+			"CLAIM_MONTH": "06-2025",
+			"TOTAL_AMOUNT": " ",
+			"WBS": " ",
+			"ULU": "0231054600",
+			"FDLU": "0005690002",
+			"DRAFT_ID": "DT2509000011",
+			"VERIFIER": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ADDTIONAL_APPROVER_1": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ADDTIONAL_APPROVER_2": [
+				{
+					"PPNT_ID": "",
+					"STAFF_ID": "",
+					"NUSNET_ID": "",
+					"ULU": "",
+					"FDLU": "",
+					"STAFF_FULL_NAME": ""
+				}
+			],
+			"ATTACHMENTS": [],
+			"REMARKS": [],
+			"REQUEST_STATUS": "01",
+			"isMassUpload": "N",
+			"isSave": "Y",
+			"ACTION": "SAVE",
+			"ROLE": "CA",
+			"REQUEST_ID": "",
+			"selectedClaimDates": [
+				{
+					"ITEM_ID": "DT2509000011002",
+					"CLAIM_START_DATE": "2025-06-01",
+					"CLAIM_END_DATE": "2025-06-01",
+					"START_TIME": "11:00",
+					"END_TIME": "12:00",
+					"CLAIM_START_DATE_DISPLAY": "01 Jun, 2025",
+					"CLAIM_DAY": "Sunday",
+					"HOURS_UNIT": "1.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Restday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 1,
+					"OT_COMMENCE_AFT_HRS": ""
+				},
+				{
+					"ITEM_ID": "DT2509000011003",
+					"CLAIM_START_DATE": "2025-06-02",
+					"CLAIM_END_DATE": "2025-06-02",
+					"START_TIME": "11:00",
+					"END_TIME": "12:00",
+					"CLAIM_START_DATE_DISPLAY": "02 Jun, 2025",
+					"CLAIM_DAY": "Monday",
+					"HOURS_UNIT": "1.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 0
+				},
+				{
+					"ITEM_ID": "DT2509000011004",
+					"CLAIM_START_DATE": "2025-06-03",
+					"CLAIM_END_DATE": "2025-06-03",
+					"START_TIME": "11:00",
+					"END_TIME": "12:00",
+					"CLAIM_START_DATE_DISPLAY": "03 Jun, 2025",
+					"CLAIM_DAY": "Tuesday",
+					"HOURS_UNIT": "1.00",
+					"RATE_TYPE": "",
+					"CLAIM_REQUEST_TYPE_NUMBER": "",
+					"CLAIM_DAY_TYPE": "Workday",
+					"WBS": "",
+					"WAGE_CODE": "",
+					"REMARKS": "",
+					"TOTAL_AMOUNT": "0.00",
+					"IS_DISCREPENCY": 0,
+					"RATE_TYPE_AMOUNT": "0.00",
+					"DISC_RATETYPE_AMOUNT": "0.00",
+					"IS_PH": 0
+				}
+			]
+		}
+	]
 }
 
 ### Request-2 Save After Draft Request Created

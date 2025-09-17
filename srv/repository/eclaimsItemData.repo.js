@@ -98,40 +98,31 @@ async function checkForExistingReq(staffNusNetId, claimStartDate, claimEndDate, 
         ApplicationConstants.STATUS_ECLAIMS_WITHDRAWN_BY_ECP,
         ApplicationConstants.STATUS_ECLAIMS_CLAIMANT_RETRACT,
     ];
-    const checkForExistingReq = await cds.run(
-        SELECT.from("NUSEXT_ECLAIMS_ITEMS_DATA")
-            .join("NUSEXT_ECLAIMS_HEADER_DATA")
-            .on("NUSEXT_ECLAIMS_HEADER_DATA.DRAFT_ID = NUSEXT_ECLAIMS_ITEMS_DATA.DRAFT_ID")
-            .where([
-                cds.or(
-                    cds.fn("upper", { ref: ["NUSEXT_ECLAIMS_HEADER_DATA", "STAFF_NUSNET_ID"] }),
-                    "=",
-                    staffNusNetId.toUpperCase(),
-                    { ref: ["NUSEXT_ECLAIMS_HEADER_DATA", "STAFF_ID"] },
-                    "=",
-                    staffNusNetId
-                ),
-                { ref: ["NUSEXT_ECLAIMS_ITEMS_DATA", "CLAIM_START_DATE"] },
-                "<=",
-                claimEndDate,
-                { ref: ["NUSEXT_ECLAIMS_ITEMS_DATA", "CLAIM_END_DATE"] },
-                ">=",
-                claimStartDate,
-                { ref: ["NUSEXT_ECLAIMS_HEADER_DATA", "ULU"] },
-                "=",
-                ulu,
-                { ref: ["NUSEXT_ECLAIMS_HEADER_DATA", "FDLU"] },
-                "=",
-                fdlu,
-                { ref: ["NUSEXT_ECLAIMS_ITEMS_DATA", "IS_DELETED"] },
-                "=",
-                "N",
-                { ref: ["NUSEXT_ECLAIMS_HEADER_DATA", "REQUEST_STATUS"] },
-                "not in",
-                STATUS_LIST,
-            ])
-            .columns("*") // or list specific fields you want
-    );
+    // Use raw SQL for complex OR condition and NOT IN clause
+    const query = `
+        SELECT i.*, h.*
+        FROM NUSEXT_ECLAIMS_ITEMS_DATA i
+        JOIN NUSEXT_ECLAIMS_HEADER_DATA h ON h.DRAFT_ID = i.DRAFT_ID
+        WHERE (UPPER(h.STAFF_NUSNET_ID) = ? OR h.STAFF_ID = ?)
+        AND i.CLAIM_START_DATE <= ?
+        AND i.CLAIM_END_DATE >= ?
+        AND h.ULU = ?
+        AND h.FDLU = ?
+        AND i.IS_DELETED = 'N'
+        AND h.REQUEST_STATUS NOT IN (${STATUS_LIST.map(() => '?').join(', ')})
+    `;
+    
+    const values = [
+        staffNusNetId.toUpperCase(),
+        staffNusNetId,
+        claimEndDate,
+        claimStartDate,
+        ulu,
+        fdlu,
+        ...STATUS_LIST
+    ];
+    
+    const checkForExistingReq = await cds.run(query, values);
     return checkForExistingReq;
 }
 
