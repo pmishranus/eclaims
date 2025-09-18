@@ -22,8 +22,8 @@ const UserUtil = require("../util/userUtil");
 
 /**
  * Handles the main entry point for single request claims.
- * @param {Object} request - The request object.
- * @returns {Promise<Object>} The response DTO.
+ * @param {object} request - The request object.
+ * @returns {Promise<object>} The response DTO.
  */
 async function postClaims(request) {
     try {
@@ -102,9 +102,9 @@ function populateStartTimeEndTime(massUploadRequest) {
 // Withdraw Claim Submission
 /**
  * Withdraws a claim submission.
- * @param {Object} item - The claim item.
- * @param {Object} userInfoDetails - The user info.
- * @returns {Promise<Object>} The response DTO.
+ * @param {object} item - The claim item.
+ * @param {object} userInfoDetails - The user info.
+ * @returns {Promise<object>} The response DTO.
  */
 async function withdrawClaimSubmission(item, userInfoDetails) {
     // TODO: Replace with actual logger if needed
@@ -151,10 +151,10 @@ async function withdrawClaimSubmission(item, userInfoDetails) {
 // Retract Claim Submission
 /**
  * Retracts a claim submission.
- * @param {Object} item - The claim item.
+ * @param {object} item - The claim item.
  * @param {string} roleFlow - The role flow.
- * @param {Object} userInfoDetails - The user info.
- * @returns {Promise<Object>} The response DTO.
+ * @param {object} userInfoDetails - The user info.
+ * @returns {Promise<object>} The response DTO.
  */
 async function retractClaimSubmission(item, roleFlow, userInfoDetails) {
     console.log("retractClaimSubmission start()");
@@ -206,11 +206,11 @@ async function retractClaimSubmission(item, roleFlow, userInfoDetails) {
 
 /**
  * Handles claimant submission flow.
- * @param {Object} tx - The transaction object.
+ * @param {object} tx - The transaction object.
  * @param {Array} massUploadRequest - The mass upload request array.
  * @param {string} roleFlow - The role flow.
- * @param {Object} loggedInUserDetails - The user info.
- * @returns {Promise<Object>} The response DTO.
+ * @param {object} loggedInUserDetails - The user info.
+ * @returns {Promise<object>} The response DTO.
  */
 async function claimantSubmissionFlow(tx, massUploadRequest, roleFlow, loggedInUserDetails) {
     console.log("MassUploadServiceImpl claimantSubmissionFlow start()");
@@ -312,7 +312,7 @@ async function fetchRequestLockedUser(draftId) {
 
 /**
  * Checks if the request is locked by another user.
- * @param {Object} loggedInUserDetails - The user info.
+ * @param {object} loggedInUserDetails - The user info.
  * @param {string} fetchRequestLockedByUser - The locked by user NUSNET ID.
  * @throws {Error} If locked by another user.
  */
@@ -341,14 +341,14 @@ async function checkIsLocked(loggedInUserDetails, fetchRequestLockedByUser) {
 
 /**
  * Handles save/submit logic for claimant/CA.
- * @param {Object} tx - The transaction object.
- * @param {Object} item - The claim item.
+ * @param {object} tx - The transaction object.
+ * @param {object} item - The claim item.
  * @param {string} requestorGroup - The requestor group.
- * @param {Object|null} savedData - The saved data.
+ * @param {object | null} savedData - The saved data.
  * @param {boolean} isCASave - Is CA save.
  * @param {string} roleFlow - The role flow.
- * @param {Object} loggedInUserDetails - The user info.
- * @returns {Promise<Object>} The response DTO.
+ * @param {object} loggedInUserDetails - The user info.
+ * @returns {Promise<object>} The response DTO.
  */
 async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASave, roleFlow, loggedInUserDetails) {
     // Use loggedInUserDetails as userInfoDetails
@@ -563,9 +563,9 @@ async function claimantCASaveSubmit(tx, item, requestorGroup, savedData, isCASav
 
 /**
  * Populates process participant details.
- * @param {Object} item - The claim item.
- * @param {Object} tx - The transaction object.
- * @param {Object} loggedInUserDetails - The user info.
+ * @param {object} item - The claim item.
+ * @param {object} tx - The transaction object.
+ * @param {object} loggedInUserDetails - The user info.
  * @returns {Promise<void>}
  */
 async function populateProcessParticipantDetails(item, tx, loggedInUserDetails) {
@@ -643,12 +643,12 @@ async function populateProcessParticipantDetails(item, tx, loggedInUserDetails) 
 
 /**
  * Persists a process participant detail.
- * @param {Object} claimInnerRequestDto - The inner request DTO.
- * @param {Object} item - The claim item.
- * @param {Object} loggedInUserDetails - The user info.
+ * @param {object} claimInnerRequestDto - The inner request DTO.
+ * @param {object} item - The claim item.
+ * @param {object} loggedInUserDetails - The user info.
  * @param {string} userDesignation - The user designation.
- * @param {Object} tx - The transaction object.
- * @returns {Promise<Object>} The saved participant.
+ * @param {object} tx - The transaction object.
+ * @returns {Promise<object>} The saved participant.
  */
 async function persistProcessParticipantDetails(claimInnerRequestDto, item, loggedInUserDetails, userDesignation, tx) {
     // Get user details from token (assumed async)
@@ -699,7 +699,7 @@ async function persistProcessParticipantDetails(claimInnerRequestDto, item, logg
  * Populates remarks data details.
  * @param {Array} claimInnerRequestDto - The remarks array.
  * @param {string} draftId - The draft ID.
- * @param {Object} tx - The transaction object.
+ * @param {object} tx - The transaction object.
  * @returns {Promise<void>}
  */
 async function populateRemarksDataDetails(claimInnerRequestDto, draftId, tx) {
@@ -750,15 +750,15 @@ async function populateRemarksDataDetails(claimInnerRequestDto, draftId, tx) {
 
 /**
  * Persists eclaims item data.
- * @param {Object} tx - The transaction object.
+ * @param {object} tx - The transaction object.
  * @param {string} draftNumber - The draft number.
  * @param {number} itemCount - The item count.
- * @param {Object} selectedClaimDates - The selected claim dates.
- * @param {Object} item - The claim item.
- * @param {Object} eclaimsData - The eclaims data.
+ * @param {object} selectedClaimDates - The selected claim dates.
+ * @param {object} item - The claim item.
+ * @param {object} eclaimsData - The eclaims data.
  * @param {string} nusNetId - The NUSNET ID.
- * @param {Object} userInfoDetails - The user info.
- * @returns {Promise<Object>} The item data DTO.
+ * @param {object} userInfoDetails - The user info.
+ * @returns {Promise<object>} The item data DTO.
  */
 async function persistEclaimsItemData(tx, draftNumber, itemCount, selectedClaimDates, item, eclaimsData, nusNetId, userInfoDetails) {
     console.info("MassUploadServiceImpl persistEclaimsItemData start()");
@@ -852,8 +852,8 @@ async function persistEclaimsItemData(tx, draftNumber, itemCount, selectedClaimD
 
 /**
  * Persists CHRS job info data.
- * @param {Object} eclaimsData - The eclaims data.
- * @param {Object} chrsJobInfo - The CHRS job info.
+ * @param {object} eclaimsData - The eclaims data.
+ * @param {object} chrsJobInfo - The CHRS job info.
  */
 function persistChrsJobInfoData(eclaimsData, chrsJobInfo) {
     if (chrsJobInfo) {
@@ -889,11 +889,11 @@ function persistChrsJobInfoData(eclaimsData, chrsJobInfo) {
 // Claim Assistant Submission Flow
 /**
  * Handles claim assistant submission flow.
- * @param {Object} tx - The transaction object.
+ * @param {object} tx - The transaction object.
  * @param {Array} massUploadRequest - The mass upload request array.
  * @param {string} roleFlow - The role flow.
- * @param {Object} userInfoDetails - The user info.
- * @returns {Promise<Object>} The response DTO.
+ * @param {object} userInfoDetails - The user info.
+ * @returns {Promise<object>} The response DTO.
  */
 async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, userInfoDetails) {
     console.log("claimAssistantSubmissionFlow start()");
@@ -905,7 +905,7 @@ async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, use
     };
     try {
         for (const item of massUploadRequest) {
-            if (!item) continue;
+            if (!item) {continue;}
 
             if (item.ACTION && item.ACTION.toUpperCase() === ApplicationConstants.ACTION_REJECT) {
                 // TODO: Implement or stub rejectClaimSubmission
@@ -988,11 +988,11 @@ async function claimAssistantSubmissionFlow(tx, massUploadRequest, roleFlow, use
 // Approver Submission Flow
 /**
  * Handles approver submission flow.
- * @param {Object} tx - The transaction object.
+ * @param {object} tx - The transaction object.
  * @param {Array} massUploadRequest - The mass upload request array.
  * @param {string} roleFlow - The role flow.
- * @param {Object} userInfoDetails - The user info.
- * @returns {Promise<Object>} The response DTO.
+ * @param {object} userInfoDetails - The user info.
+ * @returns {Promise<object>} The response DTO.
  */
 async function approverSubmissionFlow(tx, massUploadRequest, roleFlow, userInfoDetails) {
     console.log("approverSubmissionFlow start()");
@@ -1004,8 +1004,8 @@ async function approverSubmissionFlow(tx, massUploadRequest, roleFlow, userInfoD
     let eclaimsDataResDtoList = [];
     try {
         for (const item of massUploadRequest) {
-            if (!item) continue;
-            if (!item.DRAFT_ID) throw new ApplicationException("Draft Id is blank/empty.Please provide Draft Id.");
+            if (!item) {continue;}
+            if (!item.DRAFT_ID) {throw new ApplicationException("Draft Id is blank/empty.Please provide Draft Id.");}
             // Lock check
             const fetchRequestLockedByUser = await fetchRequestLockedUser(item.DRAFT_ID);
             await checkIsLocked(userInfoDetails, fetchRequestLockedByUser);
@@ -1035,11 +1035,11 @@ async function approverSubmissionFlow(tx, massUploadRequest, roleFlow, userInfoD
 // Verifier Submission Flow
 /**
  * Handles verifier submission flow.
- * @param {Object} tx - The transaction object.
+ * @param {object} tx - The transaction object.
  * @param {Array} massUploadRequest - The mass upload request array.
  * @param {string} roleFlow - The role flow.
- * @param {Object} userInfoDetails - The user info.
- * @returns {Promise<Object>} The response DTO.
+ * @param {object} userInfoDetails - The user info.
+ * @returns {Promise<object>} The response DTO.
  */
 async function verifierSubmissionFlow(tx, massUploadRequest, roleFlow, userInfoDetails) {
     console.log("verifierSubmissionFlow start()");
@@ -1051,8 +1051,8 @@ async function verifierSubmissionFlow(tx, massUploadRequest, roleFlow, userInfoD
     let eclaimsDataResDtoList = [];
     try {
         for (const item of massUploadRequest) {
-            if (!item) continue;
-            if (!item.DRAFT_ID) throw new ApplicationException("Draft Id is blank/empty.Please provide Draft Id.");
+            if (!item) {continue;}
+            if (!item.DRAFT_ID) {throw new ApplicationException("Draft Id is blank/empty.Please provide Draft Id.");}
             // Lock check
             const fetchRequestLockedByUser = await fetchRequestLockedUser(item.DRAFT_ID);
             await checkIsLocked(userInfoDetails, fetchRequestLockedByUser);
@@ -1089,11 +1089,11 @@ async function verifierSubmissionFlow(tx, massUploadRequest, roleFlow, userInfoD
 // Initiate Lock Process Details
 /**
  * Initiates lock process details.
- * @param {Object} tx - The transaction object.
+ * @param {object} tx - The transaction object.
  * @param {string} draftId - The draft ID.
  * @param {string} requestorGrp - The requestor group.
  * @param {string} claimType - The claim type.
- * @param {Object} userInfoDetails - The user info.
+ * @param {object} userInfoDetails - The user info.
  * @returns {Promise<boolean>} True if successful.
  */
 async function initiateLockProcessDetails(tx, draftId, requestorGrp, claimType, userInfoDetails) {

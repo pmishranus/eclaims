@@ -33,7 +33,7 @@ async function fetchEclaimStatus(draftId) {
 /**
  * Fetches eclaim status configuration by draft ID
  * @param {string} draftId - The draft ID
- * @returns {Promise<Object|null>} The status config object or null if not found
+ * @returns {Promise<object | null>} The status config object or null if not found
  */
 async function fetchEclaimStatusByDraftId(draftId) {
     try {
@@ -95,7 +95,7 @@ async function fetchAllEclaimStatusConfigs() {
 /**
  * Fetches status configuration by status code
  * @param {string} statusCode - The status code
- * @returns {Promise<Object|null>} The status config object or null if not found
+ * @returns {Promise<object | null>} The status config object or null if not found
  */
 async function fetchStatusConfigByCode(statusCode) {
     try {

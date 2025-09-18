@@ -164,11 +164,12 @@ async function fetchItemIds(draftId) {
 
 /**
  * Soft deletes items by item IDs.
- * @param {Object} tx
+ * @param {object} tx
  * @param {Array} itemIds
+ * @param itemIdsObj
  * @param {string} nusNetId
  * @param {Date} date
- * @returns {Promise<Object>}
+ * @returns {Promise<object>}
  */
 async function softDeleteByItemIdOld(tx, itemIdsObj, nusNetId, date) {
     const itemIds = itemIdsObj.map(item => item.ITEM_ID);
@@ -185,6 +186,13 @@ async function softDeleteByItemIdOld(tx, itemIdsObj, nusNetId, date) {
     return result;
 }
 
+/**
+ *
+ * @param tx
+ * @param itemIdsObj
+ * @param nusNetId
+ * @param date
+ */
 async function softDeleteByItemId(tx, itemIdsObj, nusNetId, date) {
     const itemIds = itemIdsObj.map(item => item.ITEM_ID);
   
@@ -204,11 +212,11 @@ async function softDeleteByItemId(tx, itemIdsObj, nusNetId, date) {
 
 /**
  * Soft deletes items by draft ID.
- * @param {Object} tx
+ * @param {object} tx
  * @param {string} draftId
  * @param {string} nusNetId
  * @param {Date} date
- * @returns {Promise<Object>}
+ * @returns {Promise<object>}
  */
 async function softDeleteByDraftId(tx, draftId, nusNetId, date) {
     const query = `
@@ -224,8 +232,8 @@ async function softDeleteByDraftId(tx, draftId, nusNetId, date) {
 
 /**
  * Upserts eclaims item data
- * @param {Object} eclaimsItemData - The eclaims item data object
- * @returns {Promise<Object>} The upsert result
+ * @param {object} eclaimsItemData - The eclaims item data object
+ * @returns {Promise<object>} The upsert result
  */
 async function upsertEclaimsItemData(eclaimsItemData) {
     const result = await cds.run(UPSERT.into("NUSEXT_ECLAIMS_ITEMS_DATA").entries(eclaimsItemData));

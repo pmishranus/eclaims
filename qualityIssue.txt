@@ -1,0 +1,1033 @@
+
+/home/runner/work/eclaims/eclaims/emailImpl.js
+Warning:     4:31  warning  'MessageConstants' is assigned a value but never used            no-unused-vars
+Warning:     9:1   warning  Missing JSDoc comment                                            jsdoc/require-jsdoc
+Warning:    11:28  warning  'userInfoDetails' is defined but never used                      no-unused-vars
+Warning:    11:45  warning  'tx' is defined but never used                                   no-unused-vars
+Warning:    25:19  warning  'handleOnDemandEmailsForEClaims' was used before it was defined  no-use-before-define
+Error:    33:19  error    'handleOnDemandEmailsForCws' is not defined                      no-undef
+Warning:    47:1   warning  Missing JSDoc comment                                            jsdoc/require-jsdoc
+Warning:    73:35  warning  'emailHandler' was used before it was defined                    no-use-before-define
+Warning:    86:31  warning  'emailHandler' was used before it was defined                    no-use-before-define
+Warning:    96:31  warning  'emailHandler' was used before it was defined                    no-use-before-define
+Warning:   106:31  warning  'emailHandler' was used before it was defined                    no-use-before-define
+Warning:   116:1   warning  Missing JSDoc comment                                            jsdoc/require-jsdoc
+Error:   152:19  error    'EmailConstants' is not defined                                  no-undef
+Error:   153:19  error    'EmailConstants' is not defined                                  no-undef
+Warning:   169:38  warning  'frameEmailSubject' was used before it was defined               no-use-before-define
+Error:   177:38  error    'frameEmailBody' is not defined                                  no-undef
+Error:   190:35  error    'populateEmailIds' is not defined                                no-undef
+Warning:   211:23  warning  'sendMail' was used before it was defined                        no-use-before-define
+Error:   228:11  error    'saveNotificationLog' is not defined                             no-undef
+Warning:   241:1   warning  Missing JSDoc comment                                            jsdoc/require-jsdoc
+Error:   247:14  error    'PTT' is not defined                                             no-undef
+Error:   248:14  error    'CW' is not defined                                              no-undef
+Error:   249:14  error    'OT' is not defined                                              no-undef
+Error:   250:14  error    'HM' is not defined                                              no-undef
+Error:   251:14  error    'TB' is not defined                                              no-undef
+Warning:   253:30  warning  'getClaimsData' was used before it was defined                   no-use-before-define
+Error:   255:14  error    'CWS' is not defined                                             no-undef
+Error:   256:14  error    'NED' is not defined                                             no-undef
+Error:   257:14  error    'OPWN' is not defined                                            no-undef
+Warning:   259:30  warning  'getCWData' was used before it was defined                       no-use-before-define
+Error:   261:14  error    'CWOPWN' is not defined                                          no-undef
+Warning:   264:34  warning  'getCWData' was used before it was defined                       no-use-before-define
+Error:   295:42  error    'emailConfigRepository' is not defined                           no-undef
+Warning:   308:1   warning  Missing JSDoc comment                                            jsdoc/require-jsdoc
+Warning:   314:1   warning  Missing JSDoc comment                                            jsdoc/require-jsdoc
+Error:   323:17  error    'SELECT' is not defined                                          no-undef
+Warning:   344:26  warning  'cds' was used before it was defined                             no-use-before-define
+Warning:   361:1   warning  Missing JSDoc comment                                            jsdoc/require-jsdoc
+Error:   368:37  error    Expected { after 'if' condition                                  curly
+Error:   371:17  error    'SELECT' is not defined                                          no-undef
+Error:   393:26  error    'db' is not defined                                              no-undef
+Error:   394:41  error    Expected { after 'if' condition                                  curly
+Error:   400:38  error    Expected { after 'if' condition                                  curly
+Error:   409:40  error    Expected { after 'if' condition                                  curly
+Error:   409:47  error    'formatDateToDDMMMYYYY' is not defined                           no-undef
+Error:   410:44  error    Expected { after 'if' condition                                  curly
+Error:   416:40  error    Expected { after 'if' condition                                  curly
+Error:   416:47  error    'formatDateToDDMMMYYYY' is not defined                           no-undef
+Error:   417:44  error    Expected { after 'if' condition                                  curly
+Warning:   425:1   warning  Missing JSDoc comment                                            jsdoc/require-jsdoc
+Error:   426:22  error    'process' is not defined                                         no-undef
+Error:   427:22  error    'process' is not defined                                         no-undef
+Error:   428:26  error    'process' is not defined                                         no-undef
+Error:   429:25  error    'process' is not defined                                         no-undef
+Error:   434:23  error    'nodemailer' is not defined                                      no-undef
+
+/home/runner/work/eclaims/eclaims/srv/controller/caStaffBenefitLookup.controller.js
+Warning:    5:7  warning  'UserUtil' is assigned a value but never used                   no-unused-vars
+Warning:   10:1  warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   80:7  warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/controller/caStaffLookup.controller.js
+Warning:     1:7   warning  'AppConfigRepo' is assigned a value but never used              no-unused-vars
+Warning:     6:7   warning  'CommonUtils' is assigned a value but never used                no-unused-vars
+Warning:     7:7   warning  'ChrsCompInfoRepo' is assigned a value but never used           no-unused-vars
+Warning:    11:7   warning  'cds' is assigned a value but never used                        no-unused-vars
+Warning:    16:1   warning  Expected only 0 line after block description                    jsdoc/tag-lines
+Warning:    18:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    26:40  warning  'validateInput' was used before it was defined                  no-use-before-define
+Warning:    35:39  warning  'getUserInfoWithCache' was used before it was defined           no-use-before-define
+Warning:    41:33  warning  'parsePeriodAndGetDateRange' was used before it was defined     no-use-before-define
+Warning:    60:40  warning  'processAndDeduplicateResults' was used before it was defined   no-use-before-define
+Warning:    68:7   warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+Warning:    93:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    94:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   155:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   181:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   208:7   warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/controller/claimantStaffInfo.controller.js
+Warning:     6:7   warning  'ElligibleCriteriaRepo' is assigned a value but never used    no-unused-vars
+Warning:    10:1   warning  Missing JSDoc @returns declaration                            jsdoc/require-returns
+Warning:    12:1   warning  Missing JSDoc @param "request" description                    jsdoc/require-param-description
+Warning:    12:1   warning  Missing JSDoc @param "request" type                           jsdoc/require-param-type
+Warning:    17:15  warning  'tx' is assigned a value but never used                       no-unused-vars
+Error:    17:20  error    'cds' is not defined                                          no-undef
+Warning:    21:13  warning  'userInfoDetails' is assigned a value but never used          no-unused-vars
+Warning:    26:38  warning  'fetchStaffInfoDetails' was used before it was defined        no-use-before-define
+Warning:    43:1   warning  Missing JSDoc comment                                         jsdoc/require-jsdoc
+Warning:    47:39  warning  'fetchClaimantAssignmentDtls' was used before it was defined  no-use-before-define
+Warning:   109:1   warning  Missing JSDoc comment                                         jsdoc/require-jsdoc
+Error:   124:17  error    Expected { after 'if' condition                               curly
+Warning:   152:42  warning  'frameAssignmentDetails' was used before it was defined       no-use-before-define
+Error:   158:25  error    Expected { after 'if' condition                               curly
+Warning:   164:45  warning  'frameAssignmentDetails' was used before it was defined       no-use-before-define
+Error:   170:25  error    Expected { after 'if' condition                               curly
+Error:   178:25  error    Expected { after 'if' condition                               curly
+Warning:   183:41  warning  'frameAssignmentDetails' was used before it was defined       no-use-before-define
+Error:   189:21  error    Expected { after 'if' condition                               curly
+Error:   197:21  error    Expected { after 'if' condition                               curly
+
+/home/runner/work/eclaims/eclaims/srv/controller/clearRequestsByProcessCode.controller.js
+Warning:     2:9   warning  'ApplicationConstants' is assigned a value but never used               no-unused-vars
+Warning:     2:31  warning  'MessageConstants' is assigned a value but never used                   no-unused-vars
+Warning:    11:1   warning  Missing JSDoc @returns declaration                                      jsdoc/require-returns
+Warning:    13:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:    34:30  warning  'purgeClaimsByProcess' was used before it was defined                   no-use-before-define
+Warning:    55:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    56:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                  jsdoc/check-types
+Warning:   131:7   warning  Value of 'error' may be overwritten in IE 8 and earlier                 no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/controller/deleteClaimClearRequest.controller.js
+Warning:     2:9   warning  'ApplicationConstants' is assigned a value but never used               no-unused-vars
+Warning:     2:31  warning  'MessageConstants' is assigned a value but never used                   no-unused-vars
+Warning:    11:1   warning  Missing JSDoc @returns declaration                                      jsdoc/require-returns
+Warning:    13:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:    34:30  warning  'purgeClaimRequest' was used before it was defined                      no-use-before-define
+Warning:    56:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    57:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                  jsdoc/check-types
+Warning:   170:7   warning  Value of 'error' may be overwritten in IE 8 and earlier                 no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/controller/deleteClaimRequest.controller.js
+Warning:     2:9   warning  'ApplicationConstants' is assigned a value but never used               no-unused-vars
+Warning:     2:31  warning  'MessageConstants' is assigned a value but never used                   no-unused-vars
+Warning:    11:1   warning  Missing JSDoc @returns declaration                                      jsdoc/require-returns
+Warning:    13:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:    34:30  warning  'purgeClaimRequest' was used before it was defined                      no-use-before-define
+Warning:    56:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    57:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                  jsdoc/check-types
+Warning:   170:7   warning  Value of 'error' may be overwritten in IE 8 and earlier                 no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/controller/deleteEclaimRequest.controller.js
+Warning:     6:7   warning  'RemarksDataRepo' is assigned a value but never used            no-unused-vars
+Warning:    14:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    15:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"          jsdoc/check-types
+Error:    22:9   error    Unnecessary try/catch wrapper                                   no-useless-catch
+Warning:    72:27  warning  'performDeletion' was used before it was defined                no-use-before-define
+Warning:    85:11  warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+Warning:    95:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:   122:15  warning  'deleteRemarksByDraftIdWithTx' was used before it was defined   no-use-before-define
+Warning:   136:15  warning  'deleteEclaimsHeaderData' was used before it was defined        no-use-before-define
+Warning:   138:7   warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+Warning:   146:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:   158:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:   172:16  warning  'fetchDraftIdByRequestId' is defined but never used             no-unused-vars
+
+/home/runner/work/eclaims/eclaims/srv/controller/eclaimsOverviewDashboard.controller.js
+Warning:     4:7   warning  'TaskInboxRepo' is assigned a value but never used                               no-unused-vars
+Warning:    17:9   warning  'head' is assigned a value but never used                                        no-unused-vars
+Warning:    23:1   warning  The type 'oject' is undefined                                                    jsdoc/no-undefined-types
+Error:    33:20  error    'cds' is not defined                                                             no-undef
+Warning:    41:17  warning  'loggedInUserDetails' is assigned a value but never used                         no-unused-vars
+Warning:    74:11  warning  Value of 'error' may be overwritten in IE 8 and earlier                          no-catch-shadow
+Error:    76:56  error    Empty block statement                                                            no-empty
+Warning:   577:17  warning  'staffId' is assigned a value but never used                                     no-unused-vars
+Warning:   680:44  warning  Function declared in a loop contains unsafe references to variable(s) 'appnMap'  no-loop-func
+
+/home/runner/work/eclaims/eclaims/srv/controller/ecpWbsValidateCtrl.controller.js
+Warning:    1:7   warning  'CommonUtils' is assigned a value but never used                no-unused-vars
+Warning:    7:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    8:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   13:15  warning  'user' is assigned a value but never used                       no-unused-vars
+
+/home/runner/work/eclaims/eclaims/srv/controller/eligibleClaimTypes.controller.js
+Warning:    4:1   warning  Missing JSDoc @param "request" declaration       jsdoc/require-param
+Warning:    4:1   warning  Missing JSDoc @returns declaration               jsdoc/require-returns
+Warning:   16:17  warning  'claimMonth' is assigned a value but never used  no-unused-vars
+Warning:   16:29  warning  'claimYear' is assigned a value but never used   no-unused-vars
+
+/home/runner/work/eclaims/eclaims/srv/controller/fetchClaimTypes.controller.js
+Warning:    2:7  warning  'CommonRepo' is assigned a value but never used                 no-unused-vars
+Warning:   10:1  warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/controller/fetchDraftEclaimRequest.controller.js
+Warning:    8:1   warning  Missing JSDoc @returns declaration                                                                                                                         jsdoc/require-returns
+Warning:   10:1   warning  Missing JSDoc @param "request" description                                                                                                                 jsdoc/require-param-description
+Warning:   10:1   warning  Missing JSDoc @param "request" type                                                                                                                        jsdoc/require-param-type
+Warning:   13:9   warning  'approveTasksRes' is assigned a value but never used                                                                                                       no-unused-vars
+Warning:   26:38  warning  'isDraftExists' was used before it was defined                                                                                                             no-use-before-define
+Warning:   45:1   warning  Missing JSDoc @returns declaration                                                                                                                         jsdoc/require-returns
+Warning:   47:1   warning  Expected @param names to be "claimCode, ulu, fdlu, period, staffId, userInfoDetails". Got "token, claimCode, ulu, fdlu, period, staffId, userInfoDetails"  jsdoc/check-param-names
+Warning:   47:1   warning  Missing JSDoc @param "token" description                                                                                                                   jsdoc/require-param-description
+Warning:   47:1   warning  Missing JSDoc @param "token" type                                                                                                                          jsdoc/require-param-type
+Warning:   48:1   warning  Missing JSDoc @param "claimCode" description                                                                                                               jsdoc/require-param-description
+Warning:   48:1   warning  Missing JSDoc @param "claimCode" type                                                                                                                      jsdoc/require-param-type
+Warning:   49:1   warning  Missing JSDoc @param "ulu" description                                                                                                                     jsdoc/require-param-description
+Warning:   49:1   warning  Missing JSDoc @param "ulu" type                                                                                                                            jsdoc/require-param-type
+Warning:   50:1   warning  Missing JSDoc @param "fdlu" description                                                                                                                    jsdoc/require-param-description
+Warning:   50:1   warning  Missing JSDoc @param "fdlu" type                                                                                                                           jsdoc/require-param-type
+Warning:   51:1   warning  Missing JSDoc @param "period" description                                                                                                                  jsdoc/require-param-description
+Warning:   51:1   warning  Missing JSDoc @param "period" type                                                                                                                         jsdoc/require-param-type
+Warning:   52:1   warning  Missing JSDoc @param "staffId" description                                                                                                                 jsdoc/require-param-description
+Warning:   52:1   warning  Missing JSDoc @param "staffId" type                                                                                                                        jsdoc/require-param-type
+Warning:   53:1   warning  Missing JSDoc @param "userInfoDetails" description                                                                                                         jsdoc/require-param-description
+Warning:   53:1   warning  Missing JSDoc @param "userInfoDetails" type                                                                                                                jsdoc/require-param-type
+Warning:   58:7   warning  'validateInputParams' was used before it was defined                                                                                                       no-use-before-define
+Warning:   96:3   warning  Missing JSDoc comment                                                                                                                                      jsdoc/require-jsdoc
+
+/home/runner/work/eclaims/eclaims/srv/controller/fetchUluFdlu.controller.js
+Warning:    1:7  warning  'AppConfigRepo' is assigned a value but never used              no-unused-vars
+Warning:    4:9  warning  'ApplicationConstants' is assigned a value but never used       no-unused-vars
+Warning:   12:1  warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   13:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   85:7  warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/controller/fetchWBS.controller.js
+Warning:    1:31  warning  'MessageConstants' is assigned a value but never used     no-unused-vars
+Warning:    3:7   warning  'EclaimsItemDataRepo' is assigned a value but never used  no-unused-vars
+Warning:    9:1   warning  Missing JSDoc @returns declaration                        jsdoc/require-returns
+Warning:   11:1   warning  Missing JSDoc @param "request" description                jsdoc/require-param-description
+Warning:   11:1   warning  Missing JSDoc @param "request" type                       jsdoc/require-param-type
+Warning:   14:9   warning  'aWBS' is assigned a value but never used                 no-unused-vars
+Warning:   22:13  warning  'userInfoDetails' is assigned a value but never used      no-unused-vars
+Warning:   27:32  warning  'fetchWBSPastThreeMonths' was used before it was defined  no-use-before-define
+Warning:   43:1   warning  Missing JSDoc comment                                     jsdoc/require-jsdoc
+
+/home/runner/work/eclaims/eclaims/srv/controller/filterData.controller.js
+Warning:    1:9   warning  'ApplicationConstants' is assigned a value but never used       no-unused-vars
+Warning:    1:31  warning  'MessageConstants' is assigned a value but never used           no-unused-vars
+Warning:    5:1   warning  Missing JSDoc @returns declaration                              jsdoc/require-returns
+Warning:    8:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   46:7   warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/controller/rateTypes.controller.js
+Warning:    1:7   warning  'AppConfigRepo' is assigned a value but never used         no-unused-vars
+Warning:    4:7   warning  'ChrsJobInfoRepo' is assigned a value but never used       no-unused-vars
+Warning:    5:9   warning  'ApplicationConstants' is assigned a value but never used  no-unused-vars
+Warning:    6:7   warning  'CommonUtils' is assigned a value but never used           no-unused-vars
+Warning:   10:1   warning  Missing JSDoc @returns declaration                         jsdoc/require-returns
+Warning:   12:1   warning  Missing JSDoc @param "request" description                 jsdoc/require-param-description
+Warning:   12:1   warning  Missing JSDoc @param "request" type                        jsdoc/require-param-type
+Warning:   15:9   warning  'approveTasksRes' is assigned a value but never used       no-unused-vars
+Error:   16:5   error    Unnecessary try/catch wrapper                              no-useless-catch
+Warning:   21:13  warning  'userInfoDetails' is assigned a value but never used       no-unused-vars
+
+/home/runner/work/eclaims/eclaims/srv/controller/requestUpload.controller.js
+Warning:     1:7   warning  'cds' is assigned a value but never used                        no-unused-vars
+Warning:     2:9   warning  'ApplicationConstants' is assigned a value but never used       no-unused-vars
+Warning:     2:31  warning  'MessageConstants' is assigned a value but never used           no-unused-vars
+Warning:     4:7   warning  'CommonRepo' is assigned a value but never used                 no-unused-vars
+Warning:     9:1   warning  Missing JSDoc @returns declaration                              jsdoc/require-returns
+Warning:    12:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    98:7   warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+Warning:   115:1   warning  Missing JSDoc @returns declaration                              jsdoc/require-returns
+Warning:   118:1   warning  Invalid JSDoc @param "req" type "Object"; prefer: "object"      jsdoc/check-types
+Warning:   119:1   warning  Invalid JSDoc @param "res" type "Object"; prefer: "object"      jsdoc/check-types
+Warning:   122:43  warning  'next' is defined but never used                                no-unused-vars
+Warning:   174:7   warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/controller/sendPendingEmailNotification.controller.js
+Warning:   11:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   52:11  warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/controller/sendRejectionEmail.controller.js
+Warning:   11:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   12:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   61:11  warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/controller/singleRequest.controller.js
+  2309:85  error  Parsing error: Argument name clash
+
+/home/runner/work/eclaims/eclaims/srv/controller/submittedEclaimData.controller.js
+Warning:    1:31  warning  'MessageConstants' is assigned a value but never used                   no-unused-vars
+Warning:    6:7   warning  'CommonUtils' is assigned a value but never used                        no-unused-vars
+Warning:    9:1   warning  Missing JSDoc @returns declaration                                      jsdoc/require-returns
+Warning:   11:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   27:38  warning  'isSubmittedExists' was used before it was defined                      no-use-before-define
+Warning:   53:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   54:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                  jsdoc/check-types
+Warning:   60:5   warning  'validateInputParams' was used before it was defined                    no-use-before-define
+
+/home/runner/work/eclaims/eclaims/srv/controller/tobedeletedsingleRequest.controller.js
+Warning:     25:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"               jsdoc/check-types
+Warning:     26:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                       jsdoc/check-types
+Warning:     62:7   warning  Value of 'error' may be overwritten in IE 8 and earlier                      no-catch-shadow
+Warning:    105:1   warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                  jsdoc/check-types
+Warning:    106:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:    107:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                       jsdoc/check-types
+Warning:    154:1   warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                  jsdoc/check-types
+Warning:    156:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:    157:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                       jsdoc/check-types
+Warning:    209:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:    212:1   warning  Invalid JSDoc @param "loggedInUserDetails" type "Object"; prefer: "object"   jsdoc/check-types
+Warning:    213:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                       jsdoc/check-types
+Warning:    315:1   warning  Invalid JSDoc @param "loggedInUserDetails" type "Object"; prefer: "object"   jsdoc/check-types
+Warning:    344:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:    345:1   warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                  jsdoc/check-types
+Warning:    347:1   warning  Invalid JSDoc @param "savedData" type "Object"; prefer: "object"             jsdoc/check-types
+Warning:    350:1   warning  Invalid JSDoc @param "loggedInUserDetails" type "Object"; prefer: "object"   jsdoc/check-types
+Warning:    351:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                       jsdoc/check-types
+Warning:    566:1   warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                  jsdoc/check-types
+Warning:    567:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:    568:1   warning  Invalid JSDoc @param "loggedInUserDetails" type "Object"; prefer: "object"   jsdoc/check-types
+Warning:    646:1   warning  Invalid JSDoc @param "claimInnerRequestDto" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    647:1   warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                  jsdoc/check-types
+Warning:    648:1   warning  Invalid JSDoc @param "loggedInUserDetails" type "Object"; prefer: "object"   jsdoc/check-types
+Warning:    650:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:    651:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                       jsdoc/check-types
+Warning:    702:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:    753:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:    756:1   warning  Invalid JSDoc @param "selectedClaimDates" type "Object"; prefer: "object"    jsdoc/check-types
+Warning:    757:1   warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                  jsdoc/check-types
+Warning:    758:1   warning  Invalid JSDoc @param "eclaimsData" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:    760:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:    761:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                       jsdoc/check-types
+Warning:    855:1   warning  Invalid JSDoc @param "eclaimsData" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:    856:1   warning  Invalid JSDoc @param "chrsJobInfo" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:    892:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:    895:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:    896:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                       jsdoc/check-types
+Error:    908:24  error    Expected { after 'if' condition                                              curly
+Warning:    957:29  warning  'lockRequestorGrp' is assigned a value but never used                        no-unused-vars
+Warning:    991:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:    994:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:    995:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                       jsdoc/check-types
+Error:   1007:24  error    Expected { after 'if' condition                                              curly
+Error:   1008:33  error    Expected { after 'if' condition                                              curly
+Warning:   1038:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:   1041:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:   1042:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                       jsdoc/check-types
+Error:   1054:24  error    Expected { after 'if' condition                                              curly
+Error:   1055:33  error    Expected { after 'if' condition                                              curly
+Warning:   1092:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:   1096:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"       jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/controller/validateEclaims.controller.js
+Warning:     8:1   warning  Missing JSDoc @returns declaration                       jsdoc/require-returns
+Warning:    10:1   warning  Missing JSDoc @param "request" description               jsdoc/require-param-description
+Warning:    10:1   warning  Missing JSDoc @param "request" type                      jsdoc/require-param-type
+Warning:    27:13  warning  'responseHeaders' is assigned a value but never used     no-unused-vars
+Warning:    29:33  warning  'validateEclaims' was used before it was defined         no-use-before-define
+Warning:    36:7   warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+Warning:    57:1   warning  Missing JSDoc comment                                    jsdoc/require-jsdoc
+Warning:   105:7   warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/enum/processConfigType.js
+Warning:   24:1  warning  Missing JSDoc comment  jsdoc/require-jsdoc
+
+/home/runner/work/eclaims/eclaims/srv/enum/rateTypeConfig.js
+Warning:   57:5   warning  Missing JSDoc @returns declaration        jsdoc/require-returns
+Warning:   60:1   warning  Missing JSDoc @param "value" description  jsdoc/require-param-description
+Warning:   60:1   warning  Missing JSDoc @param "value" type         jsdoc/require-param-type
+Warning:   63:23  warning  Expected '===' and instead saw '=='       eqeqeq
+
+/home/runner/work/eclaims/eclaims/srv/repository/appConfig.repo.js
+Warning:    8:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                                        jsdoc/check-types
+Warning:   11:11  warning  'fetchByConfigKeyAndProcessCode' is already declared in the upper scope on line 10 column 16  no-shadow
+Warning:   21:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                                        jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/repository/approverMatrix.repo.js
+Warning:     3:9  warning  'UTC' is assigned a value but never used                   no-unused-vars
+Warning:   241:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   266:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"  jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/repository/chrsCompInfo.repo.js
+Warning:    2:9  warning  'SELECT' is assigned a value but never used                                   no-unused-vars
+Warning:    4:1  warning  Missing JSDoc @returns declaration                                            jsdoc/require-returns
+Warning:    6:1  warning  Missing JSDoc @param "nusNetId" description                                   jsdoc/require-param-description
+Warning:    6:1  warning  Missing JSDoc @param "nusNetId" type                                          jsdoc/require-param-type
+Warning:    7:1  warning  Missing JSDoc @param "startDate" description                                  jsdoc/require-param-description
+Warning:    7:1  warning  Missing JSDoc @param "startDate" type                                         jsdoc/require-param-type
+Warning:    8:1  warning  Missing JSDoc @param "endDate" description                                    jsdoc/require-param-description
+Warning:    8:1  warning  Missing JSDoc @param "endDate" type                                           jsdoc/require-param-type
+Warning:    9:1  warning  Missing JSDoc @param "ulu" description                                        jsdoc/require-param-description
+Warning:    9:1  warning  Missing JSDoc @param "ulu" type                                               jsdoc/require-param-type
+Warning:   10:1  warning  Missing JSDoc @param "fdlu" description                                       jsdoc/require-param-description
+Warning:   10:1  warning  Missing JSDoc @param "fdlu" type                                              jsdoc/require-param-type
+Warning:   11:1  warning  Missing JSDoc @param "processCode" description                                jsdoc/require-param-description
+Warning:   11:1  warning  Missing JSDoc @param "processCode" type                                       jsdoc/require-param-type
+Warning:   74:9  warning  'fetchRateTypes' is already declared in the upper scope on line 13 column 16  no-shadow
+
+/home/runner/work/eclaims/eclaims/srv/repository/chrsCostDist.repo.js
+Warning:   3:1  warning  Missing JSDoc comment                                                              jsdoc/require-jsdoc
+Warning:   5:9  warning  'fetchCostDistDetails' is already declared in the upper scope on line 3 column 16  no-shadow
+
+/home/runner/work/eclaims/eclaims/srv/repository/chrsJobInfo.repo.js
+Warning:     2:17  warning  'func' is assigned a value but never used                no-unused-vars
+Warning:   330:11  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+Error:   332:23  error    'DatabaseException' is not defined                       no-undef
+Warning:   462:11  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/repository/chrsUluFdlu.repo.js
+Warning:    3:9  warning  'fetchUluFdlu' is assigned a value but never used                                    no-unused-vars
+Warning:    4:9  warning  'CQL' is assigned a value but never used                                             no-unused-vars
+Warning:    6:1  warning  Missing JSDoc @returns declaration                                                   jsdoc/require-returns
+Warning:    8:1  warning  Missing JSDoc @param "staffId" description                                           jsdoc/require-param-description
+Warning:    8:1  warning  Missing JSDoc @param "staffId" type                                                  jsdoc/require-param-type
+Warning:    9:1  warning  Missing JSDoc @param "userGroup" description                                         jsdoc/require-param-description
+Warning:    9:1  warning  Missing JSDoc @param "userGroup" type                                                jsdoc/require-param-type
+Warning:   13:9  warning  'fetchUluFdluDetails' is already declared in the upper scope on line 11 column 16    no-shadow
+Warning:   17:1  warning  Missing JSDoc @returns declaration                                                   jsdoc/require-returns
+Warning:   19:1  warning  Missing JSDoc @param "staffID" description                                           jsdoc/require-param-description
+Warning:   19:1  warning  Missing JSDoc @param "staffID" type                                                  jsdoc/require-param-type
+Warning:   20:1  warning  Missing JSDoc @param "userGroup" description                                         jsdoc/require-param-description
+Warning:   20:1  warning  Missing JSDoc @param "userGroup" type                                                jsdoc/require-param-type
+Warning:   21:1  warning  Missing JSDoc @param "claimType" description                                         jsdoc/require-param-description
+Warning:   21:1  warning  Missing JSDoc @param "claimType" type                                                jsdoc/require-param-type
+Warning:   52:9  warning  'fetchCAUluFdluDetails' is already declared in the upper scope on line 23 column 16  no-shadow
+
+/home/runner/work/eclaims/eclaims/srv/repository/cwsData.repo.js
+Warning:    2:9  warning  'SELECT' is assigned a value but never used                     no-unused-vars
+Warning:   12:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:   13:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   24:7  warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+Warning:   33:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:   45:7  warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+Warning:   53:1  warning  Invalid JSDoc @param "cwsData" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   54:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:   55:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   67:7  warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+Warning:   76:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:   77:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   88:7  warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/repository/dashboardConfig.repo.js
+Warning:   3:9  warning  'PROCESS_CODE' is assigned a value but never used  no-unused-vars
+
+/home/runner/work/eclaims/eclaims/srv/repository/dateToWeek.repo.js
+Warning:   3:7  warning  'ApplicationConstants' is assigned a value but never used  no-unused-vars
+Warning:   5:1  warning  Missing JSDoc @returns declaration                         jsdoc/require-returns
+Warning:   7:1  warning  Missing JSDoc @param "claimStartDate" description          jsdoc/require-param-description
+Warning:   7:1  warning  Missing JSDoc @param "claimStartDate" type                 jsdoc/require-param-type
+
+/home/runner/work/eclaims/eclaims/srv/repository/eclaimsData.repo.js
+Warning:     7:1  warning  Missing JSDoc @param "staffId" description                                                      jsdoc/require-param-description
+Warning:     8:1  warning  Missing JSDoc @param "statusCode" description                                                   jsdoc/require-param-description
+Warning:     9:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:    12:9  warning  'fetchClaimStatusCountById' is already declared in the upper scope on line 11 column 16         no-shadow
+Warning:    27:1  warning  Missing JSDoc @param "staffId" description                                                      jsdoc/require-param-description
+Warning:    28:1  warning  Missing JSDoc @param "statusCode" description                                                   jsdoc/require-param-description
+Warning:    29:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:    32:9  warning  'fetchClaimStatusCountById' is already declared in the upper scope on line 11 column 16         no-shadow
+Warning:    47:1  warning  Missing JSDoc @param "staffId" description                                                      jsdoc/require-param-description
+Warning:    48:1  warning  Missing JSDoc @param "status" description                                                       jsdoc/require-param-description
+Warning:    49:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:    78:9  warning  'fetchPendingCAStatusCount' is already declared in the upper scope on line 51 column 16         no-shadow
+Warning:    83:1  warning  Missing JSDoc @param "staffId" description                                                      jsdoc/require-param-description
+Warning:    84:1  warning  Missing JSDoc @param "status" description                                                       jsdoc/require-param-description
+Warning:    85:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:   113:9  warning  'fetchCAStatusCountForDraft' is already declared in the upper scope on line 87 column 16        no-shadow
+Warning:   118:1  warning  Missing JSDoc @param "staffId" description                                                      jsdoc/require-param-description
+Warning:   119:1  warning  Missing JSDoc @param "status" description                                                       jsdoc/require-param-description
+Warning:   120:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:   148:9  warning  'fetchCAStatusCountForDraft' is already declared in the upper scope on line 87 column 16        no-shadow
+Warning:   153:1  warning  Missing JSDoc @param "staffId" description                                                      jsdoc/require-param-description
+Warning:   154:1  warning  Missing JSDoc @param "statusCode" description                                                   jsdoc/require-param-description
+Warning:   155:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:   160:9  warning  'fetchTbClaimStatusCountById' is already declared in the upper scope on line 157 column 16      no-shadow
+Warning:   165:1  warning  Missing JSDoc @param "staffId" description                                                      jsdoc/require-param-description
+Warning:   166:1  warning  Missing JSDoc @param "statusCode" description                                                   jsdoc/require-param-description
+Warning:   167:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:   172:9  warning  'fetchTbClaimStatusCount' is already declared in the upper scope on line 169 column 16          no-shadow
+Warning:   175:1  warning  Missing JSDoc @param "tx" declaration                                                           jsdoc/require-param
+Warning:   177:1  warning  Missing JSDoc @param "draftId" description                                                      jsdoc/require-param-description
+Warning:   178:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"                                          jsdoc/check-types
+Warning:   178:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:   189:1  warning  Missing JSDoc @param "draftId" description                                                      jsdoc/require-param-description
+Warning:   190:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:   195:9  warning  'fetchRequestId' is already declared in the upper scope on line 192 column 16                   no-shadow
+Warning:   201:1  warning  Missing JSDoc @param "requestId" description                                                    jsdoc/require-param-description
+Warning:   202:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"                                          jsdoc/check-types
+Warning:   202:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:   214:1  warning  Missing JSDoc @param "month" description                                                        jsdoc/require-param-description
+Warning:   215:1  warning  Missing JSDoc @param "year" description                                                         jsdoc/require-param-description
+Warning:   216:1  warning  Missing JSDoc @param "staffId" description                                                      jsdoc/require-param-description
+Warning:   217:1  warning  Missing JSDoc @param "claimType" description                                                    jsdoc/require-param-description
+Warning:   218:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:   224:9  warning  'fetchMonthlyClaims' is already declared in the upper scope on line 220 column 16               no-shadow
+Warning:   229:1  warning  Missing JSDoc @param "month" description                                                        jsdoc/require-param-description
+Warning:   230:1  warning  Missing JSDoc @param "year" description                                                         jsdoc/require-param-description
+Warning:   231:1  warning  Missing JSDoc @param "staffId" description                                                      jsdoc/require-param-description
+Warning:   232:1  warning  Missing JSDoc @param "claimType" description                                                    jsdoc/require-param-description
+Warning:   233:1  warning  Missing JSDoc @param "startDate" description                                                    jsdoc/require-param-description
+Warning:   234:1  warning  Missing JSDoc @param "endDate" description                                                      jsdoc/require-param-description
+Warning:   235:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:   241:9  warning  'fetchMonthlyClaimsOnSubmittedOn' is already declared in the upper scope on line 237 column 16  no-shadow
+Warning:   246:1  warning  Missing JSDoc @param "ULU" description                                                          jsdoc/require-param-description
+Warning:   247:1  warning  Missing JSDoc @param "FDLU" description                                                         jsdoc/require-param-description
+Warning:   248:1  warning  Missing JSDoc @param "CLAIM_TYPE" description                                                   jsdoc/require-param-description
+Warning:   249:1  warning  Missing JSDoc @param "CLAIM_MONTH" description                                                  jsdoc/require-param-description
+Warning:   250:1  warning  Missing JSDoc @param "CLAIM_YEAR" description                                                   jsdoc/require-param-description
+Warning:   251:1  warning  Missing JSDoc @param "STAFF_ID" description                                                     jsdoc/require-param-description
+Warning:   252:1  warning  Missing JSDoc @param "NUSNET_ID" description                                                    jsdoc/require-param-description
+Warning:   253:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:   269:9  warning  'fetchDraftStatusEclaimsData' is already declared in the upper scope on line 255 column 16      no-shadow
+Warning:   275:1  warning  Missing JSDoc @param "ULU" description                                                          jsdoc/require-param-description
+Warning:   276:1  warning  Missing JSDoc @param "FDLU" description                                                         jsdoc/require-param-description
+Warning:   277:1  warning  Missing JSDoc @param "CLAIM_TYPE" description                                                   jsdoc/require-param-description
+Warning:   278:1  warning  Missing JSDoc @param "CLAIM_MONTH" description                                                  jsdoc/require-param-description
+Warning:   279:1  warning  Missing JSDoc @param "CLAIM_YEAR" description                                                   jsdoc/require-param-description
+Warning:   280:1  warning  Missing JSDoc @param "STAFF_ID" description                                                     jsdoc/require-param-description
+Warning:   281:1  warning  Missing JSDoc @param "NUSNET_ID" description                                                    jsdoc/require-param-description
+Warning:   282:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:   298:9  warning  'fetchSubmittedStatusEclaimsData' is already declared in the upper scope on line 284 column 16  no-shadow
+Warning:   303:1  warning  Missing JSDoc @param "stfNumber" description                                                    jsdoc/require-param-description
+Warning:   304:1  warning  Missing JSDoc @param "requestClaimDate" description                                             jsdoc/require-param-description
+Warning:   305:1  warning  Missing JSDoc @returns description                                                              jsdoc/require-returns-description
+Warning:   331:1  warning  Invalid JSDoc @param "eclaimsData" type "Object"; prefer: "object"                              jsdoc/check-types
+Warning:   332:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"                                          jsdoc/check-types
+Warning:   341:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                                       jsdoc/check-types
+Warning:   365:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                                       jsdoc/check-types
+Warning:   369:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"                                          jsdoc/check-types
+Warning:   428:7  warning  Value of 'error' may be overwritten in IE 8 and earlier                                         no-catch-shadow
+Warning:   476:7  warning  Value of 'error' may be overwritten in IE 8 and earlier                                         no-catch-shadow
+Warning:   522:7  warning  Value of 'error' may be overwritten in IE 8 and earlier                                         no-catch-shadow
+Warning:   572:7  warning  Value of 'error' may be overwritten in IE 8 and earlier                                         no-catch-shadow
+Warning:   626:7  warning  Value of 'error' may be overwritten in IE 8 and earlier                                         no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/repository/eclaimsItemData.repo.js
+Warning:     7:1   warning  Missing JSDoc @param "staffNusNetId" description                                                 jsdoc/require-param-description
+Warning:     8:1   warning  Missing JSDoc @param "claimCode" description                                                     jsdoc/require-param-description
+Warning:     9:1   warning  Missing JSDoc @param "month" description                                                         jsdoc/require-param-description
+Warning:    10:1   warning  Missing JSDoc @param "year" description                                                          jsdoc/require-param-description
+Warning:    11:1   warning  Missing JSDoc @param "date" description                                                          jsdoc/require-param-description
+Warning:    12:1   warning  Missing JSDoc @returns description                                                               jsdoc/require-returns-description
+Warning:    26:11  warning  'queryDayMonthAndYearRequests' is already declared in the upper scope on line 14 column 16       no-shadow
+Warning:    44:1   warning  Missing JSDoc @param "staffNusNetId" description                                                 jsdoc/require-param-description
+Warning:    45:1   warning  Missing JSDoc @param "claimCode" description                                                     jsdoc/require-param-description
+Warning:    46:1   warning  Missing JSDoc @param "weekNo" description                                                        jsdoc/require-param-description
+Warning:    47:1   warning  Missing JSDoc @returns description                                                               jsdoc/require-returns-description
+Warning:    61:11  warning  'queryMonthAndYearRequests' is already declared in the upper scope on line 49 column 16          no-shadow
+Warning:    82:1   warning  Missing JSDoc @param "staffNusNetId" description                                                 jsdoc/require-param-description
+Warning:    83:1   warning  Missing JSDoc @param "claimStartDate" description                                                jsdoc/require-param-description
+Warning:    84:1   warning  Missing JSDoc @param "claimEndDate" description                                                  jsdoc/require-param-description
+Warning:    85:1   warning  Missing JSDoc @param "ulu" description                                                           jsdoc/require-param-description
+Warning:    86:1   warning  Missing JSDoc @param "fdlu" description                                                          jsdoc/require-param-description
+Warning:    87:1   warning  Missing JSDoc @returns description                                                               jsdoc/require-returns-description
+Warning:   125:11  warning  'checkForExistingReq' is already declared in the upper scope on line 89 column 16                no-shadow
+Warning:   131:1   warning  Missing JSDoc @param "draftId" description                                                       jsdoc/require-param-description
+Warning:   132:1   warning  Missing JSDoc @returns description                                                               jsdoc/require-returns-description
+Warning:   137:9   warning  'fetchItemCount' is already declared in the upper scope on line 134 column 16                    no-shadow
+Warning:   143:1   warning  Missing JSDoc @param "draftId" description                                                       jsdoc/require-param-description
+Warning:   144:1   warning  Missing JSDoc @returns description                                                               jsdoc/require-returns-description
+Warning:   149:9   warning  'fetchByDraftId' is already declared in the upper scope on line 146 column 16                    no-shadow
+Warning:   155:1   warning  Missing JSDoc @param "draftId" description                                                       jsdoc/require-param-description
+Warning:   156:1   warning  Missing JSDoc @returns description                                                               jsdoc/require-returns-description
+Warning:   161:9   warning  'fetchItemIds' is already declared in the upper scope on line 158 column 16                      no-shadow
+Warning:   165:1   warning  Missing JSDoc @param "itemIdsObj" declaration                                                    jsdoc/require-param
+Warning:   167:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                                        jsdoc/check-types
+Warning:   167:1   warning  Missing JSDoc @param "tx" description                                                            jsdoc/require-param-description
+Warning:   168:1   warning  Expected @param names to be "tx, itemIdsObj, nusNetId, date". Got "tx, itemIds, nusNetId, date"  jsdoc/check-param-names
+Warning:   168:1   warning  Missing JSDoc @param "itemIds" description                                                       jsdoc/require-param-description
+Warning:   169:1   warning  Missing JSDoc @param "nusNetId" description                                                      jsdoc/require-param-description
+Warning:   170:1   warning  Missing JSDoc @param "date" description                                                          jsdoc/require-param-description
+Warning:   171:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                                           jsdoc/check-types
+Warning:   171:1   warning  Missing JSDoc @returns description                                                               jsdoc/require-returns-description
+Warning:   173:16  warning  'softDeleteByItemIdOld' is defined but never used                                                no-unused-vars
+Warning:   188:1   warning  Missing JSDoc comment                                                                            jsdoc/require-jsdoc
+Warning:   207:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                                        jsdoc/check-types
+Warning:   207:1   warning  Missing JSDoc @param "tx" description                                                            jsdoc/require-param-description
+Warning:   208:1   warning  Missing JSDoc @param "draftId" description                                                       jsdoc/require-param-description
+Warning:   209:1   warning  Missing JSDoc @param "nusNetId" description                                                      jsdoc/require-param-description
+Warning:   210:1   warning  Missing JSDoc @param "date" description                                                          jsdoc/require-param-description
+Warning:   211:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                                           jsdoc/check-types
+Warning:   211:1   warning  Missing JSDoc @returns description                                                               jsdoc/require-returns-description
+Warning:   227:1   warning  Invalid JSDoc @param "eclaimsItemData" type "Object"; prefer: "object"                           jsdoc/check-types
+Warning:   228:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                                           jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/repository/eligibilityCriteria.repo.js
+Warning:    37:15  warning  'fetchWorkingHours' is already declared in the upper scope on line 12 column 16      no-shadow
+Warning:    39:7   warning  Value of 'error' may be overwritten in IE 8 and earlier                              no-catch-shadow
+Warning:    55:15  warning  'fetchClaimTypes' is already declared in the upper scope on line 50 column 16        no-shadow
+Warning:   123:7   warning  Value of 'error' may be overwritten in IE 8 and earlier                              no-catch-shadow
+Warning:   136:15  warning  'fetchClaimTypesForCw' is already declared in the upper scope on line 134 column 16  no-shadow
+Warning:   211:7   warning  Value of 'error' may be overwritten in IE 8 and earlier                              no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/repository/emailConfig.repo.js
+Warning:    14:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"   jsdoc/check-types
+Warning:    30:7  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+Warning:    41:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"   jsdoc/check-types
+Warning:    57:7  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+Warning:    68:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"   jsdoc/check-types
+Warning:    84:7  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+Warning:    93:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"   jsdoc/check-types
+Warning:   107:7  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/repository/emailNotificationLog.repo.js
+Warning:   14:1  warning  Invalid JSDoc @param "mailIdMap" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   18:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"            jsdoc/check-types
+Warning:   47:7  warning  Value of 'error' may be overwritten in IE 8 and earlier           no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/repository/processDetails.repo.js
+Warning:   12:9  warning  'fetchByReferenceId' is already declared in the upper scope on line 10 column 16                  no-shadow
+Warning:   26:9  warning  'fetchProcessInstancesByProcessCode' is already declared in the upper scope on line 21 column 16  no-shadow
+Warning:   32:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                                         jsdoc/check-types
+Warning:   36:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"                                            jsdoc/check-types
+Warning:   53:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                                         jsdoc/check-types
+Warning:   57:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"                                            jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/repository/processParticipant.repo.js
+Warning:    4:1   warning  Missing JSDoc @returns declaration                                                jsdoc/require-returns
+Warning:    6:1   warning  Missing JSDoc @param "STF_NUMBER" description                                     jsdoc/require-param-description
+Warning:    6:1   warning  Missing JSDoc @param "STF_NUMBER" type                                            jsdoc/require-param-type
+Warning:    9:9   warning  'fetchRole' is already declared in the upper scope on line 8 column 16            no-shadow
+Warning:   21:1   warning  Missing JSDoc @returns declaration                                                jsdoc/require-returns
+Warning:   23:1   warning  Missing JSDoc @param "draftId" description                                        jsdoc/require-param-description
+Warning:   23:1   warning  Missing JSDoc @param "draftId" type                                               jsdoc/require-param-type
+Warning:   26:9   warning  'fetchPPNTIdDtls' is already declared in the upper scope on line 25 column 16     no-shadow
+Warning:   37:1   warning  Missing JSDoc @returns declaration                                                jsdoc/require-returns
+Warning:   39:1   warning  Missing JSDoc @param "tx" description                                             jsdoc/require-param-description
+Warning:   39:1   warning  Missing JSDoc @param "tx" type                                                    jsdoc/require-param-type
+Warning:   40:1   warning  Missing JSDoc @param "ppntIds" description                                        jsdoc/require-param-description
+Warning:   40:1   warning  Missing JSDoc @param "ppntIds" type                                               jsdoc/require-param-type
+Warning:   45:11  warning  'softDeleteByPPNTId' is already declared in the upper scope on line 42 column 16  no-shadow
+Warning:   78:1   warning  Invalid JSDoc @param "processParticipantData" type "Object"; prefer: "object"     jsdoc/check-types
+Warning:   79:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                            jsdoc/check-types
+Warning:   90:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                         jsdoc/check-types
+Warning:   91:1   warning  Invalid JSDoc @param "processParticipantData" type "Object"; prefer: "object"     jsdoc/check-types
+Warning:   92:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                            jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/repository/remarksData.repo.js
+Warning:    2:9  warning  'INSERT' is assigned a value but never used                        no-unused-vars
+Warning:    7:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"             jsdoc/check-types
+Warning:   17:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   18:1  warning  Invalid JSDoc @param "remarkData" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   19:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"             jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/repository/requestLockDetails.repo.js
+Warning:     8:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:     9:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:    22:1  warning  Invalid JSDoc @param "lockDetails" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    23:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:    24:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:    37:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:    38:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:    51:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:    67:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:    81:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:    82:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:    98:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:   114:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:   115:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:   132:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:   133:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/repository/statusConfig.repo.js
+Warning:    27:7  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+Warning:    36:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"   jsdoc/check-types
+Warning:    62:7  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+Warning:    89:7  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+Warning:    98:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"   jsdoc/check-types
+Warning:   114:7  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+Warning:   139:7  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+Warning:   159:7  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/repository/taskDetails.repo.js
+Warning:    4:1   warning  Missing JSDoc @returns declaration                                                      jsdoc/require-returns
+Warning:    6:1   warning  Missing JSDoc @param "draftId" description                                              jsdoc/require-param-description
+Warning:    6:1   warning  Missing JSDoc @param "draftId" type                                                     jsdoc/require-param-type
+Warning:    7:1   warning  Missing JSDoc @param "processCode" description                                          jsdoc/require-param-description
+Warning:    7:1   warning  Missing JSDoc @param "processCode" type                                                 jsdoc/require-param-type
+Warning:    9:16  warning  'fetchActiveTaskByDraftIdOld' is defined but never used                                 no-unused-vars
+Warning:   10:11  warning  'fetchActiveTaskByDraftId' is already declared in the upper scope on line 30 column 16  no-shadow
+Warning:   25:1   warning  Missing JSDoc @returns declaration                                                      jsdoc/require-returns
+Warning:   27:1   warning  Missing JSDoc @param "draftId" description                                              jsdoc/require-param-description
+Warning:   27:1   warning  Missing JSDoc @param "draftId" type                                                     jsdoc/require-param-type
+Warning:   28:1   warning  Missing JSDoc @param "processCode" description                                          jsdoc/require-param-description
+Warning:   28:1   warning  Missing JSDoc @param "processCode" type                                                 jsdoc/require-param-type
+Warning:   31:11  warning  'fetchActiveTaskByDraftId' is already declared in the upper scope on line 30 column 16  no-shadow
+
+/home/runner/work/eclaims/eclaims/srv/repository/taskInbox.repo.js
+Warning:   5:60  warning  'STATUS_CODE' is defined but never used  no-unused-vars
+
+/home/runner/work/eclaims/eclaims/srv/repository/util.repo.js
+Warning:    24:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:    36:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:    50:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:    65:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:    78:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:    92:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:   107:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:   125:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:   127:1  warning  Invalid JSDoc @param "record" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:   130:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:   185:1  warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"           jsdoc/check-types
+Warning:   187:1  warning  Invalid JSDoc @param "whereClause" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   188:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/server.js
+Warning:     5:7   warning  'xssec' is assigned a value but never used               no-unused-vars
+Error:    51:38  error    '__dirname' is not defined                               no-undef
+Error:    55:32  error    '__dirname' is not defined                               no-undef
+Error:    61:43  error    '__dirname' is not defined                               no-undef
+Warning:   142:41  warning  ["Authorization"] is better written in dot notation      dot-notation
+Warning:   161:7   warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+Warning:   170:11  warning  Value of 'error' may be overwritten in IE 8 and earlier  no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/service/emailService.js
+Warning:    26:1    warning  Invalid JSDoc @param "req" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:    27:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:    52:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:    74:1    warning  Invalid JSDoc @param "req" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:    75:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:   123:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:   146:1    warning  Invalid JSDoc @param "req" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   147:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:   209:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:   227:1    warning  Invalid JSDoc @param "mailIdMap" type "Object"; prefer: "object"    jsdoc/check-types
+Warning:   228:1    warning  Invalid JSDoc @param "req" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   239:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:   275:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:   308:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:   316:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:   325:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:   333:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:   367:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:   415:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:   424:1    warning  Invalid JSDoc @param "emailConfig" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   431:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:   433:93   warning  'isPendingNotification' is defined but never used                   no-unused-vars
+Warning:   433:116  warning  'staffId' is defined but never used                                 no-unused-vars
+Warning:   433:125  warning  'requestorGrp' is defined but never used                            no-unused-vars
+Warning:   462:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:   478:1    warning  Invalid JSDoc @param "mailIdMap" type "Object"; prefer: "object"    jsdoc/check-types
+Warning:   482:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+Warning:   500:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:   518:1    warning  Invalid JSDoc @param "req" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   547:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:   565:1    warning  Invalid JSDoc @param "req" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   568:103  warning  'req' is assigned a value but never used                            no-unused-vars
+Warning:   588:11   warning  Value of 'error' may be overwritten in IE 8 and earlier             no-catch-shadow
+Warning:   604:1    warning  Invalid JSDoc @param "req" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   607:1    warning  Invalid JSDoc @param "mailIdMap" type "Object"; prefer: "object"    jsdoc/check-types
+Warning:   609:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"              jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/util/cacheUtil.js
+Warning:    63:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"  jsdoc/check-types
+Error:   106:1  error    'setInterval' is not defined                            no-undef
+
+/home/runner/work/eclaims/eclaims/srv/util/commonUtil.js
+Warning:     7:1   warning  Invalid JSDoc @param "sourceObj" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:     7:1   warning  Missing JSDoc @param "sourceObj" description                              jsdoc/require-param-description
+Warning:     8:1   warning  Missing JSDoc @param "errorCode" description                              jsdoc/require-param-description
+Warning:     9:1   warning  Missing JSDoc @param "message" description                                jsdoc/require-param-description
+Warning:    10:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:    10:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:    33:1   warning  Missing JSDoc @param "str1" description                                   jsdoc/require-param-description
+Warning:    34:1   warning  Missing JSDoc @param "str2" description                                   jsdoc/require-param-description
+Warning:    35:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:    46:1   warning  Missing JSDoc @param "value" description                                  jsdoc/require-param-description
+Warning:    47:1   warning  Missing JSDoc @param "defaultValue" description                           jsdoc/require-param-description
+Warning:    48:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:    56:1   warning  Missing JSDoc @param "value" description                                  jsdoc/require-param-description
+Warning:    57:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:    65:1   warning  Missing JSDoc @param "value" description                                  jsdoc/require-param-description
+Warning:    66:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:    74:1   warning  Missing JSDoc @param "value" description                                  jsdoc/require-param-description
+Warning:    75:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:    83:1   warning  Missing JSDoc @param "str" description                                    jsdoc/require-param-description
+Warning:    84:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:    92:1   warning  Missing JSDoc @param "str" description                                    jsdoc/require-param-description
+Warning:    93:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:   101:1   warning  Missing JSDoc @param "str" description                                    jsdoc/require-param-description
+Warning:   102:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:   111:1   warning  Invalid JSDoc @param "obj" type "Object"; prefer: "object"                jsdoc/check-types
+Warning:   111:1   warning  Missing JSDoc @param "obj" description                                    jsdoc/require-param-description
+Warning:   112:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:   112:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:   120:1   warning  Missing JSDoc @param "date" description                                   jsdoc/require-param-description
+Warning:   121:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:   133:1   warning  Missing JSDoc @param "min" description                                    jsdoc/require-param-description
+Warning:   134:1   warning  Missing JSDoc @param "max" description                                    jsdoc/require-param-description
+Warning:   135:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:   143:1   warning  Invalid JSDoc @param "obj" type "Object"; prefer: "object"                jsdoc/check-types
+Warning:   143:1   warning  Missing JSDoc @param "obj" description                                    jsdoc/require-param-description
+Warning:   144:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:   152:1   warning  Invalid JSDoc @param "source" type "Object"; prefer: "object"             jsdoc/check-types
+Warning:   152:1   warning  Missing JSDoc @param "source" description                                 jsdoc/require-param-description
+Warning:   153:1   warning  Invalid JSDoc @param "target" type "Object"; prefer: "object"             jsdoc/check-types
+Warning:   153:1   warning  Missing JSDoc @param "target" description                                 jsdoc/require-param-description
+Warning:   154:1   warning  Missing JSDoc @param "skipProps" description                              jsdoc/require-param-description
+Warning:   155:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:   155:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:   176:1   warning  Missing JSDoc @param "number" description                                 jsdoc/require-param-description
+Warning:   177:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:   188:1   warning  Missing JSDoc @param "array" description                                  jsdoc/require-param-description
+Warning:   189:1   warning  Missing JSDoc @param "key" description                                    jsdoc/require-param-description
+Warning:   190:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:   190:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:   205:1   warning  Missing JSDoc @param "type" description                                   jsdoc/require-param-description
+Warning:   206:1   warning  Missing JSDoc @param "message" description                                jsdoc/require-param-description
+Warning:   207:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                    jsdoc/check-types
+Warning:   207:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Warning:   218:1   warning  Missing JSDoc @param "arr" description                                    jsdoc/require-param-description
+Warning:   219:1   warning  Missing JSDoc @param "key" description                                    jsdoc/require-param-description
+Warning:   220:1   warning  Missing JSDoc @returns description                                        jsdoc/require-returns-description
+Error:   237:39  error    'process' is not defined                                                  no-undef
+Error:   273:23  error    'Buffer' is not defined                                                   no-undef
+Warning:   290:1   warning  Invalid JSDoc @param "additionalHeaders" type "Object"; prefer: "object"  jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/util/credStore/credStore.js
+Warning:     5:1   warning  Missing JSDoc @returns declaration              jsdoc/require-returns
+Warning:     7:1   warning  Missing JSDoc @param "response" description     jsdoc/require-param-description
+Warning:     7:1   warning  Missing JSDoc @param "response" type            jsdoc/require-param-type
+Warning:    15:1   warning  Missing JSDoc @returns declaration              jsdoc/require-returns
+Warning:    17:1   warning  Missing JSDoc @param "privateKey" description   jsdoc/require-param-description
+Warning:    17:1   warning  Missing JSDoc @param "privateKey" type          jsdoc/require-param-type
+Warning:    18:1   warning  Missing JSDoc @param "payload" description      jsdoc/require-param-description
+Warning:    18:1   warning  Missing JSDoc @param "payload" type             jsdoc/require-param-type
+Warning:    31:1   warning  Missing JSDoc @returns declaration              jsdoc/require-returns
+Warning:    33:1   warning  Missing JSDoc @param "publicKey" description    jsdoc/require-param-description
+Warning:    33:1   warning  Missing JSDoc @param "publicKey" type           jsdoc/require-param-type
+Warning:    34:1   warning  Missing JSDoc @param "payload" description      jsdoc/require-param-description
+Warning:    34:1   warning  Missing JSDoc @param "payload" type             jsdoc/require-param-type
+Error:    49:56  error    'Buffer' is not defined                         no-undef
+Warning:    53:1   warning  Missing JSDoc @returns declaration              jsdoc/require-returns
+Warning:    55:1   warning  Missing JSDoc @param "binding" description      jsdoc/require-param-description
+Warning:    55:1   warning  Missing JSDoc @param "binding" type             jsdoc/require-param-type
+Warning:    56:1   warning  Missing JSDoc @param "namespace" description    jsdoc/require-param-description
+Warning:    56:1   warning  Missing JSDoc @param "namespace" type           jsdoc/require-param-type
+Warning:    57:1   warning  Missing JSDoc @param "initHeaders" description  jsdoc/require-param-description
+Warning:    57:1   warning  Missing JSDoc @param "initHeaders" type         jsdoc/require-param-type
+Error:    61:43  error    'Buffer' is not defined                         no-undef
+Warning:    67:1   warning  Missing JSDoc @returns declaration              jsdoc/require-returns
+Warning:    69:1   warning  Missing JSDoc @param "privateKey" description   jsdoc/require-param-description
+Warning:    69:1   warning  Missing JSDoc @param "privateKey" type          jsdoc/require-param-type
+Warning:    70:1   warning  Missing JSDoc @param "url" description          jsdoc/require-param-description
+Warning:    70:1   warning  Missing JSDoc @param "url" type                 jsdoc/require-param-type
+Warning:    71:1   warning  Missing JSDoc @param "method" description       jsdoc/require-param-description
+Warning:    71:1   warning  Missing JSDoc @param "method" type              jsdoc/require-param-type
+Warning:    72:1   warning  Missing JSDoc @param "headers" description      jsdoc/require-param-description
+Warning:    72:1   warning  Missing JSDoc @param "headers" type             jsdoc/require-param-type
+Warning:    73:1   warning  Missing JSDoc @param "body" description         jsdoc/require-param-description
+Warning:    73:1   warning  Missing JSDoc @param "body" type                jsdoc/require-param-type
+Warning:    84:1   warning  Missing JSDoc @returns declaration              jsdoc/require-returns
+Warning:    86:1   warning  Missing JSDoc @param "binding" description      jsdoc/require-param-description
+Warning:    86:1   warning  Missing JSDoc @param "binding" type             jsdoc/require-param-type
+Warning:    87:1   warning  Missing JSDoc @param "namespace" description    jsdoc/require-param-description
+Warning:    87:1   warning  Missing JSDoc @param "namespace" type           jsdoc/require-param-type
+Warning:    88:1   warning  Missing JSDoc @param "type" description         jsdoc/require-param-description
+Warning:    88:1   warning  Missing JSDoc @param "type" type                jsdoc/require-param-type
+Warning:    89:1   warning  Missing JSDoc @param "name" description         jsdoc/require-param-description
+Warning:    89:1   warning  Missing JSDoc @param "name" type                jsdoc/require-param-type
+Warning:   101:1   warning  Missing JSDoc @returns declaration              jsdoc/require-returns
+Warning:   103:1   warning  Missing JSDoc @param "binding" description      jsdoc/require-param-description
+Warning:   103:1   warning  Missing JSDoc @param "binding" type             jsdoc/require-param-type
+Warning:   104:1   warning  Missing JSDoc @param "namespace" description    jsdoc/require-param-description
+Warning:   104:1   warning  Missing JSDoc @param "namespace" type           jsdoc/require-param-type
+Warning:   105:1   warning  Missing JSDoc @param "type" description         jsdoc/require-param-description
+Warning:   105:1   warning  Missing JSDoc @param "type" type                jsdoc/require-param-type
+Warning:   106:1   warning  Missing JSDoc @param "credential" description   jsdoc/require-param-description
+Warning:   106:1   warning  Missing JSDoc @param "credential" type          jsdoc/require-param-type
+Warning:   122:1   warning  Missing JSDoc @param "binding" description      jsdoc/require-param-description
+Warning:   122:1   warning  Missing JSDoc @param "binding" type             jsdoc/require-param-type
+Warning:   123:1   warning  Missing JSDoc @param "namespace" description    jsdoc/require-param-description
+Warning:   123:1   warning  Missing JSDoc @param "namespace" type           jsdoc/require-param-type
+Warning:   124:1   warning  Missing JSDoc @param "type" description         jsdoc/require-param-description
+Warning:   124:1   warning  Missing JSDoc @param "type" type                jsdoc/require-param-type
+Warning:   125:1   warning  Missing JSDoc @param "name" description         jsdoc/require-param-description
+Warning:   125:1   warning  Missing JSDoc @param "name" type                jsdoc/require-param-type
+
+/home/runner/work/eclaims/eclaims/srv/util/customErrors.js
+Warning:   73:1  warning  Missing JSDoc comment  jsdoc/require-jsdoc
+
+/home/runner/work/eclaims/eclaims/srv/util/dateUtil.js
+Warning:     5:5   warning  'formatISO' is assigned a value but never used                      no-unused-vars
+Warning:    94:23  warning  'formatDateAsString' was used before it was defined                 no-use-before-define
+Warning:    95:21  warning  'formatDateAsString' was used before it was defined                 no-use-before-define
+Warning:   133:18  warning  'e' is defined but never used                                       no-unused-vars
+Warning:   245:11  warning  'dayOfMonth' is assigned a value but never used                     no-unused-vars
+Warning:   270:40  warning  'format' is already declared in the upper scope on line 2 column 5  no-shadow
+Warning:   287:46  warning  Expected '!==' and instead saw '!='                                 eqeqeq
+Warning:   370:25  warning  'ampm' is already defined                                           no-redeclare
+Warning:   384:25  warning  'ampm' is already defined                                           no-redeclare
+
+/home/runner/work/eclaims/eclaims/srv/util/eclaimService.js
+Warning:     62:1  warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                 jsdoc/check-types
+Warning:     65:1  warning  Invalid JSDoc @param "loggedInUserDetails" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    100:7  warning  Value of 'error' may be overwritten in IE 8 and earlier                     no-catch-shadow
+Warning:    113:1  warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                 jsdoc/check-types
+Warning:    114:1  warning  Missing JSDoc @returns description                                          jsdoc/require-returns-description
+Warning:    182:1  warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                 jsdoc/check-types
+Warning:    185:1  warning  Invalid JSDoc @param "loggedInUserDetails" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    717:7  warning  Value of 'error' may be overwritten in IE 8 and earlier                     no-catch-shadow
+Warning:    731:1  warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                 jsdoc/check-types
+Warning:    754:1  warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                 jsdoc/check-types
+Warning:    854:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"                      jsdoc/check-types
+Warning:    854:1  warning  Missing JSDoc @returns description                                          jsdoc/require-returns-description
+Warning:    869:1  warning  Invalid JSDoc @returns type "Object"; prefer: "object"                      jsdoc/check-types
+Warning:    869:1  warning  Missing JSDoc @returns description                                          jsdoc/require-returns-description
+Warning:    885:1  warning  Invalid JSDoc @param "selectedClaimDates" type "Object"; prefer: "object"   jsdoc/check-types
+Warning:    886:1  warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                 jsdoc/check-types
+Warning:    924:1  warning  Missing JSDoc @returns description                                          jsdoc/require-returns-description
+Warning:    941:1  warning  Invalid JSDoc @param "selectedClaimDates" type "Object"; prefer: "object"   jsdoc/check-types
+Warning:    943:1  warning  Missing JSDoc @returns description                                          jsdoc/require-returns-description
+Warning:   1048:1  warning  Missing JSDoc @returns description                                          jsdoc/require-returns-description
+Warning:   1077:1  warning  Invalid JSDoc @param "item" type "Object"; prefer: "object"                 jsdoc/check-types
+Warning:   1169:1  warning  Invalid JSDoc @param "loggedInUserDetails" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   1212:7  warning  Value of 'error' may be overwritten in IE 8 and earlier                     no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/util/excelMassUploadService.js
+Warning:     6:7    warning  'EclaimService' is assigned a value but never used                              no-unused-vars
+Warning:     7:7    warning  'DateUtils' is assigned a value but never used                                  no-unused-vars
+Warning:    19:1    warning  Invalid JSDoc @param "file" type "Object"; prefer: "object"                     jsdoc/check-types
+Warning:    26:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"                          jsdoc/check-types
+Warning:    32:13   warning  'excelMassUploadRequest' is assigned a value but never used                     no-unused-vars
+Warning:    69:11   warning  Value of 'error' may be overwritten in IE 8 and earlier                         no-catch-shadow
+Warning:    83:1    warning  Invalid JSDoc @param "file" type "Object"; prefer: "object"                     jsdoc/check-types
+Warning:    90:1    warning  Invalid JSDoc @param "excelMassUploadResponse" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    91:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"                          jsdoc/check-types
+Warning:   118:11   warning  Value of 'error' may be overwritten in IE 8 and earlier                         no-catch-shadow
+Warning:   126:1    warning  Invalid JSDoc @param "file" type "Object"; prefer: "object"                     jsdoc/check-types
+Warning:   133:1    warning  Invalid JSDoc @param "excelMassUploadResponse" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   134:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"                          jsdoc/check-types
+Warning:   161:11   warning  Value of 'error' may be overwritten in IE 8 and earlier                         no-catch-shadow
+Warning:   169:1    warning  Invalid JSDoc @param "file" type "Object"; prefer: "object"                     jsdoc/check-types
+Warning:   176:1    warning  Invalid JSDoc @param "excelMassUploadResponse" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   177:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"                          jsdoc/check-types
+Warning:   204:11   warning  Value of 'error' may be overwritten in IE 8 and earlier                         no-catch-shadow
+Warning:   218:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"                          jsdoc/check-types
+Warning:   262:1    warning  Invalid JSDoc @param "excelMassUploadRequest" type "Object"; prefer: "object"   jsdoc/check-types
+Warning:   269:1    warning  Invalid JSDoc @param "checkWbsElementRes" type "Object"; prefer: "object"       jsdoc/check-types
+Warning:   270:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"                          jsdoc/check-types
+Warning:   273:9    warning  'excelMassUploadRequestList' is defined but never used                          no-unused-vars
+Warning:   273:37   warning  'checkWbsElementRes' is defined but never used                                  no-unused-vars
+Warning:   336:11   warning  Value of 'error' may be overwritten in IE 8 and earlier                         no-catch-shadow
+Warning:   344:1    warning  Invalid JSDoc @param "excelMassUploadRequest" type "Object"; prefer: "object"   jsdoc/check-types
+Warning:   349:1    warning  Invalid JSDoc @param "massUploadRequestDto" type "Object"; prefer: "object"     jsdoc/check-types
+Warning:   350:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"                          jsdoc/check-types
+Warning:   352:111  warning  'massUploadRequestDto' is defined but never used                                no-unused-vars
+Warning:   375:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"                          jsdoc/check-types
+Warning:   401:11   warning  Value of 'error' may be overwritten in IE 8 and earlier                         no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/util/excelMassUploadUtil.js
+Warning:    14:1   warning  Invalid JSDoc @param "file" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    37:1   warning  The type 'Buffer' is undefined                               jsdoc/no-undefined-types
+Warning:    90:11  warning  Value of 'error' may be overwritten in IE 8 and earlier      no-catch-shadow
+Warning:    98:1   warning  The type 'Buffer' is undefined                               jsdoc/no-undefined-types
+Warning:   152:11  warning  Value of 'error' may be overwritten in IE 8 and earlier      no-catch-shadow
+Warning:   160:1   warning  The type 'Buffer' is undefined                               jsdoc/no-undefined-types
+Warning:   215:11  warning  Value of 'error' may be overwritten in IE 8 and earlier      no-catch-shadow
+Warning:   223:1   warning  The type 'Buffer' is undefined                               jsdoc/no-undefined-types
+Warning:   272:11  warning  Value of 'error' may be overwritten in IE 8 and earlier      no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/util/filterService.js
+Warning:     1:9   warning  'ApplicationConstants' is assigned a value but never used                no-unused-vars
+Warning:    14:1   warning  Invalid JSDoc @param "filterRequestDto" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    15:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                   jsdoc/check-types
+Warning:    54:11  warning  Value of 'error' may be overwritten in IE 8 and earlier                  no-catch-shadow
+Warning:    69:1   warning  Invalid JSDoc @param "filterRequestDto" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    70:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                   jsdoc/check-types
+Warning:   100:11  warning  Value of 'error' may be overwritten in IE 8 and earlier                  no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/util/performanceMonitor.js
+Warning:    30:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"         jsdoc/check-types
+Warning:    53:1   warning  Invalid JSDoc @param "metric" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    84:11  warning  Value of 'error' may be overwritten in IE 8 and earlier        no-catch-shadow
+Warning:    92:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"         jsdoc/check-types
+Warning:   125:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"         jsdoc/check-types
+Warning:   139:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"         jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/util/processDetails.js
+    1:1   warning  Unused eslint-disable directive (no problems were reported from 'no-use-before-define')
+Warning:     2:7   warning  'cds' is assigned a value but never used                                                                                                                                                                         no-unused-vars
+Warning:     3:9   warning  'SELECT' is assigned a value but never used                                                                                                                                                                      no-unused-vars
+Warning:     3:17  warning  'UPSERT' is assigned a value but never used                                                                                                                                                                      no-unused-vars
+Warning:     3:25  warning  'DELETE' is assigned a value but never used                                                                                                                                                                      no-unused-vars
+Warning:     3:33  warning  'UPDATE' is assigned a value but never used                                                                                                                                                                      no-unused-vars
+Warning:     3:41  warning  'INSERT' is assigned a value but never used                                                                                                                                                                      no-unused-vars
+Warning:    20:5   warning  Missing JSDoc @param "userInfoDetails" declaration                                                                                                                                                               jsdoc/require-param
+Warning:    22:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                                                                                                                                                        jsdoc/check-types
+Warning:    23:1   warning  Invalid JSDoc @param "savedMasterData" type "Object"; prefer: "object"                                                                                                                                           jsdoc/check-types
+Warning:    26:1   warning  Expected @param names to be "tx, savedMasterData, action, additionalApproverOne, userInfoDetails, stfNumber, verifier". Got "tx, savedMasterData, action, additionalApproverOne, nusNetId, stfNumber, verifier"  jsdoc/check-param-names
+Warning:   190:11  warning  Value of 'error' may be overwritten in IE 8 and earlier                                                                                                                                                          no-catch-shadow
+Warning:   200:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                                                                                                                                                        jsdoc/check-types
+Warning:   201:1   warning  Invalid JSDoc @param "processConfig" type "Object"; prefer: "object"                                                                                                                                             jsdoc/check-types
+Warning:   202:1   warning  Invalid JSDoc @param "savedMasterData" type "Object"; prefer: "object"                                                                                                                                           jsdoc/check-types
+Warning:   206:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"                                                                                                                                           jsdoc/check-types
+Warning:   207:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"                                                                                                                                                           jsdoc/check-types
+Warning:   239:11  warning  Value of 'error' may be overwritten in IE 8 and earlier                                                                                                                                                          no-catch-shadow
+Warning:   247:1   warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"                                                                                                                                                        jsdoc/check-types
+Warning:   248:1   warning  Invalid JSDoc @param "tasksConfig" type "Object"; prefer: "object"                                                                                                                                               jsdoc/check-types
+Warning:   249:1   warning  Invalid JSDoc @param "processDetails" type "Object"; prefer: "object"                                                                                                                                            jsdoc/check-types
+Warning:   254:1   warning  Invalid JSDoc @param "taskActionConfig" type "Object"; prefer: "object"                                                                                                                                          jsdoc/check-types
+Warning:   255:1   warning  Invalid JSDoc @param "userInfoDetails" type "Object"; prefer: "object"                                                                                                                                           jsdoc/check-types
+Warning:   306:11  warning  Value of 'error' may be overwritten in IE 8 and earlier                                                                                                                                                          no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/util/requestLockService.js
+Warning:    17:1    warning  Invalid JSDoc @param "requestDto" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    18:1    warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:    19:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"             jsdoc/check-types
+Warning:    73:25   warning  'isUserExists' is assigned a value but never used                  no-unused-vars
+Warning:    85:11   warning  Value of 'error' may be overwritten in IE 8 and earlier            no-catch-shadow
+Warning:    97:1    warning  Invalid JSDoc @param "requestDto" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    98:1    warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:    99:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"             jsdoc/check-types
+Warning:   118:1    warning  Invalid JSDoc @param "requestDto" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   120:1    warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   121:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"             jsdoc/check-types
+Warning:   186:25   warning  'isUserExists' is assigned a value but never used                  no-unused-vars
+Warning:   199:11   warning  Value of 'error' may be overwritten in IE 8 and earlier            no-catch-shadow
+Warning:   215:1    warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   330:11   warning  Value of 'error' may be overwritten in IE 8 and earlier            no-catch-shadow
+Warning:   350:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"             jsdoc/check-types
+Warning:   352:116  warning  'lockedByUserID' is defined but never used                         no-unused-vars
+Warning:   382:1    warning  Invalid JSDoc @param "tx" type "Object"; prefer: "object"          jsdoc/check-types
+Warning:   406:1    warning  Invalid JSDoc @param "requestDto" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:   441:1    warning  Invalid JSDoc @returns type "Object"; prefer: "object"             jsdoc/check-types
+
+/home/runner/work/eclaims/eclaims/srv/util/userUtil.js
+Warning:    18:1   warning  Expected only 0 line after block description                    jsdoc/tag-lines
+Warning:    20:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    80:1   warning  Expected only 0 line after block description                    jsdoc/tag-lines
+Warning:    82:1   warning  Invalid JSDoc @param "request" type "Object"; prefer: "object"  jsdoc/check-types
+Warning:    83:1   warning  Invalid JSDoc @returns type "Object"; prefer: "object"          jsdoc/check-types
+Warning:    99:1   warning  Expected only 0 line after block description                    jsdoc/tag-lines
+Warning:   115:1   warning  Expected only 0 line after block description                    jsdoc/tag-lines
+Warning:   129:1   warning  Expected only 0 line after block description                    jsdoc/tag-lines
+Warning:   138:1   warning  Expected only 0 line after block description                    jsdoc/tag-lines
+Warning:   150:15  warning  'cleanToken' is assigned a value but never used                 no-unused-vars
+Warning:   161:7   warning  Value of 'error' may be overwritten in IE 8 and earlier         no-catch-shadow
+
+/home/runner/work/eclaims/eclaims/srv/util/wbsValidation.service.js
+Warning:    4:1   warning  Missing JSDoc @param "wbsList" declaration                                  jsdoc/require-param
+Warning:    4:1   warning  Missing JSDoc @param "additionalPayload" declaration                        jsdoc/require-param
+Warning:    4:1   warning  Missing JSDoc @returns declaration                                          jsdoc/require-returns
+Error:   38:24  error    Expected { after 'if' condition                                             curly
+Error:   52:26  error    Unexpected constant nullishness on the left-hand side of a `??` expression  no-constant-binary-expression
+
+/home/runner/work/eclaims/eclaims/unit-test/eclaims.test.js
+Warning:   2:5   warning  'GET' is assigned a value but never used     no-unused-vars
+Warning:   2:10  warning  'POST' is assigned a value but never used    no-unused-vars
+Warning:   2:16  warning  'auth' is assigned a value but never used    no-unused-vars
+Warning:   2:22  warning  'expect' is assigned a value but never used  no-unused-vars
+Warning:   2:30  warning  'DELETE' is assigned a value but never used  no-unused-vars
+Warning:   2:38  warning  'PATCH' is assigned a value but never used   no-unused-vars
+
+✖ 898 problems (61 errors, 837 warnings)
+  19 errors and 290 warnings potentially fixable with the `--fix` option.
+
+Error: Process completed with exit code 1.

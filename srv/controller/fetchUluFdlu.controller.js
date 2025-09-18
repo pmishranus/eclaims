@@ -9,8 +9,8 @@ const { ApplicationException } = require("../util/customErrors");
 
 /**
  * Fetches ULU/FDLU details for the given user and parameters
- * @param {Object} request - The request object containing claimType, userGroup, and period
- * @returns {Promise<Object>} The response object with ULU/FDLU details
+ * @param {object} request - The request object containing claimType, userGroup, and period
+ * @returns {Promise<object>} The response object with ULU/FDLU details
  */
 async function fetchUluFdlu(request) {
     console.log("FetchUluFdluController fetchUluFdlu start()");

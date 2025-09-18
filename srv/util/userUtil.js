@@ -16,8 +16,7 @@ let FALLBACK_USERNAME = "PTT_CA9";
  * 3. XSUAA user information
  * 4. Request parameters from data
  * 5. Centralized fallback username
- * 
- * @param {Object} request - The CAP request object
+ * @param {object} request - The CAP request object
  * @returns {string} The extracted username
  * @throws {ApplicationException} If no valid username is found
  */
@@ -78,9 +77,8 @@ function extractUsername(request) {
 
 /**
  * Gets user information with username extraction
- * 
- * @param {Object} request - The CAP request object
- * @returns {Object} Object containing username and user details
+ * @param {object} request - The CAP request object
+ * @returns {object} Object containing username and user details
  */
 async function getUserInfo(request) {
     const username = extractUsername(request);
@@ -97,7 +95,6 @@ async function getUserInfo(request) {
 
 /**
  * Validates if a username is in the correct format
- * 
  * @param {string} username - Username to validate
  * @returns {boolean} True if valid, false otherwise
  */
@@ -113,7 +110,6 @@ function isValidUsername(username) {
 
 /**
  * Sets the centralized fallback username
- * 
  * @param {string} username - The fallback username to set
  */
 function setFallbackUsername(username) {
@@ -127,7 +123,6 @@ function setFallbackUsername(username) {
 
 /**
  * Gets the current centralized fallback username
- * 
  * @returns {string} The current fallback username
  */
 function getFallbackUsername() {
@@ -136,7 +131,6 @@ function getFallbackUsername() {
 
 /**
  * Extracts username from authorization token
- * 
  * @param {string} token - The authorization token
  * @returns {string} The extracted username
  */

@@ -175,7 +175,8 @@ async function fetchTbClaimStatusCount(staffId, statusCode) {
 /**
  * Fetches claim data by draft ID.
  * @param {string} draftId
- * @returns {Promise<Object>}
+ * @param tx
+ * @returns {Promise<object>}
  */
 async function fetchByDraftId(draftId, tx = null) {
     let query = SELECT.one.from("NUSEXT_ECLAIMS_HEADER_DATA").where({
@@ -199,7 +200,7 @@ async function fetchRequestId(draftId) {
 /**
  * Fetches eclaims header data by request ID.
  * @param {string} requestId
- * @returns {Promise<Object>}
+ * @returns {Promise<object>}
  */
 async function fetchByRequestId(requestId) {
     let query = SELECT.one.from("NUSEXT_ECLAIMS_HEADER_DATA").where({
@@ -328,8 +329,8 @@ async function fetchPastThreeMonthsWbs(stfNumber, requestClaimDate) {
 
 /**
  * Upserts eclaims data
- * @param {Object} eclaimsData - The eclaims data object
- * @returns {Promise<Object>} The upsert result
+ * @param {object} eclaimsData - The eclaims data object
+ * @returns {Promise<object>} The upsert result
  */
 async function upsertEclaimsData(eclaimsData) {
     const result = await cds.run(UPSERT.into("NUSEXT_ECLAIMS_HEADER_DATA").entries(eclaimsData));
@@ -338,7 +339,7 @@ async function upsertEclaimsData(eclaimsData) {
 
 /**
  * Updates request status on task completion
- * @param {Object} tx - The CDS transaction object
+ * @param {object} tx - The CDS transaction object
  * @param {string} toBeRequestStatus - The to be request status
  * @param {string} draftId - The draft ID
  * @param {string} stfNumber - The staff number
@@ -362,11 +363,11 @@ async function updateRequestStatusOnTaskCompletion(tx, toBeRequestStatus, draftI
 
 /**
  * Soft deletes eclaims header data by draft ID
- * @param {Object} tx - The transaction object
+ * @param {object} tx - The transaction object
  * @param {string} draftId - The draft ID
  * @param {string} modifiedBy - The user who modified the record
  * @param {string} modifiedOn - The modification date
- * @returns {Promise<Object>} Delete result
+ * @returns {Promise<object>} Delete result
  */
 async function softDeleteByDraftId(tx, draftId, modifiedBy, modifiedOn) {
     const { UPDATE } = require("@sap/cds/lib/ql/cds-ql");

@@ -5,6 +5,7 @@ const { ApplicationException } = require("../util/customErrors");
  * Controller: eligibleClaimTypes
  * Derives staff identity from XSUAA (request.user.id) and fetches eligible claim types
  * Mirrors Java EligibilityCriteriaController.eligibleClaimTypes but uses CAP user context
+ * @param request
  */
 async function eligibleClaimTypes(request) {
     try {

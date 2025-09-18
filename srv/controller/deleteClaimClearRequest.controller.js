@@ -10,7 +10,7 @@ const DateUtils = require("../util/dateUtil");
 
 /**
  * Controller for clearing claim requests (clear request deletion)
- * @param {Object} request - The request object containing array of RequestDto objects
+ * @param {object} request - The request object containing array of RequestDto objects
  */
 async function deleteClaimClearRequest(request) {
     let oResponse = {};
@@ -53,8 +53,8 @@ async function deleteClaimClearRequest(request) {
  * Purges claim requests based on input request array
  * @param {Array} inputRequest - Array of RequestDto objects
  * @param {boolean} isDraft - Whether this is for draft deletion (true) or clear request deletion (false)
- * @param {Object} userInfoDetails - User information details
- * @returns {Promise<Object>} Purge operation result
+ * @param {object} userInfoDetails - User information details
+ * @returns {Promise<object>} Purge operation result
  */
 async function purgeClaimRequest(inputRequest, isDraft, userInfoDetails) {
     const tx = cds.transaction();

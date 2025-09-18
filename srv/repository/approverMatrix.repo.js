@@ -1,6 +1,5 @@
 const cds = require("@sap/cds");
 const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
-const { UTC } = require("../util/constant");
 
 module.exports = {
     checkForDuplicateWithValidity: async function (
@@ -238,7 +237,7 @@ module.exports = {
      * @param {string} ulu - The ULU
      * @param {string} fdlu - The FDLU
      * @param {string} processCode - The process code
-     * @param {Object} tx - Optional transaction object
+     * @param {object} tx - Optional transaction object
      * @returns {Promise<Array>} Array of approver matrix details
      */
     fetchApprovalMatrixDtls: async function (staffUserGroup, ulu, fdlu, processCode, tx = null) {
@@ -263,7 +262,7 @@ module.exports = {
      * @param {string} ulu - The ULU
      * @param {string} fdlu - The FDLU
      * @param {string} processCode - The process code
-     * @param {Object} tx - Optional transaction object
+     * @param {object} tx - Optional transaction object
      * @returns {Promise<Array>} Array of approver matrix details
      */
     fetchApprovalMatrixDtlsForAllUlunFdlu: async function (staffUserGroup, ulu, fdlu, processCode, tx = null) {

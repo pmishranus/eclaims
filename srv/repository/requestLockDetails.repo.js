@@ -5,8 +5,8 @@ const ApplicationConstants = require("../util/constant");
 /**
  * Checks if a request is locked for a given draftId.
  * @param {string} draftId - The draft ID.
- * @param {Object} tx - Optional transaction object.
- * @returns {Promise<Object|null>} The lock details or null.
+ * @param {object} tx - Optional transaction object.
+ * @returns {Promise<object | null>} The lock details or null.
  */
 async function checkIsRequestLocked(draftId, tx = null) {
     const query = SELECT.one
@@ -19,9 +19,9 @@ async function checkIsRequestLocked(draftId, tx = null) {
 
 /**
  * Upserts lock details for a draft request.
- * @param {Object} lockDetails - The lock details object.
- * @param {Object} tx - Optional transaction object.
- * @returns {Promise<Object>} The upsert result.
+ * @param {object} lockDetails - The lock details object.
+ * @param {object} tx - Optional transaction object.
+ * @returns {Promise<object>} The upsert result.
  */
 async function upsertLockDetails(lockDetails, tx = null) {
     const query = UPSERT.into("NUSEXT_UTILITY_REQUEST_LOCK_DETAILS")
@@ -34,8 +34,8 @@ async function upsertLockDetails(lockDetails, tx = null) {
 /**
  * Deletes lock details by draft ID.
  * @param {string} draftId - The draft ID.
- * @param {Object} tx - Optional transaction object.
- * @returns {Promise<Object>} The delete result.
+ * @param {object} tx - Optional transaction object.
+ * @returns {Promise<object>} The delete result.
  */
 async function deleteByDraftId(draftId, tx = null) {
     const query = DELETE.from("NUSEXT_UTILITY_REQUEST_LOCK_DETAILS")
@@ -48,7 +48,7 @@ async function deleteByDraftId(draftId, tx = null) {
 /**
  * Gets all lock details for a specific user.
  * @param {string} staffNusNetId - The staff NUSNET ID.
- * @param {Object} tx - Optional transaction object.
+ * @param {object} tx - Optional transaction object.
  * @returns {Promise<Array>} Array of lock details.
  */
 async function getLocksByUser(staffNusNetId, tx = null) {
@@ -64,7 +64,7 @@ async function getLocksByUser(staffNusNetId, tx = null) {
 
 /**
  * Gets all active locks in the system.
- * @param {Object} tx - Optional transaction object.
+ * @param {object} tx - Optional transaction object.
  * @returns {Promise<Array>} Array of all active lock details.
  */
 async function getAllActiveLocks(tx = null) {
@@ -78,8 +78,8 @@ async function getAllActiveLocks(tx = null) {
 /**
  * Releases all locks for a specific user.
  * @param {string} staffNusNetId - The staff NUSNET ID.
- * @param {Object} tx - Optional transaction object.
- * @returns {Promise<Object>} The delete result.
+ * @param {object} tx - Optional transaction object.
+ * @returns {Promise<object>} The delete result.
  */
 async function releaseAllLocksForUser(staffNusNetId, tx = null) {
     const query = DELETE.from("NUSEXT_UTILITY_REQUEST_LOCK_DETAILS")
@@ -95,7 +95,7 @@ async function releaseAllLocksForUser(staffNusNetId, tx = null) {
 /**
  * Fetches all lock details by draft ID.
  * @param {string} draftId - The draft ID.
- * @param {Object} tx - Optional transaction object.
+ * @param {object} tx - Optional transaction object.
  * @returns {Promise<Array>} Array of lock details.
  */
 async function fetchByDraftId(draftId, tx = null) {
@@ -111,8 +111,8 @@ async function fetchByDraftId(draftId, tx = null) {
  * @param {string} draftId - The draft ID.
  * @param {string} nusNetId - The NUSNET ID.
  * @param {string} lockValue - The lock value.
- * @param {Object} tx - Optional transaction object.
- * @returns {Promise<Object>} The update result.
+ * @param {object} tx - Optional transaction object.
+ * @returns {Promise<object>} The update result.
  */
 async function updateLockValue(draftId, nusNetId, lockValue, tx = null) {
     const query = UPDATE("NUSEXT_UTILITY_REQUEST_LOCK_DETAILS")
@@ -129,8 +129,8 @@ async function updateLockValue(draftId, nusNetId, lockValue, tx = null) {
 /**
  * Saves all lock details.
  * @param {Array} lockDetailsList - Array of lock details.
- * @param {Object} tx - Optional transaction object.
- * @returns {Promise<Object>} The save result.
+ * @param {object} tx - Optional transaction object.
+ * @returns {Promise<object>} The save result.
  */
 async function saveAll(lockDetailsList, tx = null) {
     console.log("RequestLockDetailsRepo.saveAll: Starting save operation with", lockDetailsList.length, "items");

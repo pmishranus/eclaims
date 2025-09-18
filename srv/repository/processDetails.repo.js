@@ -29,11 +29,11 @@ async function fetchProcessInstancesByProcessCode(processCode) {
 
 /**
  * Soft deletes process details by process instance ID
- * @param {Object} tx - The transaction object
+ * @param {object} tx - The transaction object
  * @param {string} processInstId - The process instance ID
  * @param {string} modifiedBy - The user who modified the record
  * @param {string} modifiedOn - The modification date
- * @returns {Promise<Object>} Delete result
+ * @returns {Promise<object>} Delete result
  */
 async function softDeleteByProcessInstId(tx, processInstId, modifiedBy, modifiedOn) {
     const query = UPDATE("NUSEXT_UTILITY_PROCESS_DETAILS")
@@ -50,11 +50,11 @@ async function softDeleteByProcessInstId(tx, processInstId, modifiedBy, modified
 
 /**
  * Soft deletes process details by reference ID
- * @param {Object} tx - The transaction object
+ * @param {object} tx - The transaction object
  * @param {string} referenceId - The reference ID
  * @param {string} modifiedBy - The user who modified the record
  * @param {string} modifiedOn - The modification date
- * @returns {Promise<Object>} Delete result
+ * @returns {Promise<object>} Delete result
  */
 async function softDeleteByReferenceId(tx, referenceId, modifiedBy, modifiedOn) {
     const query = UPDATE("NUSEXT_UTILITY_PROCESS_DETAILS")

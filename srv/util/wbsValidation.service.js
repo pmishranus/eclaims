@@ -5,6 +5,8 @@ const { ApplicationConstants } = require("./constant");
  * Shared WBS Validation Service
  * - Provides a common function to validate WBS codes via CPI
  * - Keeps a stable contract for reuse across controllers/services
+ * @param wbsList
+ * @param additionalPayload
  */
 async function validateWbsCodes(wbsList, additionalPayload = {}) {
     if (!Array.isArray(wbsList)) {
@@ -35,7 +37,9 @@ async function validateWbsCodes(wbsList, additionalPayload = {}) {
     if (Array.isArray(raw)) {
         for (const entry of raw) {
             const code = entry?.WBS || entry?.wbs || entry?.code;
-            if (!code) continue;
+            if (!code) {
+                continue;
+            }
             const result = {
                 WBS: code,
                 isValid: entry?.isValid ?? entry?.VALID ?? entry?.STATUS === ApplicationConstants.STATUS_SUCCESS,

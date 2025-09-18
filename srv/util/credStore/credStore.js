@@ -1,3 +1,4 @@
+/* global Buffer */
 const fetch = require("node-fetch");
 const jose = require("node-jose");
 

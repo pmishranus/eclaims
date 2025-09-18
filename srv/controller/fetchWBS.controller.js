@@ -40,6 +40,11 @@ async function fetchWBS(request) {
     }
 }
 
+/**
+ *
+ * @param staffId
+ * @param claimDate
+ */
 async function fetchWBSPastThreeMonths(staffId, claimDate) {
     // Logger.info('EligibilityCriteriaServiceImpl fetchWBSPastThreeMonths start()');
     let response = [];

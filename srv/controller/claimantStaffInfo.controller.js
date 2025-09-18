@@ -3,22 +3,21 @@ const CommonRepo = require("../repository/util.repo");
 const ApproverMatrixRepo = require("../repository/approverMatrix.repo");
 const { ApplicationConstants } = require("../util/constant");
 const CommonUtils = require("../util/commonUtil");
-const ElligibleCriteriaRepo = require("../repository/eligibilityCriteria.repo");
 const { ApplicationException } = require("../util/customErrors");
 const ChrsJobInfoRepo = require("../repository/chrsJobInfo.repo");
 const UserUtil = require("../util/userUtil");
+const cds = require('@sap/cds');
 /**
- *
- * @param request
+ * Fetches claimant staff information
+ * @param {object} request - The request object
+ * @returns {Promise<object>} Staff information response
  */
 async function fetchClaimantStaffInfo(request) {
     let oResClaimantStaffInfo = {}
     try {
-        const tx = cds.tx(request);
         // Extract username using utility function
         const username = UserUtil.extractUsername(request);
         const upperNusNetId = username.toUpperCase();
-        let userInfoDetails = await CommonRepo.fetchUserInfo(upperNusNetId);
         if (!username) {
             throw new Error("User not found..!!");
         }
@@ -40,6 +39,11 @@ async function fetchClaimantStaffInfo(request) {
     }
 }
 
+/**
+ * Fetches staff information details
+ * @param {string} nusNetId - NUS Net ID
+ * @returns {Promise<object>} Staff information details
+ */
 async function fetchStaffInfoDetails(nusNetId) {
     let eclaimsJwtResponseDto = {};
     try {
@@ -106,6 +110,11 @@ async function fetchStaffInfoDetails(nusNetId) {
 }
 
 
+/**
+ * Fetches claimant assignment details
+ * @param {string} staffId - Staff ID
+ * @returns {Promise<object>} Assignment details
+ */
 async function fetchClaimantAssignmentDtls(staffId) {
     const eclaimsJwtResponseDto = {};
     const staffInfo = await ChrsJobInfoRepo.fetchStaffInfoDetails(staffId);
@@ -120,8 +129,9 @@ async function fetchClaimantAssignmentDtls(staffId) {
             eclaimsJwtResponseDto.FIRST_NM = jobInfoDtls.FIRST_NM;
             eclaimsJwtResponseDto.LAST_NM = jobInfoDtls.LAST_NM;
 
-            if (CommonUtils.isBlank(eclaimsJwtResponseDto.BANK_INFO_FLG))
+            if (CommonUtils.isBlank(eclaimsJwtResponseDto.BANK_INFO_FLG)) {
                 eclaimsJwtResponseDto.BANK_INFO_FLG = ApplicationConstants.N;
+            }
 
             if (CommonUtils.isBlank(eclaimsJwtResponseDto.COST_DIST_FLG)) {
                 eclaimsJwtResponseDto.COST_DIST_FLG = ApplicationConstants.N;
@@ -144,7 +154,7 @@ async function fetchClaimantAssignmentDtls(staffId) {
 
             const isPrimary = CommonUtils.equalsIgnoreCase(jobInfoDtls.STF_NUMBER, staffId);
 
-            if (isPrimary) {
+                if (isPrimary) {
                 if (
                     !eclaimsJwtResponseDto.PrimaryAssignment ||
                     CommonUtils.isBlank(eclaimsJwtResponseDto.PrimaryAssignment.STF_NUMBER)
@@ -154,8 +164,9 @@ async function fetchClaimantAssignmentDtls(staffId) {
                     if (
                         CommonUtils.isNotBlank(jobInfoDtls.BANK_INFO_FLG) &&
                         CommonUtils.equalsIgnoreCase(jobInfoDtls.BANK_INFO_FLG, ApplicationConstants.X)
-                    )
+                    ) {
                         eclaimsJwtResponseDto.BANK_INFO_FLG = ApplicationConstants.Y;
+                    }
 
                     uluC = staffInfoDto.ULU_C;
                     fdluC = staffInfoDto.FDLU_C;
@@ -166,16 +177,18 @@ async function fetchClaimantAssignmentDtls(staffId) {
                     if (
                         CommonUtils.isNotBlank(jobInfoDtls.BANK_INFO_FLG) &&
                         CommonUtils.equalsIgnoreCase(jobInfoDtls.BANK_INFO_FLG, ApplicationConstants.X)
-                    )
+                    ) {
                         eclaimsJwtResponseDto.BANK_INFO_FLG = ApplicationConstants.Y;
+                    }
 
                     otherAssignment.DuplicateUluFdlu = ApplicationConstants.N;
                     if (
                         CommonUtils.isNotBlank(uluC) && CommonUtils.isNotBlank(fdluC) &&
                         CommonUtils.equalsIgnoreCase(uluC, otherAssignment.ULU_C) &&
                         CommonUtils.equalsIgnoreCase(fdluC, otherAssignment.FDLU_C)
-                    )
+                    ) {
                         otherAssignment.DuplicateUluFdlu = ApplicationConstants.Y;
+                    }
 
                     otherAssignments.push(otherAssignment);
                 }
@@ -185,16 +198,18 @@ async function fetchClaimantAssignmentDtls(staffId) {
                 if (
                     CommonUtils.isNotBlank(jobInfoDtls.BANK_INFO_FLG) &&
                     CommonUtils.equalsIgnoreCase(jobInfoDtls.BANK_INFO_FLG, ApplicationConstants.X)
-                )
+                ) {
                     eclaimsJwtResponseDto.BANK_INFO_FLG = ApplicationConstants.Y;
+                }
 
                 otherAssignment.DuplicateUluFdlu = ApplicationConstants.N;
                 if (
                     CommonUtils.isNotBlank(uluC) && CommonUtils.isNotBlank(fdluC) &&
                     CommonUtils.equalsIgnoreCase(uluC, otherAssignment.ULU_C) &&
                     CommonUtils.equalsIgnoreCase(fdluC, otherAssignment.FDLU_C)
-                )
+                ) {
                     otherAssignment.DuplicateUluFdlu = ApplicationConstants.Y;
+                }
 
                 otherAssignments.push(otherAssignment);
             }

@@ -8,7 +8,7 @@ const UserUtil = require("../util/userUtil");
 
 /**
  * Controller for fetching submitted eclaim data
- * @param {Object} request - The request object containing claimType, ulu, fdlu, period, staffId
+ * @param {object} request - The request object containing claimType, ulu, fdlu, period, staffId
  */
 async function fetchSubmittedEclaimData(request) {
     let oResponse = {};
@@ -50,8 +50,8 @@ async function fetchSubmittedEclaimData(request) {
  * @param {string} fdlu - Faculty Department Level Unit code
  * @param {string} period - Time period in MM-YYYY format
  * @param {string} staffId - Staff identifier
- * @param {Object} userInfoDetails - User information details
- * @returns {Promise<Object>} Submitted eclaim data response
+ * @param {object} userInfoDetails - User information details
+ * @returns {Promise<object>} Submitted eclaim data response
  */
 async function isSubmittedExists(claimCode, ulu, fdlu, period, staffId, userInfoDetails) {
     const oSubmittedResp = {};

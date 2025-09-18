@@ -70,6 +70,11 @@ class HttpClientErrorException extends BaseApplicationException {
     }
 }
 
+/**
+ *
+ * @param ErrorClass
+ * @param message
+ */
 function createErrorWithLocation(ErrorClass, message) {
     const stack = new Error().stack;
     const stackLines = stack.split('\n');

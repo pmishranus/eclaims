@@ -1,21 +1,16 @@
-const AppConfigRepo = require("../repository/appConfig.repo");
 const CommonRepo = require("../repository/util.repo");
 const DateUtils = require("../util/dateUtil");
 const ChrsJobInfoRepo = require("../repository/chrsJobInfo.repo");
 const { ApplicationConstants } = require("../util/constant");
-const CommonUtils = require("../util/commonUtil");
-const ChrsCompInfoRepo = require("../repository/chrsCompInfo.repo");
 const { monitor } = require("../util/performanceMonitor");
 const { userInfoCache } = require("../util/cacheUtil");
 const { ApplicationException, DatabaseException } = require("../util/customErrors");
-const cds = require("@sap/cds");
 const UserUtil = require("../util/userUtil");
 
 /**
  * Enhanced CA Staff Lookup function with improved performance and error handling
  * Follows SAP BTP CAPM guidelines for error handling and performance optimization
- * 
- * @param {Object} request - CAP request object
+ * @param {object} request - CAP request object
  * @returns {Promise<Array>} Array of staff lookup results
  */
 async function fetchCaStaffLookup(request) {
@@ -65,22 +60,22 @@ async function fetchCaStaffLookup(request) {
 
         return processedResults;
 
-    } catch (error) {
+    } catch (err) {
         // Stop timer and log error
         monitor.stop(timerId);
 
         // Log error details for debugging
         console.error("CA Staff Lookup failed:", {
-            error: error.message,
-            stack: error.stack,
+            error: err.message,
+            stack: err.stack,
             user: request.user?.id,
             data: request.data
         });
 
         // Return proper CAP error response
-        if (error instanceof ApplicationException) {
-            return request.error(400, error.message);
-        } else if (error instanceof DatabaseException) {
+        if (err instanceof ApplicationException) {
+            return request.error(400, err.message);
+        } else if (err instanceof DatabaseException) {
             return request.error(500, "Database operation failed. Please try again later.");
         } else {
             return request.error(500, "An unexpected error occurred. Please contact support.");
@@ -90,8 +85,8 @@ async function fetchCaStaffLookup(request) {
 
 /**
  * Validate input parameters
- * @param {Object} request - CAP request object
- * @returns {Object} Validation result
+ * @param {object} request - CAP request object
+ * @returns {object} Validation result
  */
 async function validateInput(request) {
     const { claimType, ulu, fdlu, period, searchValue } = request.data;
@@ -152,7 +147,7 @@ async function validateInput(request) {
 /**
  * Get user info with caching for performance optimization
  * @param {string} user - User identifier
- * @returns {Promise<Object>} User info details
+ * @returns {Promise<object>} User info details
  */
 async function getUserInfoWithCache(user) {
     const cacheKey = `userInfo_${user}`;
@@ -178,7 +173,7 @@ async function getUserInfoWithCache(user) {
 /**
  * Parse period and get date range
  * @param {string} period - Period string in MM-YYYY format
- * @returns {Object|null} Date range object or null if invalid
+ * @returns {object|null} Date range object or null if invalid
  */
 async function parsePeriodAndGetDateRange(period) {
     if (!period || !period.includes(ApplicationConstants.HYPHEN)) {
@@ -205,8 +200,8 @@ async function parsePeriodAndGetDateRange(period) {
             startDate: inputDates[0],
             endDate: inputDates[1]
         };
-    } catch (error) {
-        console.error("Error parsing period:", error);
+    } catch (err) {
+        console.error("Error parsing period:", err);
         return null;
     }
 }

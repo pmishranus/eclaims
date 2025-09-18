@@ -1,4 +1,4 @@
-/* eslint-disable no-use-before-define */
+ 
 const cds = require("@sap/cds");
 const { SELECT, UPSERT, DELETE, UPDATE, INSERT } = require("@sap/cds/lib/ql/cds-ql");
 const { ApplicationConstants } = require("./constant");
@@ -19,11 +19,12 @@ const TaskActionConfigRepo = require("../repository/taskActionConfig.repo");
 class ProcessDetailsService {
     /**
      * Initiates process on eclaim submit
-     * @param {Object} tx - The CDS transaction object
-     * @param {Object} savedMasterData - The saved eclaims data
+     * @param {object} tx - The CDS transaction object
+     * @param {object} savedMasterData - The saved eclaims data
      * @param {string} action - The action being performed
      * @param {string} additionalApproverOne - Additional approver one NUSNET ID
      * @param {string} nusNetId - The NUSNET ID of the user
+     * @param userInfoDetails
      * @param {string} stfNumber - The staff number
      * @param {string} verifier - The verifier NUSNET ID
      * @returns {Promise<void>}
@@ -197,14 +198,14 @@ class ProcessDetailsService {
 
     /**
      * Persists process details data
-     * @param {Object} tx - The CDS transaction object
-     * @param {Object} processConfig - The process configuration
-     * @param {Object} savedMasterData - The saved master data
+     * @param {object} tx - The CDS transaction object
+     * @param {object} processConfig - The process configuration
+     * @param {object} savedMasterData - The saved master data
      * @param {string} status - The process status
      * @param {string} nusNetId - The NUSNET ID
      * @param {string} stfNumber - The staff number
-     * @param {Object} userInfoDetails - The user info details
-     * @returns {Promise<Object>} The saved process details
+     * @param {object} userInfoDetails - The user info details
+     * @returns {Promise<object>} The saved process details
      */
     async persistProcessDetailsData(tx, processConfig, savedMasterData, status, nusNetId, stfNumber, userInfoDetails) {
         console.log("ProcessDetailsService persistProcessDetailsData start()");
@@ -244,15 +245,15 @@ class ProcessDetailsService {
 
     /**
      * Persists task details
-     * @param {Object} tx - The CDS transaction object
-     * @param {Object} tasksConfig - The tasks configuration
-     * @param {Object} processDetails - The process details
+     * @param {object} tx - The CDS transaction object
+     * @param {object} tasksConfig - The tasks configuration
+     * @param {object} processDetails - The process details
      * @param {string} status - The task status
      * @param {string} taskAssignTo - The task assign to
      * @param {string} actionCode - The action code
      * @param {string} nusNetId - The NUSNET ID
-     * @param {Object} taskActionConfig - The task action configuration
-     * @param {Object} userInfoDetails - The user info details
+     * @param {object} taskActionConfig - The task action configuration
+     * @param {object} userInfoDetails - The user info details
      * @returns {Promise<void>}
      */
     async persistTaskDetails(tx, tasksConfig, processDetails, status, taskAssignTo, actionCode, nusNetId, taskActionConfig, userInfoDetails) {

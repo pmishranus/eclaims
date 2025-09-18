@@ -11,8 +11,8 @@ class FilterService {
 
     /**
      * Filters eclaims data based on request parameters
-     * @param {Object} filterRequestDto - Filter request containing STAFF_ID and REQUEST_STATUS
-     * @returns {Promise<Object>} Filter response with filtered data arrays
+     * @param {object} filterRequestDto - Filter request containing STAFF_ID and REQUEST_STATUS
+     * @returns {Promise<object>} Filter response with filtered data arrays
      */
     static async filterData(filterRequestDto) {
         console.log("FilterService filterData start()");
@@ -66,8 +66,8 @@ class FilterService {
     /**
      * Fetches filter response data from repository
      * @param {Array} statusIdList - List of status IDs to filter by (null for all)
-     * @param {Object} filterRequestDto - Filter request DTO
-     * @returns {Promise<Object>} Filter response DTO
+     * @param {object} filterRequestDto - Filter request DTO
+     * @returns {Promise<object>} Filter response DTO
      */
     static async fetchFilterResponse(statusIdList, filterRequestDto) {
         const filterResponseDto = {

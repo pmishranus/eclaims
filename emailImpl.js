@@ -1,11 +1,29 @@
 const ProcessConfigType = require("../enum/processConfigType");
 const EmailResponseDto = require('../dto/EmailResponseDto');
 const AppConfigRepo = require("../repository/appConfig.repo");
-const { ApplicationConstants, MessageConstants } = require("../util/constant");
-const EmailConfigRepo = require("../repository/emailConfig.repo")
-const EmailPlaceholderConfigRepo = require("../repository/emailPlaceholderConfig.repo")
+const { ApplicationConstants } = require("../util/constant");
+const EmailConfigRepo = require("../repository/emailConfig.repo");
+const EmailPlaceholderConfigRepo = require("../repository/emailPlaceholderConfig.repo");
 const CommonUtils = require("../util/commonUtil");
 const { getMicrosoftAccessToken } = require("../config/getMicrosoftAccessToken");
+const nodemailer = require('nodemailer');
+const cds = require('@sap/cds');
+/**
+ * Sends on-demand emails based on process code and action
+ * @param {string} draftId - The draft ID
+ * @param {string} processCode - Process code
+ * @param {string} actionCode - Action code
+ * @param {string} requestorGrp - Requestor group
+ * @param {string} loggedInUserName - Logged in user name
+ * @param {string} remarks - Remarks
+ * @param {string} role - User role
+ * @param {string} taskName - Task name
+ * @param {string} nextTaskName - Next task name
+ * @param {string} staffId - Staff ID
+ * @param {object} userInfoDetails - User info details
+ * @param {object} tx - Transaction object
+ * @returns {Promise<object>} Email response
+ */
 async function sendOnDemandEmails(draftId, processCode, actionCode,
     requestorGrp, loggedInUserName, remarks, role, taskName,
     nextTaskName, staffId, userInfoDetails, tx) {
@@ -30,7 +48,7 @@ async function sendOnDemandEmails(draftId, processCode, actionCode,
         case 'CWS':
         case 'NED':
         case 'OPWN':
-            await handleOnDemandEmailsForCws(
+            await handleOnDemandEmailsForCWS(
                 draftId, processCode, actionCode, requestorGrp, loggedInUserName, remarks,
                 role, taskName, nextTaskName, staffId
             );
@@ -44,6 +62,19 @@ async function sendOnDemandEmails(draftId, processCode, actionCode,
 
 }
 
+/**
+ * Handles on-demand emails for EClaims
+ * @param {string} draftId - Draft ID
+ * @param {string} processCode - Process code
+ * @param {string} actionCode - Action code
+ * @param {string} requestorGrp - Requestor group
+ * @param {string} loggedInUserName - Logged in user name
+ * @param {string} rejectionRemarks - Rejection remarks
+ * @param {string} role - User role
+ * @param {string} taskName - Task name
+ * @param {string} nextTaskName - Next task name
+ * @returns {Promise<object>} Email response
+ */
 async function handleOnDemandEmailsForEClaims(
     draftId,
     processCode,
@@ -113,6 +144,19 @@ async function handleOnDemandEmailsForEClaims(
     return emailResponse;
 }
 
+/**
+ * Handles email processing and sending
+ * @param {string} draftId - Draft ID
+ * @param {string} processCode - Process code
+ * @param {string} actionCode - Action code
+ * @param {string} requestorGrp - Requestor group
+ * @param {string} loggedInUserName - Logged in user name
+ * @param {string} remarks - Remarks
+ * @param {string} taskName - Task name
+ * @param {string} nextTaskName - Next task name
+ * @param {string} staffId - Staff ID
+ * @returns {Promise<object>} Email response
+ */
 async function emailHandler(
     draftId,
     processCode,
@@ -149,8 +193,8 @@ async function emailHandler(
         } else {
             // Pending email task notification handling
             const processTemplateName = CommonUtils.equalsIgnoreCase(processCode, ApplicationConstants.CLAIM_TYPE_101)
-                ? EmailConstants.ECLAIM_PENDING_EMAIL
-                : EmailConstants.OTHM_PENDING_EMAIL;
+                ? 'ECLAIM_PENDING_EMAIL'
+                : 'OTHM_PENDING_EMAIL';
             emailConfig = await EmailConfigRepo.getPendingEmailTemplateConfiguration(
                 processCode,
                 taskName,
@@ -238,27 +282,36 @@ async function emailHandler(
     return emailResponse;
 }
 
+/**
+ * Frames email subject with placeholders
+ * @param {string} processCode - Process code
+ * @param {string} templateName - Template name
+ * @param {string} emailSubject - Email subject
+ * @param {string} draftId - Draft ID
+ * @param {string} taskName - Task name
+ * @returns {Promise<string>} Formatted email subject
+ */
 async function frameEmailSubject(processCode, templateName, emailSubject, draftId, taskName) {
     let subjectPHConfigs = [];
     let subjList = [];
     // Process type logic
     const pType = ProcessConfigType.fromValue(processCode);
     switch (pType) {
-        case PTT:
-        case CW:
-        case OT:
-        case HM:
-        case TB:
+        case 'PTT':
+        case 'CW':
+        case 'OT':
+        case 'HM':
+        case 'TB':
             subjectPHConfigs = await EmailPlaceholderConfigRepo.getAllEmailPlaceHoldersForSubjectLine(templateName);
             subjList = await getClaimsData(subjectPHConfigs, draftId, false, processCode);
             break;
-        case CWS:
-        case NED:
-        case OPWN:
+        case 'CWS':
+        case 'NED':
+        case 'OPWN':
             subjectPHConfigs = await EmailPlaceholderConfigRepo.getAllEmailPlaceHoldersForSubjectLine(templateName);
             subjList = await getCWData(subjectPHConfigs, draftId, false, processCode);
             break;
-        case CWOPWN:
+        case 'CWOPWN':
             subjectPHConfigs = await EmailPlaceholderConfigRepo.getAllEmailPlaceHoldersForSubjectLine(templateName);
             if (subjectPHConfigs.length > 0) {
                 subjList = await getCWData(subjectPHConfigs, draftId, false, processCode);
@@ -292,7 +345,7 @@ async function frameEmailSubject(processCode, templateName, emailSubject, draftI
     }
 
     // Email Subject For Constants in an Email
-    let subjectPHConstantConfigs = await emailConfigRepository.getEmailPlaceHoldersForSubjectLineNTaskName(
+    let subjectPHConstantConfigs = await EmailPlaceholderConfigRepo.getEmailPlaceHoldersForSubjectLineNTaskName(
         templateName, 'Constant', taskName
     );
 
@@ -305,12 +358,25 @@ async function frameEmailSubject(processCode, templateName, emailSubject, draftI
 
     return emailSubject;
 }
+/**
+ * Builds select columns from placeholder configs
+ * @param {Array} phConfigs - Placeholder configurations
+ * @returns {Array} Select columns
+ */
 function buildSelectColumns(phConfigs) {
     return phConfigs
         .filter(ph => ph.FIELD_VALUE_PROP && ph.FIELD_TYPE !== 'Ref' && ph.FIELD_TYPE !== 'Constant')
         .map(ph => ph.FIELD_VALUE_PROP);
 }
 
+/**
+ * Gets claims data based on configurations
+ * @param {Array} phConfigs - Placeholder configurations
+ * @param {string} draftId - Draft ID
+ * @param {boolean} isRequestRows - Whether to include request rows
+ * @param {string} processCode - Process code
+ * @returns {Promise<Array>} Claims data
+ */
 async function getClaimsData(phConfigs, draftId, isRequestRows, processCode) {
     // const db = cds.transaction(); // For transactional context; or use cds.run() if not in a service handler
     // const db = cds.connect.to("db");
@@ -356,8 +422,14 @@ async function getClaimsData(phConfigs, draftId, isRequestRows, processCode) {
     return rsList;
 }
 
-const cds = require('@sap/cds');
-
+/**
+ * Gets CW data based on configurations
+ * @param {Array} phConfigs - Placeholder configurations
+ * @param {string} draftId - Draft ID
+ * @param {boolean} isRequestRows - Whether to include request rows
+ * @param {string} processCode - Process code
+ * @returns {Promise<Array>} CW data
+ */
 async function getCWData(phConfigs, draftId, isRequestRows, processCode) {
 
     // Build select columns
@@ -365,7 +437,9 @@ async function getCWData(phConfigs, draftId, isRequestRows, processCode) {
         .filter(ph => ph.FIELD_VALUE_PROP)
         .map(ph => ph.FIELD_VALUE_PROP);
 
-    if (selectColumns.length === 0) return [];
+    if (selectColumns.length === 0) {
+        return [];
+    }
 
     // Start query
     let query = SELECT.from('NUSEXT_CWNED_HEADER_DATA as CwsData').columns(selectColumns);
@@ -390,14 +464,19 @@ async function getCWData(phConfigs, draftId, isRequestRows, processCode) {
     }
 
     // Execute
+    const db = cds.tx();
     const result = await db.run(query);
-    if (!result || result.length === 0) return [];
+    if (!result || result.length === 0) {
+        return [];
+    }
 
     // Filter null/undefined rows
     let filterTempList = result.filter(row => row);
 
     // Take first non-null row
-    if (filterTempList.length === 0) return [];
+    if (filterTempList.length === 0) {
+        return [];
+    }
 
     let firstRow = filterTempList[0];
     let rsList = [];
@@ -406,15 +485,23 @@ async function getCWData(phConfigs, draftId, isRequestRows, processCode) {
     if (Array.isArray(firstRow)) {
         // Some DB drivers may return rows as arrays
         rsList = firstRow.map(value => {
-            if (value instanceof Date) return formatDateToDDMMMYYYY(value);
-            if (typeof value === 'number') return value.toString();
+            if (value instanceof Date) {
+                return formatDateToDDMMMYYYY(value);
+            }
+            if (typeof value === 'number') {
+                return value.toString();
+            }
             return value ? value.toString() : '';
         });
     } else if (typeof firstRow === 'object') {
         rsList = selectColumns.map(col => {
             let value = firstRow[col];
-            if (value instanceof Date) return formatDateToDDMMMYYYY(value);
-            if (typeof value === 'number') return value.toString();
+            if (value instanceof Date) {
+                return formatDateToDDMMMYYYY(value);
+            }
+            if (typeof value === 'number') {
+                return value.toString();
+            }
             return value ? value.toString() : '';
         });
     }
@@ -422,6 +509,13 @@ async function getCWData(phConfigs, draftId, isRequestRows, processCode) {
 }
 
 
+/**
+ * Sends email using Microsoft Graph API
+ * @param {string} subject - Email subject
+ * @param {string} content - Email content
+ * @param {object} emailIdMap - Email ID mapping
+ * @returns {Promise<void>}
+ */
 async function sendMail(subject, content, emailIdMap) {
     const tenantId = process.env.AZURE_TENANT_ID;
     const clientId = process.env.AZURE_CLIENT_ID;
@@ -460,6 +554,91 @@ async function sendMail(subject, content, emailIdMap) {
 
 }
 
+
+/**
+ * Handles on-demand emails for CWS
+ * @param {string} draftId - Draft ID
+ * @param {string} processCode - Process code
+ * @param {string} actionCode - Action code
+ * @param {string} requestorGrp - Requestor group
+ * @param {string} loggedInUserName - Logged in user name
+ * @param {string} remarks - Remarks
+ * @param {string} role - User role
+ * @param {string} taskName - Task name
+ * @param {string} nextTaskName - Next task name
+ * @param {string} staffId - Staff ID
+ * @returns {Promise<object>} Email response
+ */
+async function handleOnDemandEmailsForCWS(draftId, processCode, actionCode, requestorGrp, loggedInUserName, remarks, role, taskName, nextTaskName, staffId) {
+    // Implementation placeholder - to be implemented based on business logic
+    const EmailResponseDto = require('../dto/EmailResponseDto');
+    return new EmailResponseDto();
+}
+
+/**
+ * Frames email body with placeholders
+ * @param {string} templateName - Template name
+ * @param {string} emailBody - Email body template
+ * @param {string} draftId - Draft ID
+ * @param {string} taskName - Task name
+ * @param {string} nextTaskName - Next task name
+ * @param {string} remarks - Remarks
+ * @param {string} processCode - Process code
+ * @param {string} actionCode - Action code
+ * @param {string} requestorGrp - Requestor group
+ * @param {string} loggedInUserName - Logged in user name
+ * @returns {Promise<string>} Formatted email body
+ */
+async function frameEmailBody(templateName, emailBody, draftId, taskName, nextTaskName, remarks, processCode, actionCode, requestorGrp, loggedInUserName) {
+    // Implementation placeholder - to be implemented based on business logic
+    return emailBody;
+}
+
+/**
+ * Populates email IDs based on configuration
+ * @param {string} draftId - Draft ID
+ * @param {object} emailConfig - Email configuration
+ * @param {string} processCode - Process code
+ * @param {string} loggedInUserName - Logged in user name
+ * @param {string} actionCode - Action code
+ * @param {boolean} isScheduled - Whether email is scheduled
+ * @param {string} staffId - Staff ID
+ * @param {string} requestorGrp - Requestor group
+ * @returns {Promise<object>} Email ID mapping
+ */
+async function populateEmailIds(draftId, emailConfig, processCode, loggedInUserName, actionCode, isScheduled, staffId, requestorGrp) {
+    // Implementation placeholder - to be implemented based on business logic
+    return {};
+}
+
+/**
+ * Saves notification log
+ * @param {string} draftId - Draft ID
+ * @param {string} templateName - Template name
+ * @param {string} emailType - Email type
+ * @param {object} mailIdMap - Mail ID mapping
+ * @param {string} loggedInUserName - Logged in user name
+ * @param {string} status - Status
+ * @param {string} message - Message
+ * @returns {Promise<void>}
+ */
+async function saveNotificationLog(draftId, templateName, emailType, mailIdMap, loggedInUserName, status, message) {
+    // Implementation placeholder - to be implemented based on business logic
+}
+
+/**
+ * Formats date to DD MMM YYYY format
+ * @param {Date} date - Date to format
+ * @returns {string} Formatted date
+ */
+function formatDateToDDMMMYYYY(date) {
+    if (!date) {return '';}
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+}
 
 module.exports = {
     sendOnDemandEmails

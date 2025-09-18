@@ -27,7 +27,7 @@ class PerformanceMonitor {
     /**
      * Stop timing an operation
      * @param {string} timerId - Timer ID returned from startTimer
-     * @returns {Object} Performance metrics
+     * @returns {object} Performance metrics
      */
     stopTimer(timerId) {
         const metric = this.metrics.get(timerId);
@@ -50,7 +50,7 @@ class PerformanceMonitor {
 
     /**
      * Log performance metrics
-     * @param {Object} metric - Performance metric object
+     * @param {object} metric - Performance metric object
      */
     logPerformance(metric) {
         const { operationName, duration } = metric;
@@ -89,7 +89,7 @@ class PerformanceMonitor {
 
     /**
      * Get performance statistics
-     * @returns {Object} Performance statistics
+     * @returns {object} Performance statistics
      */
     getStats() {
         const stats = {
@@ -122,7 +122,7 @@ const monitor = {
     /**
      * Stop timing an operation
      * @param {string} timerId - Timer ID
-     * @returns {Object} Performance metrics
+     * @returns {object} Performance metrics
      */
     stop: (timerId) => performanceMonitor.stopTimer(timerId),
     
@@ -136,7 +136,7 @@ const monitor = {
     
     /**
      * Get performance statistics
-     * @returns {Object} Performance statistics
+     * @returns {object} Performance statistics
      */
     stats: () => performanceMonitor.getStats()
 };

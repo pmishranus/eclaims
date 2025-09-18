@@ -2,6 +2,7 @@
  * Simple in-memory cache utility for performance optimization
  * Note: For production, consider using Redis or similar distributed cache
  */
+/* global setInterval */
 
 class SimpleCache {
     constructor(defaultTTL = 300000) { // 5 minutes default
@@ -60,7 +61,7 @@ class SimpleCache {
 
     /**
      * Get cache statistics
-     * @returns {Object} Cache statistics
+     * @returns {object} Cache statistics
      */
     getStats() {
         const now = Date.now();

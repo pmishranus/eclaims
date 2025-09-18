@@ -9,7 +9,7 @@ const ExcelMassUploadService = require("../util/excelMassUploadService");
 /**
  * Controller for Excel file upload and processing
  * Converts Java ExcelMassUploadController to Node.js
- * @param {Object} request - The request object containing file and parameters
+ * @param {object} request - The request object containing file and parameters
  */
 async function requestUpload(request) {
     console.log("RequestUploadController requestUpload start()");
@@ -115,8 +115,8 @@ async function requestUpload(request) {
 /**
  * Handles file upload with multer middleware
  * This function processes the uploaded file and extracts parameters
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
  * @param {Function} next - Next middleware function
  */
 async function handleFileUpload(req, res, next) {

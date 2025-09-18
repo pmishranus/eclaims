@@ -11,11 +11,11 @@ const { INSERT } = require("@sap/cds/lib/ql/cds-ql");
  * @param {string} referenceId - The reference ID (draft ID)
  * @param {string} notifTemplateId - The notification template ID
  * @param {string} notifType - The notification type
- * @param {Object} mailIdMap - The mail ID map
+ * @param {object} mailIdMap - The mail ID map
  * @param {string} loggedInUserName - The logged in user name
  * @param {string} status - The status
  * @param {string} message - The message
- * @returns {Promise<Object>} The saved notification log entry
+ * @returns {Promise<object>} The saved notification log entry
  */
 async function saveNotificationLog(referenceId, notifTemplateId, notifType, mailIdMap, loggedInUserName, status, message) {
     console.log("EmailNotificationLogRepo saveNotificationLog - referenceId:", referenceId, "notifTemplateId:", notifTemplateId, "status:", status);

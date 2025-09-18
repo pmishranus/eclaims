@@ -23,8 +23,8 @@ class EmailService {
      * @param {string} taskName - The task name
      * @param {string} nextTaskName - The next task name
      * @param {string} staffId - The staff ID
-     * @param {Object} req - The request object for transaction context
-     * @returns {Promise<Object>} The email response
+     * @param {object} req - The request object for transaction context
+     * @returns {Promise<object>} The email response
      */
     async sendOnDemandEmails(draftId, processCode, actionCode, requestorGrp, loggedInUserName, remarks, role, taskName, nextTaskName, staffId, req = null) {
         console.log("EmailService sendOnDemandEmails start()");
@@ -49,10 +49,10 @@ class EmailService {
                     console.log("No valid process type found for:", processCode);
                     break;
             }
-        } catch (error) {
-            console.error("Exception in sendOnDemandEmails:", error);
+        } catch (err) {
+            console.error("Exception in sendOnDemandEmails:", err);
             emailResponse.status = "ERROR";
-            emailResponse.message = "Mail sending FAILURE: " + error.message;
+            emailResponse.message = "Mail sending FAILURE: " + err.message;
             emailResponse.error = true;
         }
 
@@ -71,8 +71,8 @@ class EmailService {
      * @param {string} role - The role
      * @param {string} taskName - The task name
      * @param {string} nextTaskName - The next task name
-     * @param {Object} req - The request object for transaction context
-     * @returns {Promise<Object>} The email response
+     * @param {object} req - The request object for transaction context
+     * @returns {Promise<object>} The email response
      */
     async handleOnDemandEmailsForEClaims(draftId, processCode, actionCode, requestorGrp, loggedInUserName, rejectionRemarks, role, taskName, nextTaskName, req = null) {
         console.log("EmailService handleOnDemandEmailsForEClaims start()");
@@ -120,10 +120,10 @@ class EmailService {
                 emailResponse = await this.emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, null, tempTaskName, nextTaskName, null, req);
             }
 
-        } catch (error) {
-            console.error("Exception in handleOnDemandEmailsForEClaims:", error);
+        } catch (err) {
+            console.error("Exception in handleOnDemandEmailsForEClaims:", err);
             emailResponse.status = "ERROR";
-            emailResponse.message = "Mail sending FAILURE: " + error.message;
+            emailResponse.message = "Mail sending FAILURE: " + err.message;
             emailResponse.error = true;
         }
 
@@ -143,8 +143,8 @@ class EmailService {
      * @param {string} taskName - The task name
      * @param {string} nextTaskName - The next task name
      * @param {string} staffId - The staff ID
-     * @param {Object} req - The request object for transaction context
-     * @returns {Promise<Object>} The email response
+     * @param {object} req - The request object for transaction context
+     * @returns {Promise<object>} The email response
      */
     async emailHandler(draftId, processCode, actionCode, requestorGrp, loggedInUserName, remarks, taskName, nextTaskName, staffId, req = null) {
         console.log("EmailService emailHandler start()");
@@ -206,10 +206,10 @@ class EmailService {
             emailResponse.status = "SUCCESS";
             emailResponse.message = "Mail Sent Successfully";
 
-        } catch (error) {
-            console.error("Exception in emailHandler:", error);
+        } catch (err) {
+            console.error("Exception in emailHandler:", err);
             emailResponse.status = "ERROR";
-            emailResponse.message = "Mail sending FAILURE: " + error.message;
+            emailResponse.message = "Mail sending FAILURE: " + err.message;
             emailResponse.error = true;
         }
 
@@ -224,8 +224,8 @@ class EmailService {
      * Sends email using external CAPM service via InboxService
      * @param {string} emailSubject - The email subject
      * @param {string} emailContent - The email content
-     * @param {Object} mailIdMap - The mail ID map
-     * @param {Object} req - The request object for transaction context
+     * @param {object} mailIdMap - The mail ID map
+     * @param {object} req - The request object for transaction context
      * @returns {Promise<void>}
      */
     async sendEmail(emailSubject, emailContent, mailIdMap, req = null) {
@@ -236,8 +236,8 @@ class EmailService {
             await this.callUtilityInboxEmailSender(req, emailSubject, emailContent, mailIdMap, false);
             console.log("Email sent successfully via InboxService");
 
-        } catch (error) {
-            console.error("Error calling InboxService sendMail:", error);
+        } catch (err) {
+            console.error("Error calling InboxService sendMail:", err);
             throw error;
         }
     }
@@ -272,8 +272,8 @@ class EmailService {
                 console.log("Using fallback task name:", fallbackTaskName);
                 return fallbackTaskName;
             }
-        } catch (error) {
-            console.error("Error in getTaskNameFromRole:", error);
+        } catch (err) {
+            console.error("Error in getTaskNameFromRole:", err);
             // Return fallback task name on error
             return this.getFallbackTaskName(role);
         }
@@ -305,7 +305,7 @@ class EmailService {
      * @param {string} processCode - The process code
      * @param {string} taskName - The task name
      * @param {string} actionCode - The action code
-     * @returns {Promise<Object>} The email configuration
+     * @returns {Promise<object>} The email configuration
      */
     async getEmailTemplateConfiguration(processCode, taskName, actionCode) {
         console.log("EmailService getEmailTemplateConfiguration - processCode:", processCode, "taskName:", taskName, "actionCode:", actionCode);
@@ -313,8 +313,8 @@ class EmailService {
         try {
             const emailConfig = await EmailConfigRepo.getEmailTemplateConfiguration(processCode, taskName, actionCode);
             return emailConfig;
-        } catch (error) {
-            console.error("Error in getEmailTemplateConfiguration:", error);
+        } catch (err) {
+            console.error("Error in getEmailTemplateConfiguration:", err);
             return null;
         }
     }
@@ -322,7 +322,7 @@ class EmailService {
     /**
      * Gets email template
      * @param {string} templateName - The template name
-     * @returns {Promise<Object>} The email template
+     * @returns {Promise<object>} The email template
      */
     async getEmailTemplate(templateName) {
         console.log("EmailService getEmailTemplate - templateName:", templateName);
@@ -330,8 +330,8 @@ class EmailService {
         try {
             const emailTemplate = await EmailConfigRepo.getEmailTemplate(templateName);
             return emailTemplate;
-        } catch (error) {
-            console.error("Error in getEmailTemplate:", error);
+        } catch (err) {
+            console.error("Error in getEmailTemplate:", err);
             return null;
         }
     }
@@ -364,8 +364,8 @@ class EmailService {
 
             console.log("Framed email subject:", framedSubject);
             return framedSubject;
-        } catch (error) {
-            console.error("Error in frameEmailSubject:", error);
+        } catch (err) {
+            console.error("Error in frameEmailSubject:", err);
             return emailSubject; // Return original subject on error
         }
     }
@@ -412,8 +412,8 @@ class EmailService {
 
             console.log("Framed email body length:", framedBody.length);
             return framedBody;
-        } catch (error) {
-            console.error("Error in frameEmailBody:", error);
+        } catch (err) {
+            console.error("Error in frameEmailBody:", err);
             return emailTemplateBody; // Return original body on error
         }
     }
@@ -421,14 +421,14 @@ class EmailService {
     /**
      * Populates email IDs
      * @param {string} draftId - The draft ID
-     * @param {Object} emailConfig - The email configuration
+     * @param {object} emailConfig - The email configuration
      * @param {string} processCode - The process code
      * @param {string} loggedInUserName - The logged in user name
      * @param {string} actionCode - The action code
      * @param {boolean} isPendingNotification - Whether it's a pending notification
      * @param {string} staffId - The staff ID
      * @param {string} requestorGrp - The requestor group
-     * @returns {Promise<Object>} The mail ID map
+     * @returns {Promise<object>} The mail ID map
      */
     async populateEmailIds(draftId, emailConfig, processCode, loggedInUserName, actionCode, isPendingNotification, staffId, requestorGrp) {
         console.log("EmailService populateEmailIds - draftId:", draftId, "processCode:", processCode, "actionCode:", actionCode);
@@ -459,8 +459,8 @@ class EmailService {
 
             console.log("Populated email IDs:", mailIdMap);
             return mailIdMap;
-        } catch (error) {
-            console.error("Error in populateEmailIds:", error);
+        } catch (err) {
+            console.error("Error in populateEmailIds:", err);
             // Return default email IDs on error
             return {
                 to: "user@nus.edu.sg",
@@ -475,11 +475,11 @@ class EmailService {
      * @param {string} referenceId - The reference ID
      * @param {string} notifTemplateId - The notification template ID
      * @param {string} notifType - The notification type
-     * @param {Object} mailIdMap - The mail ID map
+     * @param {object} mailIdMap - The mail ID map
      * @param {string} loggedInUserName - The logged in user name
      * @param {string} status - The status
      * @param {string} message - The message
-     * @returns {Promise<Object>} The notification log response
+     * @returns {Promise<object>} The notification log response
      */
     async saveNotificationLog(referenceId, notifTemplateId, notifType, mailIdMap, loggedInUserName, status, message) {
         console.log("EmailService saveNotificationLog - referenceId:", referenceId, "notifTemplateId:", notifTemplateId, "status:", status);
@@ -497,11 +497,11 @@ class EmailService {
 
             console.log("Notification log saved successfully:", result);
             return result;
-        } catch (error) {
-            console.error("Error in saveNotificationLog:", error);
+        } catch (err) {
+            console.error("Error in saveNotificationLog:", err);
             return {
                 status: "ERROR",
-                message: "Failed to save notification log: " + error.message,
+                message: "Failed to save notification log: " + err.message,
                 error: error
             };
         }
@@ -515,7 +515,7 @@ class EmailService {
      * @param {string} emailDate - Email date
      * @param {string} ignoreDifference - Whether to ignore difference
      * @param {string} timeRange - Time range
-     * @param {Object} req - The request object for transaction context
+     * @param {object} req - The request object for transaction context
      * @returns {Promise<Array>} Array of email response objects
      */
     async sendPendingTaskEmails(pendingTaskName, processCode, noOfDaysDiff, emailDate, ignoreDifference, timeRange, req = null) {
@@ -544,11 +544,11 @@ class EmailService {
             console.log("EmailService sendPendingTaskEmails end()");
             return emailResponseList;
 
-        } catch (error) {
-            console.error("Error in sendPendingTaskEmails:", error);
+        } catch (err) {
+            console.error("Error in sendPendingTaskEmails:", err);
             emailResponseList.push({
                 status: "ERROR",
-                message: "Mail sending FAILURE: " + error.message,
+                message: "Mail sending FAILURE: " + err.message,
                 templateId: null,
                 error: true
             });
@@ -562,7 +562,7 @@ class EmailService {
      * @param {string} pendingTaskName - The pending task name
      * @param {string} noOfDaysDiff - Number of days difference
      * @param {string} ignoreDifference - Whether to ignore difference
-     * @param {Object} req - The request object for transaction context
+     * @param {object} req - The request object for transaction context
      * @returns {Promise<Array>} Array of email response objects
      */
     async handlePendingEmailsForEClaims(processCode, pendingTaskName, noOfDaysDiff, ignoreDifference, req = null) {
@@ -585,11 +585,11 @@ class EmailService {
             console.log("EmailService handlePendingEmailsForEClaims end()");
             return emailResponseList;
 
-        } catch (error) {
-            console.error("Error in handlePendingEmailsForEClaims:", error);
+        } catch (err) {
+            console.error("Error in handlePendingEmailsForEClaims:", err);
             emailResponseList.push({
                 status: "ERROR",
-                message: "Mail sending FAILURE: " + error.message,
+                message: "Mail sending FAILURE: " + err.message,
                 templateId: null,
                 error: true
             });
@@ -601,12 +601,12 @@ class EmailService {
     /**
      * Calls the external InboxService sendMail action for email sending
      * Similar to callUtilityInboxTaskActions but for email functionality
-     * @param {Object} req - The request object
+     * @param {object} req - The request object
      * @param {string} emailSubject - The email subject
      * @param {string} emailContent - The email content (HTML)
-     * @param {Object} mailIdMap - The mail ID map with to, cc, bcc
+     * @param {object} mailIdMap - The mail ID map with to, cc, bcc
      * @param {boolean} setPriority - Whether to set email priority
-     * @returns {Promise<Object>} The email sending result
+     * @returns {Promise<object>} The email sending result
      */
     async callUtilityInboxEmailSender(req, emailSubject, emailContent, mailIdMap, setPriority = false) {
         const srv = await cds.connect.to('InboxService');
