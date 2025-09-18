@@ -9,8 +9,8 @@ const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
 /**
  * Fetches CWS data by unique ID (matches Java CwsDataRepository.fetchByUNIQUE_ID)
  * @param {string} uniqueId - The unique ID
- * @param {Object} tx - Optional transaction object
- * @returns {Promise<Object|null>} The CWS data or null if not found
+ * @param {object} tx - Optional transaction object
+ * @returns {Promise<object | null>} The CWS data or null if not found
  */
 async function fetchByUNIQUE_ID(uniqueId, tx = null) {
     try {
@@ -30,7 +30,7 @@ async function fetchByUNIQUE_ID(uniqueId, tx = null) {
 /**
  * Fetches all CWS data by unique ID (returns array)
  * @param {string} uniqueId - The unique ID
- * @param {Object} tx - Optional transaction object
+ * @param {object} tx - Optional transaction object
  * @returns {Promise<Array>} Array of CWS data
  */
 async function fetchAllByUNIQUE_ID(uniqueId, tx = null) {
@@ -50,9 +50,9 @@ async function fetchAllByUNIQUE_ID(uniqueId, tx = null) {
 
 /**
  * Upserts CWS data
- * @param {Object} cwsData - The CWS data object
- * @param {Object} tx - Optional transaction object
- * @returns {Promise<Object>} The upsert result
+ * @param {object} cwsData - The CWS data object
+ * @param {object} tx - Optional transaction object
+ * @returns {Promise<object>} The upsert result
  */
 async function upsertCwsData(cwsData, tx = null) {
     try {
@@ -73,8 +73,8 @@ async function upsertCwsData(cwsData, tx = null) {
 /**
  * Deletes CWS data by unique ID
  * @param {string} uniqueId - The unique ID
- * @param {Object} tx - Optional transaction object
- * @returns {Promise<Object>} The delete result
+ * @param {object} tx - Optional transaction object
+ * @returns {Promise<object>} The delete result
  */
 async function deleteByUNIQUE_ID(uniqueId, tx = null) {
     try {

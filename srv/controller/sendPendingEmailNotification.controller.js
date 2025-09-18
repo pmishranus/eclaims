@@ -8,7 +8,7 @@ class SendPendingEmailNotificationController {
 
     /**
      * Sends pending email notifications for eclaims
-     * @param {Object} request - The request object containing function parameters
+     * @param {object} request - The request object containing function parameters
      * @returns {Promise<Array>} Array of email response objects
      */
     async sendPendingEmailNotification(request) {

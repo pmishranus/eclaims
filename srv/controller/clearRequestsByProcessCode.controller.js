@@ -10,7 +10,7 @@ const DateUtils = require("../util/dateUtil");
 
 /**
  * Controller for clearing/deleting claims by process code
- * @param {Object} request - The request object containing processCode
+ * @param {object} request - The request object containing processCode
  */
 async function clearRequestsByProcessCode(request) {
     let oResponse = {};
@@ -52,8 +52,8 @@ async function clearRequestsByProcessCode(request) {
 /**
  * Purges claims by process code
  * @param {string} processCode - The process code to purge claims for
- * @param {Object} userInfoDetails - User information details
- * @returns {Promise<Object>} Purge operation result
+ * @param {object} userInfoDetails - User information details
+ * @returns {Promise<object>} Purge operation result
  */
 async function purgeClaimsByProcess(processCode, userInfoDetails) {
     const tx = cds.transaction();

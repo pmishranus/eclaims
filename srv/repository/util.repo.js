@@ -21,7 +21,7 @@ module.exports = {
      * Fetches a sequence number using a pattern and counter.
      * @param {string} pattern - The sequence pattern.
      * @param {number} counter - The counter.
-     * @returns {Promise<Object>} The sequence number result.
+     * @returns {Promise<object>} The sequence number result.
      */
     fetchSequenceNumber: async function (pattern, counter) {
         let fetchSequenceNumber = await cds.run(
@@ -33,7 +33,7 @@ module.exports = {
     /**
      * Fetches logged in user details by NUSNET ID.
      * @param {string} upperNusNetId - The NUSNET ID.
-     * @returns {Promise<Object>} The user details.
+     * @returns {Promise<object>} The user details.
      */
     fetchLoggedInUser: async function (upperNusNetId) {
         let fetchStaffInfo = await cds.run(
@@ -47,7 +47,7 @@ module.exports = {
     /**
      * Fetches user info by NUSNET ID.
      * @param {string} upperNusNetId - The NUSNET ID.
-     * @returns {Promise<Object>} The user info.
+     * @returns {Promise<object>} The user info.
      */
     fetchUserInfo: async function (upperNusNetId) {
         let fetchStaffInfo = await cds.run(
@@ -62,7 +62,7 @@ module.exports = {
     /**
      * Fetches distinct ULU by code.
      * @param {string} uluCode - The ULU code.
-     * @returns {Promise<Object>} The ULU details.
+     * @returns {Promise<object>} The ULU details.
      */
     fetchDistinctULU: async function (uluCode) {
         let fetchDistinctULU = await cds.run(
@@ -75,7 +75,7 @@ module.exports = {
     /**
      * Fetches distinct FDLU by code.
      * @param {string} fdluCode - The FDLU code.
-     * @returns {Promise<Object>} The FDLU details.
+     * @returns {Promise<object>} The FDLU details.
      */
     fetchDistinctFDLU: function (fdluCode) {
         let fetchDistinctULU = cds.run(
@@ -89,7 +89,7 @@ module.exports = {
      * Fetches ULU and FDLU by code.
      * @param {string} uluCode - The ULU code.
      * @param {string} fdluCode - The FDLU code.
-     * @returns {Promise<Object>} The ULU/FDLU details.
+     * @returns {Promise<object>} The ULU/FDLU details.
      */
     fetchUluFdlu: function (uluCode, fdluCode) {
         let fetchUluFdlu = cds.run(
@@ -104,7 +104,7 @@ module.exports = {
     /**
      * Checks for matrix admin by staff ID.
      * @param {string} staffId - The staff ID.
-     * @returns {Promise<Object>} The matrix admin details.
+     * @returns {Promise<object>} The matrix admin details.
      */
     checkForMatrixAdmin: function (staffId) {
         const queryParameter = {
@@ -122,12 +122,12 @@ module.exports = {
 
     /**
      * Performs an upsert operation in a transaction with automatic CUID and managed field handling.
-     * @param {Object} tx - The transaction object.
+     * @param {object} tx - The transaction object.
      * @param {string} entityName - The entity name.
-     * @param {Object} record - The record to upsert.
+     * @param {object} record - The record to upsert.
      * @param {boolean} isNewRecord - Whether this is a new record (optional, defaults to false)
      * @param {string} userId - The logged-in user ID from XSUAA (optional, defaults to 'SYSTEM')
-     * @returns {Promise<Object>} The upsert result.
+     * @returns {Promise<object>} The upsert result.
      * 
      * For new records: Sets CREATEDAT, CREATEDBY, MODIFIEDAT, MODIFIEDBY, and generates CUID if needed
      * For updates: Only sets MODIFIEDAT, MODIFIEDBY (preserves original CREATEDAT, CREATEDBY)
@@ -182,10 +182,10 @@ module.exports = {
     },
     /**
      * Performs a delete operation in a transaction.
-     * @param {Object} tx - The transaction object.
+     * @param {object} tx - The transaction object.
      * @param {string} entityName - The entity name.
-     * @param {Object} whereClause - The where clause.
-     * @returns {Promise<Object>} The delete result.
+     * @param {object} whereClause - The where clause.
+     * @returns {Promise<object>} The delete result.
      */
     deleteOperationChained: async function (tx, entityName, whereClause) {
         // whereClause should be an object, e.g. { DRAFT_ID: '123' }

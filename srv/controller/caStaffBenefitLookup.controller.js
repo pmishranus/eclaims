@@ -2,12 +2,11 @@ const ChrsJobInfoRepo = require("../repository/chrsJobInfo.repo");
 const DateUtils = require("../util/dateUtil");
 const { ApplicationConstants } = require("../util/constant");
 const { ApplicationException } = require("../util/customErrors");
-const UserUtil = require("../util/userUtil");
 
 /**
  * Controller: caStaffBenefitLookup
  * Mirrors Java EligibilityCriteriaController.caStaffBenefitLookup but uses CAP user context (XSUAA)
- * @param {Object} request - CAP request object
+ * @param {object} request - CAP request object
  * @returns {Promise<Array>} Array of staff lookup results for benefit management
  */
 async function caStaffBenefitLookup(request) {
@@ -77,12 +76,12 @@ async function caStaffBenefitLookup(request) {
 
         return processedResults;
 
-    } catch (error) {
-        console.error("Error in caStaffBenefitLookup:", error);
-        if (error instanceof ApplicationException) {
-            throw error;
+    } catch (err) {
+        console.error("Error in caStaffBenefitLookup:", err);
+        if (err instanceof ApplicationException) {
+            throw err;
         }
-        throw new ApplicationException(`Error in staff benefit lookup: ${error.message}`);
+        throw new ApplicationException(`Error in staff benefit lookup: ${err.message}`);
     }
 }
 

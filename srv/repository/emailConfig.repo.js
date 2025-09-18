@@ -11,7 +11,7 @@ const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
  * @param {string} processCode - The process code
  * @param {string} taskName - The task name
  * @param {string} actionCode - The action code
- * @returns {Promise<Object|null>} Email configuration object or null
+ * @returns {Promise<object | null>} Email configuration object or null
  */
 async function getEmailTemplateConfiguration(processCode, taskName, actionCode) {
     console.log("EmailConfigRepo getEmailTemplateConfiguration - processCode:", processCode, "taskName:", taskName, "actionCode:", actionCode);
@@ -38,7 +38,7 @@ async function getEmailTemplateConfiguration(processCode, taskName, actionCode) 
  * @param {string} processCode - The process code
  * @param {string} templateName - The template name
  * @param {string} taskName - The task name
- * @returns {Promise<Object|null>} Email configuration object or null
+ * @returns {Promise<object | null>} Email configuration object or null
  */
 async function getEmailTemplateConfigurationByTemplateName(processCode, templateName, taskName) {
     console.log("EmailConfigRepo getEmailTemplateConfigurationByTemplateName - processCode:", processCode, "templateName:", templateName, "taskName:", taskName);
@@ -65,7 +65,7 @@ async function getEmailTemplateConfigurationByTemplateName(processCode, template
  * @param {string} processCode - The process code
  * @param {string} taskName - The task name
  * @param {string} processTemplateName - The process template name
- * @returns {Promise<Object|null>} Email configuration object or null
+ * @returns {Promise<object | null>} Email configuration object or null
  */
 async function getPendingEmailTemplateConfiguration(processCode, taskName, processTemplateName) {
     console.log("EmailConfigRepo getPendingEmailTemplateConfiguration - processCode:", processCode, "taskName:", taskName, "processTemplateName:", processTemplateName);
@@ -90,7 +90,7 @@ async function getPendingEmailTemplateConfiguration(processCode, taskName, proce
 /**
  * Get email template by template name
  * @param {string} templateName - The template name
- * @returns {Promise<Object|null>} Email template object or null
+ * @returns {Promise<object | null>} Email template object or null
  */
 async function getEmailTemplate(templateName) {
     console.log("EmailConfigRepo getEmailTemplate - templateName:", templateName);

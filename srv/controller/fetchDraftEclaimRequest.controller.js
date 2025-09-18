@@ -93,6 +93,14 @@ async function isDraftExists(claimCode, ulu, fdlu, period, staffId,userInfoDetai
     return oDraftResp;
   }
 
+  /**
+   *
+   * @param claimCode
+   * @param ulu
+   * @param fdlu
+   * @param period
+   * @param staffId
+   */
   function validateInputParams(claimCode, ulu, fdlu, period, staffId) {
     if (CommonUtils.isBlank(claimCode)) {
       throw new ApplicationException("Claim Type is missing");

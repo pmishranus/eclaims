@@ -54,6 +54,11 @@ async function fetchValidateEclaims(request) {
     }
 }
 
+/**
+ *
+ * @param massUploadRequest
+ * @param userInfoDetails
+ */
 async function validateEclaims(massUploadRequest, userInfoDetails) {
     try {
         let massUploadResponseDto = { eclaimsData: [], error: false, message: "" };

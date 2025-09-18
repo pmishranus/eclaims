@@ -5,6 +5,7 @@ const draftEclaimRequestCtrl = require("./controller/fetchDraftEclaimRequest.con
 const submittedEclaimDataCtrl = require("./controller/submittedEclaimData.controller");
 const clearRequestsByProcessCodeCtrl = require("./controller/clearRequestsByProcessCode.controller");
 const deleteClaimRequestCtrl = require("./controller/deleteClaimRequest.controller");
+const deleteEclaimRequestCtrl = require("./controller/deleteEclaimRequest.controller");
 const deleteClaimClearRequestCtrl = require("./controller/deleteClaimClearRequest.controller");
 const requestUploadCtrl = require("./controller/requestUpload.controller");
 const eligibleClaimTypesCtrl = require("./controller/eligibleClaimTypes.controller");
@@ -97,6 +98,18 @@ class EclaimsService extends cds.ApplicationService {
 
         this.on("deleteClaimRequest", async request => {
             return await deleteClaimRequestCtrl.deleteClaimRequest(request);
+        });
+
+        this.on("deleteEclaimRequest", async request => {
+            try {
+                return await deleteEclaimRequestCtrl.deleteEclaimRequest(request);
+            } catch (err) {
+                return {
+                    error: true,
+                    message: err.message || "Failed to delete eclaim request",
+                    draftIds: []
+                };
+            }
         });
 
         this.on("deleteClaimClearRequest", async request => {

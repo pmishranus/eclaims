@@ -21,6 +21,10 @@ const valueToKey = Object.entries(ProcessConfigType).reduce((acc, [key, value]) 
 }, {});
 
 // Simulate Java's fromValue
+/**
+ *
+ * @param value
+ */
 function fromValue(value) {
     // Return the key if found, else 'UNKNOWN'
     const key = valueToKey[value];

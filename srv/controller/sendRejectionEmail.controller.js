@@ -8,8 +8,8 @@ class SendRejectionEmailController {
 
     /**
      * Sends rejection email for eclaims
-     * @param {Object} request - The request object containing function parameters
-     * @returns {Promise<Object>} Email response object
+     * @param {object} request - The request object containing function parameters
+     * @returns {Promise<object>} Email response object
      */
     async sendRejectionEmail(request) {
         console.log("SendRejectionEmailController sendRejectionEmail start()");

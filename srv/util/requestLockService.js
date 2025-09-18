@@ -14,9 +14,9 @@ class RequestLockService {
 
     /**
      * requestLock - Main method to lock/unlock requests (matches Java requestLock)
-     * @param {Object} requestDto - The request DTO containing lock details
-     * @param {Object} tx - Optional transaction object
-     * @returns {Promise<Object>} Response DTO
+     * @param {object} requestDto - The request DTO containing lock details
+     * @param {object} tx - Optional transaction object
+     * @returns {Promise<object>} Response DTO
      */
     static async requestLock(requestDto, tx = null) {
         console.log("RequestLockService requestLock start()");
@@ -94,9 +94,9 @@ class RequestLockService {
 
     /**
      * deleteLock - Deletes lock for a request (matches Java deleteLock)
-     * @param {Object} requestDto - The request DTO
-     * @param {Object} tx - Optional transaction object
-     * @returns {Promise<Object>} Response DTO
+     * @param {object} requestDto - The request DTO
+     * @param {object} tx - Optional transaction object
+     * @returns {Promise<object>} Response DTO
      */
     static async deleteLock(requestDto, tx = null) {
         const responseDto = {};
@@ -115,10 +115,10 @@ class RequestLockService {
 
     /**
      * requestLockForCW - Locks request for CW (matches Java requestLockForCW)
-     * @param {Object} requestDto - The request DTO
+     * @param {object} requestDto - The request DTO
      * @param {string} token - The token
-     * @param {Object} tx - Optional transaction object
-     * @returns {Promise<Object>} Response DTO
+     * @param {object} tx - Optional transaction object
+     * @returns {Promise<object>} Response DTO
      */
     static async requestLockForCW(requestDto, token, tx = null) {
         console.log("RequestLockService requestLock start()");
@@ -212,7 +212,7 @@ class RequestLockService {
      * @param {string} staffNusNetId - The staff NUSNET ID
      * @param {string} requestorGrp - The requestor group
      * @param {string} processCode - The process code
-     * @param {Object} tx - Optional transaction object
+     * @param {object} tx - Optional transaction object
      */
     static async persistLockInputDetails(draftId, staffNusNetId, requestorGrp, processCode, tx = null) {
         console.log("RequestLockService persistLockInputDetails start()");
@@ -347,7 +347,7 @@ class RequestLockService {
      * @param {string} staffNusNetId - The staff NUSNET ID
      * @param {string} requestStatus - The request status
      * @param {string} lockedByUserID - The locked by user ID
-     * @returns {Promise<Object>} The request lock details
+     * @returns {Promise<object>} The request lock details
      */
     static async frameRequestLockDetails(draftId, processCode, ulu, fdlu, userGroup, staffNusNetId, requestStatus, lockedByUserID) {
         const now = new Date();
@@ -379,7 +379,7 @@ class RequestLockService {
      * @param {string} reqStatus - The request status
      * @param {string} staffNusNetId - The staff NUSNET ID
      * @param {string} requestorGrp - The requestor group
-     * @param {Object} tx - Optional transaction object
+     * @param {object} tx - Optional transaction object
      * @returns {Promise<Array>} Array of request lock details
      */
     static async frameGroupParticipantLockDtls(draftId, processCode, ulu, fdlu, reqStatus, staffNusNetId, requestorGrp, tx = null) {
@@ -403,7 +403,7 @@ class RequestLockService {
 
     /**
      * validateInputData - Validates input data (matches Java validateInputData)
-     * @param {Object} requestDto - The request DTO
+     * @param {object} requestDto - The request DTO
      * @returns {Array} Array of validation results
      */
     static validateInputData(requestDto) {
@@ -438,7 +438,7 @@ class RequestLockService {
      * frameValidationMessage - Frames validation message (matches Java frameValidationMessage)
      * @param {string} field - The field name
      * @param {string} message - The message
-     * @returns {Object} The validation results DTO
+     * @returns {object} The validation results DTO
      */
     static frameValidationMessage(field, message) {
         const validationResultsDto = {

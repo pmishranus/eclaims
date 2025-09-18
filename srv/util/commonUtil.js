@@ -4,10 +4,10 @@ const axios = require('axios');
 const credStore = require('./credStore/credStore');
 /**
  * Frames a response object.
- * @param {Object} sourceObj
+ * @param {object} sourceObj
  * @param {string} errorCode
  * @param {string} message
- * @returns {Object}
+ * @returns {object}
  */
 function frameResponse(sourceObj, errorCode, message) {
     sourceObj.STATUS_CODE = errorCode;
@@ -108,8 +108,8 @@ function capitalizeWords(str) {
 
 /**
  * Deep clones an object.
- * @param {Object} obj
- * @returns {Object}
+ * @param {object} obj
+ * @returns {object}
  */
 function deepClone(obj) {
     return JSON.parse(JSON.stringify(obj));
@@ -140,7 +140,7 @@ function getRandomInt(min, max) {
 
 /**
  * Checks if an object is empty.
- * @param {Object} obj
+ * @param {object} obj
  * @returns {boolean}
  */
 function isEmptyObject(obj) {
@@ -149,10 +149,10 @@ function isEmptyObject(obj) {
 
 /**
  * Copies properties from source to target, skipping specified properties.
- * @param {Object} source
- * @param {Object} target
+ * @param {object} source
+ * @param {object} target
  * @param {Array} skipProps
- * @returns {Object}
+ * @returns {object}
  */
 function copyObjectProperties(source, target, skipProps = []) {
     const skipSet = new Set(skipProps);
@@ -187,7 +187,7 @@ function numberToText(number) {
  * Groups an array by a specified key.
  * @param {Array} array
  * @param {string} key
- * @returns {Object}
+ * @returns {object}
  */
 function groupBy(array, key) {
     return array.reduce((result, item) => {
@@ -204,7 +204,7 @@ function groupBy(array, key) {
  * Frames a validation message.
  * @param {string} type
  * @param {string} message
- * @returns {Object}
+ * @returns {object}
  */
 function frameValidationMessage(type, message) {
     return {
@@ -287,7 +287,7 @@ async function fetchCpiBearerToken() {
  * @param {string} apiUrl - The CPI API endpoint URL
  * @param {any} requestData - The data to send in the request body
  * @param {string} method - HTTP method (default: 'POST')
- * @param {Object} additionalHeaders - Additional headers to include (optional)
+ * @param {object} additionalHeaders - Additional headers to include (optional)
  * @param {Function} callback - Callback function to process the response (optional)
  * @returns {Promise<any>} The CPI API response or callback result
  */

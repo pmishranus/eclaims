@@ -5,7 +5,7 @@ const FilterService = require("../util/filterService");
 /**
  * Controller for filtering eclaims data
  * Converts Java FilterController to Node.js
- * @param {Object} request - The request object containing filter parameters
+ * @param {object} request - The request object containing filter parameters
  */
 async function filterData(request) {
     console.log("FilterController filterData start()");

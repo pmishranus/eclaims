@@ -5,20 +5,20 @@ const { SELECT } = require("@sap/cds/lib/ql/cds-ql");
  * Fetch configuration by config key and process code
  * @param {string} CONFIG_KEY - Configuration key
  * @param {string} PROCESS_CODE - Process code
- * @returns {Object|null} Configuration object or null
+ * @returns {object|null} Configuration object or null
  */
 async function fetchByConfigKeyAndProcessCode(CONFIG_KEY, PROCESS_CODE) {
-    const fetchByConfigKeyAndProcessCode = await cds.run(
+    const result = await cds.run(
         SELECT.from("NUSEXT_UTILITY_APP_CONFIGS").where({ CONFIG_KEY, PROCESS_CODE })
     );
-    return fetchByConfigKeyAndProcessCode || null;
+    return result || null;
 }
 
 /**
  * Batch fetch configurations by config keys and process codes
  * @param {string} CONFIG_KEY - Configuration key
  * @param {Array<string>} PROCESS_CODES - Array of process codes
- * @returns {Object} Map of process code to configuration
+ * @returns {object} Map of process code to configuration
  */
 async function fetchConfigsByKeysAndProcessCodes(CONFIG_KEY, PROCESS_CODES) {
     if (!PROCESS_CODES || PROCESS_CODES.length === 0) {

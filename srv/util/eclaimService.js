@@ -59,10 +59,10 @@ async function fetchRole(massUploadRequest) {
 
 /**
  * Validates eclaims data.
- * @param {Object} item - The claim item.
+ * @param {object} item - The claim item.
  * @param {string} roleFlow - The role flow.
  * @param {string} requestorGroup - The requestor group.
- * @param {Object} loggedInUserDetails - The user info.
+ * @param {object} loggedInUserDetails - The user info.
  * @returns {Promise<Array>} The validation results.
  */
 async function validateEclaimsData(item, roleFlow, requestorGroup, loggedInUserDetails) {
@@ -110,7 +110,7 @@ async function validateEclaimsData(item, roleFlow, requestorGroup, loggedInUserD
 
 /**
  * Checks if the item is empty.
- * @param {Object} item - The claim item.
+ * @param {object} item - The claim item.
  * @returns {boolean}
  */
 function emptyCheck(item) {
@@ -179,10 +179,10 @@ function emptyCheck(item) {
 
 /**
  * Validates item data for eclaims.
- * @param {Object} item - The claim item.
+ * @param {object} item - The claim item.
  * @param {string} roleFlow - The role flow.
  * @param {string} requestorGroup - The requestor group.
- * @param {Object} loggedInUserDetails - The user info.
+ * @param {object} loggedInUserDetails - The user info.
  * @returns {Promise<Array>} The validation results.
  */
 async function itemDataValidation(item, roleFlow, requestorGroup, loggedInUserDetails) {
@@ -728,7 +728,7 @@ async function checkWbsElement(wbsElement) {
 
 /**
  * Checks for overlapping claims.
- * @param {Object} item - The claim item.
+ * @param {object} item - The claim item.
  * @returns {Promise<Array>} The validation results.
  */
 async function checkOverLapping(item) {
@@ -751,7 +751,7 @@ async function checkOverLapping(item) {
 }
 /**
  * Checks period validation for claims.
- * @param {Object} item - The claim item.
+ * @param {object} item - The claim item.
  * @returns {Promise<Array>} The validation results.
  */
 async function checkPeriodValidation(item) {
@@ -851,7 +851,7 @@ async function checkPeriodValidation(item) {
  * Frames a validation message.
  * @param {string} field - The field name.
  * @param {string} message - The message.
- * @returns {Object}
+ * @returns {object}
  */
 function frameValidationMessage(field, message) {
     const validationResultsDto = new ValidationResultsDto();
@@ -866,7 +866,7 @@ function frameValidationMessage(field, message) {
  * @param {string} claimDate - The claim date.
  * @param {string} columnName - The column name.
  * @param {string} message - The message.
- * @returns {Object}
+ * @returns {object}
  */
 function frameItemValidationMsg(claimDate, columnName, message) {
     const validationResultsDto = new ValidationResultsDto();
@@ -882,8 +882,8 @@ function frameItemValidationMsg(claimDate, columnName, message) {
 
 /**
  * Checks if a claim exists.
- * @param {Object} selectedClaimDates - The selected claim dates.
- * @param {Object} item - The claim item.
+ * @param {object} selectedClaimDates - The selected claim dates.
+ * @param {object} item - The claim item.
  * @param {string} roleFlow - The role flow.
  * @param {string} requestorGroup - The requestor group.
  * @returns {Promise<string|null>} The validation message or null.
@@ -938,7 +938,7 @@ function isValidFlowCheck(roleFlow, requestorGroup) {
 /**
  * Frames a claim exist message.
  * @param {Array} eclaimsItemData - The eclaims item data.
- * @param {Object} selectedClaimDates - The selected claim dates.
+ * @param {object} selectedClaimDates - The selected claim dates.
  * @param {string} claimRequestType - The claim request type.
  * @returns {string|null}
  */
@@ -1074,7 +1074,7 @@ function isHourlyMonthlyRateType(rateType, innerRateType) {
 
 /**
  * Checks daily validation for claim items.
- * @param {Object} item - The claim item.
+ * @param {object} item - The claim item.
  * @returns {Promise<Array>} The validation results.
  */
 async function checkDailyValidation(item) {
@@ -1166,7 +1166,7 @@ async function checkDailyValidation(item) {
  * @param {string} staffNusNetId - The staff NUSNET ID.
  * @param {string} requestorGrp - The requestor group.
  * @param {string} claimType - The claim type.
- * @param {Object} loggedInUserDetails - The logged in user details (optional, for optimization).
+ * @param {object} loggedInUserDetails - The logged in user details (optional, for optimization).
  * @returns {Promise<void>}
  */
 async function initiateLockProcessDetails(draftId, staffNusNetId, requestorGrp, claimType, loggedInUserDetails = null) {

@@ -7,7 +7,7 @@ const ElligibleCriteriaRepo = require("../repository/eligibilityCriteria.repo");
 
 /**
  * Optimized fetchClaimTypes function with improved performance and error handling
- * @param {Object} request - The CAP request object
+ * @param {object} request - The CAP request object
  * @returns {Array} Array of claim types with configuration
  */
 async function fetchClaimTypes(request) {

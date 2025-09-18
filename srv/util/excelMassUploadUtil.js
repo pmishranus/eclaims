@@ -11,7 +11,7 @@ class ExcelMassUploadUtil {
 
     /**
      * Checks if the file has Excel format
-     * @param {Object} file - The uploaded file object
+     * @param {object} file - The uploaded file object
      * @returns {boolean} True if file is Excel format
      */
     static hasExcelFormat(file) {

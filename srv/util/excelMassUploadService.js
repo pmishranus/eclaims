@@ -16,14 +16,14 @@ class ExcelMassUploadService {
 
     /**
      * Uploads and processes Excel file
-     * @param {Object} file - The uploaded file object
+     * @param {object} file - The uploaded file object
      * @param {string} claimCode - The claim code
      * @param {string} token - The authorization token
      * @param {string} ulu - Unit Level Unit code
      * @param {string} fdlu - Faculty Department Level Unit code
      * @param {string} period - Time period
      * @param {string} noOfHeaderRows - Number of header rows to skip
-     * @returns {Promise<Object>} Excel mass upload response
+     * @returns {Promise<object>} Excel mass upload response
      */
     static async uploadExcel(file, claimCode, token, ulu, fdlu, period, noOfHeaderRows) {
         console.log("ExcelMassUploadService uploadExcel start()");
@@ -80,15 +80,15 @@ class ExcelMassUploadService {
 
     /**
      * Populates Excel data for PTT (Claim Type 101)
-     * @param {Object} file - The uploaded file object
+     * @param {object} file - The uploaded file object
      * @param {string} claimCode - The claim code
      * @param {string} token - The authorization token
      * @param {string} ulu - Unit Level Unit code
      * @param {string} fdlu - Faculty Department Level Unit code
      * @param {string} period - Time period
      * @param {string} noOfHeaderRows - Number of header rows to skip
-     * @param {Object} excelMassUploadResponse - The response object
-     * @returns {Promise<Object>} Excel mass upload response
+     * @param {object} excelMassUploadResponse - The response object
+     * @returns {Promise<object>} Excel mass upload response
      */
     static async populateExcelForPTT(file, claimCode, token, ulu, fdlu, period, noOfHeaderRows, excelMassUploadResponse) {
         try {
@@ -123,15 +123,15 @@ class ExcelMassUploadService {
 
     /**
      * Populates Excel data for CW (Claim Type 102)
-     * @param {Object} file - The uploaded file object
+     * @param {object} file - The uploaded file object
      * @param {string} claimCode - The claim code
      * @param {string} token - The authorization token
      * @param {string} ulu - Unit Level Unit code
      * @param {string} fdlu - Faculty Department Level Unit code
      * @param {string} period - Time period
      * @param {string} noOfHeaderRows - Number of header rows to skip
-     * @param {Object} excelMassUploadResponse - The response object
-     * @returns {Promise<Object>} Excel mass upload response
+     * @param {object} excelMassUploadResponse - The response object
+     * @returns {Promise<object>} Excel mass upload response
      */
     static async populateExcelForCW(file, claimCode, token, ulu, fdlu, period, noOfHeaderRows, excelMassUploadResponse) {
         try {
@@ -166,15 +166,15 @@ class ExcelMassUploadService {
 
     /**
      * Populates Excel data for OT (Claim Types 103, 104)
-     * @param {Object} file - The uploaded file object
+     * @param {object} file - The uploaded file object
      * @param {string} claimCode - The claim code
      * @param {string} token - The authorization token
      * @param {string} ulu - Unit Level Unit code
      * @param {string} fdlu - Faculty Department Level Unit code
      * @param {string} period - Time period
      * @param {string} noOfHeaderRows - Number of header rows to skip
-     * @param {Object} excelMassUploadResponse - The response object
-     * @returns {Promise<Object>} Excel mass upload response
+     * @param {object} excelMassUploadResponse - The response object
+     * @returns {Promise<object>} Excel mass upload response
      */
     static async populateExcelForOT(file, claimCode, token, ulu, fdlu, period, noOfHeaderRows, excelMassUploadResponse) {
         try {
@@ -215,7 +215,7 @@ class ExcelMassUploadService {
      * @param {string} ulu - Unit Level Unit code
      * @param {string} fdlu - Faculty Department Level Unit code
      * @param {string} period - Time period
-     * @returns {Promise<Object>} Excel mass upload response
+     * @returns {Promise<object>} Excel mass upload response
      */
     static async frameExcelMassUploadResponse(excelMassUploadRequestList, claimCode, token, ulu, fdlu, period) {
         console.log("ExcelMassUploadService frameExcelMassUploadResponse start()");
@@ -259,15 +259,15 @@ class ExcelMassUploadService {
 
     /**
      * Populates mass upload request DTO from Excel mass upload request
-     * @param {Object} excelMassUploadRequest - Excel mass upload request
+     * @param {object} excelMassUploadRequest - Excel mass upload request
      * @param {string} claimCode - The claim code
      * @param {string} token - The authorization token
      * @param {string} ulu - Unit Level Unit code
      * @param {string} fdlu - Faculty Department Level Unit code
      * @param {string} period - Time period
      * @param {Array} excelMassUploadRequestList - List of all requests
-     * @param {Object} checkWbsElementRes - WBS element check results
-     * @returns {Promise<Object>} Mass upload request DTO
+     * @param {object} checkWbsElementRes - WBS element check results
+     * @returns {Promise<object>} Mass upload request DTO
      */
     static async populateMassUploadRequestDto(excelMassUploadRequest, claimCode, token, ulu, fdlu, period,
         excelMassUploadRequestList, checkWbsElementRes) {
@@ -341,13 +341,13 @@ class ExcelMassUploadService {
 
     /**
      * Populates Excel mass upload display response
-     * @param {Object} excelMassUploadRequest - Excel mass upload request
+     * @param {object} excelMassUploadRequest - Excel mass upload request
      * @param {string} claimCode - The claim code
      * @param {string} ulu - Unit Level Unit code
      * @param {string} fdlu - Faculty Department Level Unit code
      * @param {string} period - Time period
-     * @param {Object} massUploadRequestDto - Mass upload request DTO
-     * @returns {Promise<Object>} Excel mass upload display response
+     * @param {object} massUploadRequestDto - Mass upload request DTO
+     * @returns {Promise<object>} Excel mass upload display response
      */
     static async populateExcelMassUploadDisplayResponse(excelMassUploadRequest, claimCode, ulu, fdlu, period, massUploadRequestDto) {
         return {
@@ -372,7 +372,7 @@ class ExcelMassUploadService {
     /**
      * Checks WBS elements for validation
      * @param {Array} excelMassUploadRequestList - List of Excel mass upload requests
-     * @returns {Promise<Object>} WBS element check results
+     * @returns {Promise<object>} WBS element check results
      */
     static async checkWbsElement(excelMassUploadRequestList) {
         try {

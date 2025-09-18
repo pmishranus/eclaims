@@ -1,8 +1,8 @@
+/* global __dirname */
 const cds = require("@sap/cds");
 // const cov2ap = require("@sap/cds-odata-v2-adapter-proxy"); // Removed deprecated adapter
 const cov2ap = require("@cap-js-community/odata-v2-adapter");
 const xsenv = require("@sap/xsenv");
-const xssec = require("@sap/xssec");
 const passport = require("passport");
 const JWTStrategy = require("@sap/xssec").JWTStrategy;
 const swaggerUi = require("swagger-ui-express");
@@ -139,7 +139,7 @@ cds.on("bootstrap", app => {
                     requestInterceptor: (req) => {
                         // Add authorization header for try-it-out functionality
                         if (req.headers && req.headers.authorization) {
-                            req.headers['Authorization'] = req.headers.authorization;
+                            req.headers.Authorization = req.headers.authorization;
                         }
                         return req;
                     }
@@ -158,8 +158,8 @@ cds.on("bootstrap", app => {
         } else {
             console.warn('⚠️  OpenAPI specification file not found at:', openApiSpecPath);
         }
-    } catch (error) {
-        console.error('❌ Error setting up Swagger UI:', error.message);
+    } catch (err) {
+        console.error('❌ Error setting up Swagger UI:', err.message);
     }
 
     // File upload route for Excel mass upload
@@ -167,7 +167,7 @@ cds.on("bootstrap", app => {
         try {
             const requestUploadCtrl = require('./controller/requestUpload.controller');
             await requestUploadCtrl.handleFileUpload(req, res, next);
-        } catch (error) {
+        } catch (err) {
             console.error('Error in file upload route:', error);
             res.status(500).json({
                 message: "Internal server error",
@@ -198,7 +198,7 @@ cds.on("bootstrap", app => {
     //       })
     //     );
     //     res.status(200).json(result);
-    //   } catch (error) {
+    //   } catch (err) {
     //     next(error);
     //   }
     // });

@@ -4,8 +4,8 @@ const { validateWbsCodes } = require("../util/wbsValidation.service");
 
 /**
  * Validates WBS (Work Breakdown Structure) codes using ECP system
- * @param {Object} request - CAP request object containing WBS validation data
- * @returns {Promise<Object>} Validation results from ECP system
+ * @param {object} request - CAP request object containing WBS validation data
+ * @returns {Promise<object>} Validation results from ECP system
  */
 async function ecpWbsValidate(request) {
     try {

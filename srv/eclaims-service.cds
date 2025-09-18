@@ -185,6 +185,12 @@ service EclaimsService @(path: '/eclaims') {
    */
   action   deleteClaimRequest(data : object)                                                                                                                                      returns object;
   /**
+   * @description Deletes eclaim requests (draft deletion) - migrated from Java endpoint
+   * @param data Object containing array of RequestDto objects with either DRAFT_ID or REQUEST_ID
+   * @returns Response object with deletion status and deleted draft IDs
+   */
+  action   deleteEclaimRequest(data : object)                                                                                                                                     returns object;
+  /**
    * @description Clears claim requests (clear request deletion)
    * @param data Object containing array of RequestDto objects
    * @returns Response object with deletion status
